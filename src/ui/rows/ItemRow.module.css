@@ -1,0 +1,111 @@
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-inline-start: 8px;
+}
+
+/* ItemRowTitle: one Compose Text, 26dp tall (not the 28dp line height). */
+.title {
+  composes: t-titleLarge from global;
+  composes: t-trim from global;
+  color: var(--c-on-background);
+}
+
+.viewport {
+  position: relative;
+}
+
+.scroller {
+  overflow-x: auto;
+  overflow-y: hidden;
+  /* Upstream vertical content padding is 8dp; 6dp more each side keeps the 1.1x card and its focus ring
+     (8.6dp + 1.65dp per side at 172dp) unclipped, cancelled by the negative margin so the layout is unchanged. */
+  padding-block: 14px;
+  margin-block: -6px;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+
+.scroller::-webkit-scrollbar {
+  display: none;
+}
+
+/* being dragged with the mouse (src/ui/lib/dragScroll.ts) */
+.scroller[data-dragging] {
+  cursor: grabbing;
+  user-select: none;
+}
+
+/* Touch screens snap card edges to the padding; pointer devices scroll freely so snapping never
+   fights the focus scale or the arrow buttons. Snap uses layout boxes, unaffected by transforms. */
+@media (pointer: coarse) {
+  .scroller {
+    scroll-snap-type: x proximity;
+  }
+  .item {
+    scroll-snap-align: start;
+  }
+}
+
+.track {
+  display: flex;
+  align-items: flex-start;
+  width: max-content;
+  min-width: 100%;
+}
+
+.item {
+  flex: none;
+  position: relative;
+}
+
+/* Previous / next arrows: only for a hovering fine pointer, shown while the row is hovered. */
+.arrow {
+  display: none;
+  position: absolute;
+  top: 50%;
+  z-index: 5;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-top: -20px;
+  border-radius: 50%;
+  background: rgb(from var(--c-surface-variant) r g b / 0.8);
+  color: rgb(from var(--c-on-surface) r g b / 0.8);
+  box-shadow: 0 2px 6px rgb(from var(--fx-black) r g b / 0.4);
+  transition:
+    background-color 120ms linear,
+    transform 300ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.prev {
+  inset-inline-start: 4px;
+}
+
+.next {
+  inset-inline-end: 4px;
+}
+
+:global([dir='rtl']) .arrowIcon {
+  transform: scaleX(-1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :where(:root[data-pointer]) .viewport:hover .arrow {
+    display: flex;
+  }
+  :where(:root[data-pointer]) .arrow:hover {
+    background: var(--c-on-surface);
+    color: var(--c-inverse-on-surface);
+    transform: scale(1.1);
+  }
+}

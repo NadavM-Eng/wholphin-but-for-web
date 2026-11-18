@@ -1,0 +1,93 @@
+/* W/ui/nav/Backdrop.kt */
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  /* lets the image box measure the window (cqh) */
+  container-type: size;
+}
+
+.wash {
+  position: absolute;
+  inset: 0;
+}
+
+/* Image box: top-end, 70% x 70% of the window; ContentScale.Fit aligned TopEnd.
+   Web-only: on windows wider than 16:9 the box is no wider than 16:9. The TV canvas is always 16:9, where
+   a backdrop fills the box; in a wider box the fitted image leaves the start of the box empty and its own
+   start edge shows as a hard line part-way up the fade. */
+.imageBox {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 70%;
+  max-width: calc(70cqh * 16 / 9);
+  height: 70%;
+  /* DstIn masks: fade in from the start edge over 0..60% of the width, fade out towards the bottom */
+  mask-image: linear-gradient(to right, transparent 0%, black 60%), linear-gradient(to bottom, black, transparent);
+  mask-composite: intersect;
+}
+
+/* Upstream's RTL start offset ends at 60% of the width measured from the left (a 40% ramp); mirrored properly here. */
+.imageBox.rtl {
+  right: auto;
+  left: 0;
+  mask-image: linear-gradient(to left, transparent 0%, black 60%), linear-gradient(to bottom, black, transparent);
+}
+
+.image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: contain;
+  object-position: top right;
+  opacity: 0;
+}
+
+.rtl .image {
+  object-position: top left;
+}
+
+/* Web-only: portrait / square windows (phones, portrait tablets). The TV rule (fit inside a 70% x 70% box)
+   leaves a thin strip at the top there, so the image spans the full width, anchored to the top, cover fit,
+   with the same start and bottom fades. Landscape windows keep the TV rule. */
+@media (max-aspect-ratio: 1/1) {
+  .imageBox {
+    width: 100%;
+    max-width: none;
+    height: min(70%, 75vw);
+  }
+
+  .image {
+    object-fit: cover;
+    object-position: top center;
+  }
+
+  .rtl .image {
+    object-position: top center;
+  }
+}
+
+/* CrossFadeFactory(800ms): Coil's crossfade is linear */
+.image.loaded {
+  opacity: 1;
+  transition: opacity 800ms linear;
+}
+
+/* drawer open: black @ .75 over the image box (inside the masks) */
+.dim {
+  position: absolute;
+  inset: 0;
+  background: rgb(from var(--fx-black) r g b / 0.75);
+}
+
+/* TOP_SCRIM_ALPHA .55 -> transparent at TOP_SCRIM_END_FRACTION .25 (Multiply with black = black overlay) */
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgb(from var(--fx-black) r g b / 0.55) 0%, rgb(from var(--fx-black) r g b / 0) 25%);
+}

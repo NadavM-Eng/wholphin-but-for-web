@@ -1,0 +1,58 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-inline: 16px;
+  padding-block-end: 40px;
+}
+
+.field {
+  display: flex;
+  justify-content: center;
+  padding-inline: 16px;
+}
+
+.field > * {
+  width: min(560px, 100%);
+}
+
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Upstream ItemRowTitle / SearchResultPlaceholder title (titleLarge). */
+.resultsTitle {
+  composes: t-titleLarge from global;
+  margin: 0;
+  color: var(--c-on-background);
+}
+
+/* SearchResultPlaceholder: 16dp padding, 8dp gap, 32dp bottom. */
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 16px 48px;
+}
+
+.message {
+  composes: t-titleMedium from global;
+  margin: 0;
+  color: var(--c-on-background);
+}
+
+.messageError {
+  composes: message;
+  color: var(--c-error);
+}
+
+@media (max-width: 600px) {
+  .root {
+    padding-inline: 8px;
+  }
+  .field {
+    padding-inline: 0;
+  }
+}

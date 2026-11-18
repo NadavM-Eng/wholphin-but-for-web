@@ -1,0 +1,116 @@
+/* SeriesOverviewContent: a scrolling column, 16dp vertical padding, 8dp between its parts. */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-block: 16px;
+  min-width: 0;
+}
+
+/* The top group (tabs, logo, episode header, strip, buttons): 4dp apart. */
+.top {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+/* TabRow: end padding for the clock (184dp, 16 without), 4dp below; start clear of the floating Back button. */
+.tabs {
+  margin-inline: var(--shell-back-reserve, 0px) var(--shell-clock-reserve, 16px);
+  padding-bottom: 4px;
+  min-width: 0;
+}
+
+/* TitleOrLogo, start padding 8. */
+.title {
+  padding-inline-start: 8px;
+  min-width: 0;
+}
+
+.title h1 {
+  width: fit-content;
+  max-width: 100%;
+}
+
+/* FocusedEpisodeHeader: fillMaxWidth(.6f), 8dp apart. */
+.episodeHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 60%;
+  min-width: 0;
+  /* above the strip's scroll box, whose focus-ring room overlaps the overview's bottom padding */
+  position: relative;
+  z-index: 1;
+}
+
+.episodeName {
+  /* keeps its line while the first episode loads: an empty Compose Text is one trimmed line tall, the font's
+     ascent + descent (Roboto: 1.172em), see common/DetailHeader.module.css */
+  min-height: 1.172em;
+  /* dir="auto" text hugging the start edge (DetailHeader.module.css) */
+  width: fit-content;
+  max-width: 100%;
+}
+
+.overview p {
+  /* dir="auto" text hugging the start edge (DetailHeader.module.css) */
+  width: fit-content;
+  max-width: 100%;
+  /* Text(...).padding(8.dp).height(60.dp): the first line sits at the top of the fixed box without its leading,
+     which OverviewText's own text class already does */
+}
+
+.strip {
+  min-width: 0;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* FocusedEpisodeFooter: 4dp above the buttons, nothing below them (the 16dp under the buttons of
+   common/DetailPlayButtons belongs to the movie and episode pages: SeriesOverviewContent.kt:287-320). */
+.top .footer {
+  padding-top: 4px;
+  padding-bottom: 0;
+}
+
+.people {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  animation: fade-in 300ms linear;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 1100px) {
+  .episodeHeader {
+    width: 80%;
+  }
+}
+
+/* Phones: the episode details sit under the strip, full width. */
+@media (max-width: 760px) {
+  .episodeHeader {
+    width: 100%;
+  }
+}
+
+@media (max-width: 599.98px) {
+  .page {
+    padding-bottom: 32px;
+  }
+  .episodeHeader {
+    padding-top: 8px;
+  }
+}

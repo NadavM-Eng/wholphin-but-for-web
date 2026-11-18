@@ -1,0 +1,7 @@
+/* The pointer menu's divider: the same 1dp material3 outlineVariant line as the dialog list's. */
+.divider {
+  border: 0;
+  height: 1px;
+  margin: 8px 0;
+  background: var(--fx-m3-outline-variant);
+}

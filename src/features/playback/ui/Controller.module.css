@@ -1,0 +1,218 @@
+/*
+ * The web player's control strip (owner request; the TV controller it replaces is described in Controller.tsx).
+ * Every size is a share of the strip's height, `--player-strip-h` (PlayerView.module.css), so the strip keeps
+ * its proportions when a short window makes it lower:
+ *   one row of buttons:  4 top + 16 seek line + 1 + 38 buttons + 3 bottom = 62dp
+ *   two rows (portrait): 4 top + 16 seek line + 2.5 + 36 + 2.5 + 36 + 3 bottom = 100dp
+ */
+.root {
+  --strip: var(--player-strip-h, 62px);
+  --pb-size: calc(var(--strip) * 0.613);
+  --seek-h: calc(var(--strip) * 0.258);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--strip) * 0.016);
+  height: var(--strip);
+  padding: calc(var(--strip) * 0.065) 12px calc(var(--strip) * 0.048);
+  color: var(--c-on-surface);
+}
+
+/* Elapsed time, the bar, remaining time: left to right in every locale, like upstream's seek bar and timecodes. */
+.seekRow {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 10px;
+  height: var(--seek-h);
+  direction: ltr;
+}
+
+.seek {
+  --seek-bar: 4px;
+  --seek-bar-active: 7px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* SeekTimecodes: labelMedium here (labelLarge on TV), never taller than the line; digits of equal width, so the
+   bar does not change its length every second */
+.time,
+.timeEnd {
+  composes: t-labelMedium from global;
+  flex: none;
+  min-width: 7ch;
+  font-size: min(12px, calc(var(--seek-h) * 0.8));
+  line-height: 1;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  /* the row is left to right in every locale: these are its physical ends */
+  text-align: left;
+}
+
+.timeEnd {
+  text-align: right;
+}
+
+/* PlaybackControls.kt:297-322: only the Row is left-to-right; each time Text gets the locale's direction back
+   (a Hebrew "-1 min 28 s" is otherwise reordered as left-to-right text). */
+:global([dir='rtl']) :is(.time, .timeEnd) {
+  direction: rtl;
+  unicode-bidi: isolate;
+}
+
+.live {
+  composes: t-labelMedium from global;
+  flex: none;
+  font-size: min(12px, calc(var(--seek-h) * 0.8));
+  line-height: 1;
+  padding: calc(var(--seek-h) * 0.1) 8px;
+  border-radius: 4px;
+  background: var(--c-error);
+  color: var(--c-on-error);
+}
+
+/*
+ * Three columns: "Ends at" at the start, the transport buttons in the middle of the strip (owner request), the
+ * Skip button and the option buttons at the end. The side columns are equal while there is room, so the middle
+ * one is centred; when the end column needs more, the start column gives way first.
+ */
+.row {
+  display: grid;
+  flex: none;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  column-gap: 4px;
+  min-width: 0;
+}
+
+.info {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.transport {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.end {
+  display: flex;
+  grid-column: 3;
+  grid-row: 1;
+  align-items: center;
+  justify-content: flex-end;
+  column-gap: 4px;
+  min-width: 0;
+}
+
+.transport,
+.options {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 2px;
+}
+
+/* the transport buttons stay left to right in RTL, like upstream */
+.transport {
+  direction: ltr;
+}
+
+/* the list icon has its bullets at the start edge */
+:global([dir='rtl']) .options :global([data-player-button='chapters']) > svg {
+  transform: scaleX(-1);
+}
+
+/*
+ * "Ends at": shown when the row has room. The line box is one button high and clips; a text wider than the room
+ * left wraps to a second line (the zero-width first item keeps the first line) and is cut off whole.
+ */
+.info {
+  display: flex;
+  flex: 1 1 0;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  min-width: 0;
+  height: var(--pb-size);
+  overflow: hidden;
+}
+
+.info::before {
+  content: '';
+  flex: none;
+  width: 0;
+  height: 100%;
+}
+
+.endsAt {
+  composes: t-labelMedium from global;
+  flex: none;
+  height: var(--pb-size);
+  padding-inline: 8px;
+  font-size: min(12px, calc(var(--pb-size) * 0.4));
+  line-height: var(--pb-size);
+  white-space: nowrap;
+}
+
+/* TextButton, as low as the strip's buttons. Doubled class: wins over the kit's 40dp minimum. */
+.segmentButton.segmentButton {
+  flex: none;
+  min-height: 0;
+  height: calc(var(--pb-size) * 0.8);
+  margin-inline-end: 6px;
+  padding: 0 12px;
+  /* the label shrinks with the strip */
+  font-size: min(14px, calc(var(--pb-size) * 0.37));
+}
+
+/* Touch: the buttons keep the strip's size (it must stay inside the letterbox bar); the finger's target reaches
+   into the paddings around them. */
+@media (pointer: coarse) {
+  .row :global([data-player-button])::after {
+    content: '';
+    position: absolute;
+    inset: -4px -1px;
+  }
+}
+
+/*
+ * Narrow and tall (phones in portrait): the thirteen buttons do not fit one line, and the picture leaves room
+ * above and below. Transport, "Ends at" and the Skip button on one line, the other buttons on a second.
+ */
+@media (max-width: 699px) and (min-height: 500px) {
+  .root {
+    --strip: var(--player-strip-h, 100px);
+    --pb-size: calc(var(--strip) * 0.36);
+    --seek-h: calc(var(--strip) * 0.16);
+    gap: calc(var(--strip) * 0.025);
+    padding: calc(var(--strip) * 0.04) 8px calc(var(--strip) * 0.03);
+  }
+
+  .row {
+    row-gap: calc(var(--strip) * 0.025);
+  }
+
+  /* the end group dissolves: the Skip button stays on the first line, the option buttons take the second */
+  .end {
+    display: contents;
+  }
+
+  .segmentButton.segmentButton {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .options {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: space-between;
+  }
+
+  /* the seek line gets the width: the times are as wide as their text */
+  .time,
+  .timeEnd {
+    min-width: 0;
+  }
+}

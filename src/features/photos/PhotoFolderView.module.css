@@ -1,0 +1,266 @@
+/*
+ * CollectionFolderView: Column{ CollectionFolderHeader; [details]; Row{ grid box; letter column } }.
+ * The TV page is one screen tall and the grid scrolls inside it; here the window scrolls and the grid area is at
+ * least as tall as what is left of the window under the header (--photo-grid-top, set by PhotoFolderView).
+ */
+.page {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* expandVertically / shrinkVertically of CollectionFolderHeader. The -4dp margins cancel .header's padding:
+   upstream's header is exactly its title plus the 40dp button row, and the grid starts right under it. */
+.collapse {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 200ms ease;
+  margin-block: -4px;
+}
+
+.collapse[data-hidden] {
+  grid-template-rows: 0fr;
+}
+
+/* Column(spacedBy 8dp){ GridTitle; button Row }; the padding is room for the buttons' 1.1 focus scale */
+.header {
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-block: 4px;
+}
+
+/* GridTitle: displaySmall, onBackground, centered, one line, the first thing on the page (no padding above).
+   Compose trims a one-line Text to its font's own height (42.2dp, not the 44dp line): t-line (global.css) on the
+   text, exact in every engine. */
+.title {
+  composes: t-displaySmall from global;
+  margin: 0;
+  color: var(--c-on-background);
+  text-align: center;
+  /* Centred over the whole width like GridTitle, but a long title may take the room beside the Back button and
+     the clock that it does not cover (the rule of GridHeader.module.css): the side columns shrink to the
+     reserves, the text gets the rest. */
+  display: grid;
+  grid-template-columns:
+    minmax(var(--shell-back-reserve, 0px), 1fr) minmax(0, max-content)
+    minmax(var(--shell-clock-reserve, 0px), 1fr);
+}
+
+.title::before,
+.title::after {
+  content: '';
+}
+
+.titleText {
+  composes: t-line from global;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* row: start 16, end 16 (+24 with the letter column), gap 8 */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-inline: 16px;
+  flex-wrap: wrap;
+}
+
+.controls[data-name-sort] {
+  padding-inline-end: 40px;
+}
+
+.group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* SortByButton: caret and name 4dp apart */
+.sort {
+  gap: 4px;
+}
+
+.details {
+  height: 200px;
+  overflow: hidden;
+  padding-inline: 16px;
+}
+
+/* Row{ Box(weight 1f){ grid; footer }; AlphabetButtons } */
+.body {
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+  min-height: calc(100dvh - var(--photo-grid-top, 91px));
+}
+
+/* CardGrid.kt: the grid box starts at the page's start edge (no padding of its own) and ends at the letter column */
+.gridWrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* The card box keeps its aspect ratio whatever the photo's own shape (aspect-ratio boxes otherwise grow to
+   their content's min-content height). */
+.gridWrap :global([data-card-root]) > * {
+  min-height: 0;
+}
+
+/* AlphabetButtons: start padding 16, then the 14 + 2x2 dp letters, vertically centred in the grid area; kept
+   (empty) when the sort is not by name so the cards do not resize. */
+.letters {
+  flex: none;
+  align-self: flex-start;
+  position: sticky;
+  top: 0;
+  width: 34px;
+  height: calc(100dvh - var(--photo-grid-top, 91px));
+  padding-inline-start: 16px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.letters > * {
+  max-height: 100%;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+/* Safari before 18.2 ignores scrollbar-width */
+.letters > *::-webkit-scrollbar {
+  display: none;
+}
+
+.empty {
+  composes: t-titleLarge from global;
+  margin: 0;
+  text-align: center;
+  color: var(--c-on-background);
+}
+
+/* "n / total": bottom centre of the grid box, #80000000, padding 4, onBackground, the tv Text default style
+   (bodyLarge) trimmed to the font's height (18.75 + 8 = 27dp tall). It stays at the bottom of the window while
+   the grid scrolls under it. */
+.footer {
+  composes: t-bodyLarge t-line from global;
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  align-self: center;
+  margin-top: auto;
+  padding: 4px;
+  background: var(--fx-black-50);
+  color: var(--c-on-background);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* the music mini player covers the bottom 72dp of the window (MiniPlayer.module.css) */
+:global(body[data-music-bar]) .body {
+  min-height: calc(100dvh - var(--photo-grid-top, 91px) - 72px);
+}
+
+:global(body[data-music-bar]) .letters {
+  height: calc(100dvh - var(--photo-grid-top, 91px) - 72px);
+}
+
+:global(body[data-music-bar]) .footer {
+  bottom: 72px;
+}
+
+.listRow {
+  width: 100%;
+  background: rgb(from var(--c-surface-1) r g b / 0.5);
+}
+
+.listPlaceholder {
+  border-radius: 8px;
+  background: rgb(from var(--c-surface-1) r g b / 0.5);
+}
+
+/* FilterByButton */
+.filterWrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.filterCount {
+  composes: t-labelSmall from global;
+  position: absolute;
+  top: -2px;
+  inset-inline-end: -2px;
+  min-width: 16px;
+  height: 16px;
+  padding-inline: 4px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--c-border);
+  color: var(--c-on-primary);
+  pointer-events: none;
+}
+
+.removeItem {
+  color: var(--c-error);
+}
+
+.flipRtl {
+  transform: none;
+}
+
+:global([dir='rtl']) .flipRtl {
+  transform: scaleX(-1);
+}
+
+.menuSpinner {
+  display: flex;
+  justify-content: center;
+  padding: 8px;
+}
+
+.menuEmpty {
+  composes: t-bodyMedium from global;
+  margin: 0;
+  padding: 12px;
+  color: var(--c-on-surface);
+}
+
+.rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.star {
+  color: var(--fx-star-filled);
+  width: 1em;
+  height: 1em;
+}
+
+@media (max-width: 599px) {
+  .title {
+    font-size: 24px;
+    line-height: 32px;
+  }
+  .controls {
+    padding-inline: 8px;
+  }
+  .controls[data-name-sort] {
+    padding-inline-end: 8px;
+  }
+  .letters {
+    width: 26px;
+    padding-inline-start: 8px;
+  }
+}

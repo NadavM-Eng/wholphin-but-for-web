@@ -1,0 +1,57 @@
+/* Column(spacedBy 4dp), fills the tab content area. */
+.guide {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* TvGuideHeader: Modifier.padding(top = 48dp).fillMaxHeight(.30f). The padding is taken first, so the header is
+   48dp + 30% of what is left of the column (refshots 34-live-tv-guide: 178.5dp of a 483dp column), not 30% of
+   the column. */
+.headerSlot {
+  flex: 0 0 calc(48px + (100% - 48px) * 0.3);
+  min-height: 0;
+}
+
+/* AnimatedVisibility around the ExpandableFaButton: when it is hidden Compose drops the node, and with it one
+   4dp gap of the column (refshots 34-live-tv-guide-channel-2: the grid box starts 4dp under the header). The
+   row keeps 4dp of padding above and below so the focused button (scale 1.1) is not clipped by the collapse
+   box; the negative margins take that padding out of the layout again. */
+.buttonsSlot {
+  margin-block: -4px;
+  transition: margin-block-start 250ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.buttonsSlot[data-hidden] {
+  margin-block-start: 0;
+}
+
+/* ExpandableFaButton with start padding = channel column width (120dp) */
+.buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-inline-start: 120px;
+  padding-block: 4px;
+}
+
+.fill {
+  flex: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .buttonsSlot {
+    transition: none;
+  }
+}
+
+@media (max-width: 599px) {
+  .headerSlot {
+    flex-basis: 25%;
+  }
+  .buttons {
+    padding-inline-start: 0;
+  }
+}

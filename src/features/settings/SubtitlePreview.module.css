@@ -1,0 +1,99 @@
+.frame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--fx-black);
+}
+
+/* ContentScale.FillBounds */
+.image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: fill;
+  user-select: none;
+}
+
+/* The samples' canvas; scaled down as a whole when the frame is shorter than the TV preview. */
+.stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  transform: translate(-50%, -50%);
+}
+
+/* Column(padding 16dp) of three SubtitleViews. */
+.examples {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+}
+
+/* Modifier.weight(1f).padding(bottom = n): every sample gets a third of the height and the padding comes off inside
+   it (the view's bottom margin; padding on the flex item itself would be added to its third). */
+.slot {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.slotView {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  container-type: size;
+}
+
+.full {
+  position: absolute;
+  inset: 0;
+  container-type: size;
+}
+
+/*
+ * A Media3 SubtitleView with one cue (SubtitlePainter.setupTextLayout): the text block is centered, its bottom
+ * sits bottomPaddingFraction of the view height above the view's bottom, and it wraps at the view width minus
+ * textSize * 0.125 on each side. The font size is set inline, so em below is the cue's text size.
+ */
+.view {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  padding-inline: 0.125em;
+  /* Roboto's own line spacing (ascent 1900 + descent 500 of 2048 units): StaticLayout with spacingMult 1 */
+  line-height: 1.171875;
+}
+
+/*
+ * StaticLayout(includePad = true): the first line starts at the font's top (2163) instead of its ascent (1900)
+ * and the last ends at its bottom (555) instead of its descent (500).
+ */
+.box {
+  position: relative;
+  max-width: 100%;
+  padding-block: 0.1284em 0.0269em;
+  text-align: center;
+}
+
+/* windowColor: the text block's rectangle, textSize * 0.25 wider than the widest line on each side. */
+.window {
+  position: absolute;
+  inset-block: 0;
+  inset-inline: -0.25em;
+}
+
+.text {
+  position: relative;
+  white-space: pre-line;
+  font-family: 'Roboto Variable', Roboto, system-ui, sans-serif;
+}

@@ -1,0 +1,28 @@
+.img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.bar {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  background: var(--fx-black-50);
+  color: var(--c-on-surface);
+}
+
+/* Two one-line Texts (ChapterCard.kt): the bar is 4 + 16.4 + 14 + 4 = 38.5dp (refshots 24-playback-chapters). */
+.name {
+  composes: t-bodyMedium from global;
+  composes: t-trim from global;
+  font-weight: 600;
+}
+
+.time {
+  composes: t-bodySmall from global;
+  composes: t-trim from global;
+}

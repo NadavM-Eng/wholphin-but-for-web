@@ -1,0 +1,74 @@
+/*
+ * Doubled class: wins over PlayerSheet's 424dp list. Half the window at most on a desktop, never taller than
+ * what is left above the control strip, and not more than 56% of the window, so the picture stays in view.
+ */
+.panel.panel {
+  width: min(50%, 520px);
+  max-height: min(100%, 56vh);
+}
+
+@media (max-width: 599px) {
+  .panel.panel {
+    width: 100%;
+  }
+}
+
+.header {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  padding-inline-start: 16px;
+}
+
+.title {
+  composes: t-titleMedium from global;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.close {
+  --pb-size: 32px;
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 4px;
+}
+
+/* chapter picture: 16:9, 36dp high; the box stays when a picture is missing so the names line up */
+.thumb {
+  display: block;
+  width: 64px;
+  height: 36px;
+  border-radius: 4px;
+  background: var(--c-surface-variant);
+  object-fit: cover;
+}
+
+/* queue position */
+.number {
+  composes: t-labelLarge from global;
+  min-width: 24px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.trailing {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.line {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

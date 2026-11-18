@@ -1,0 +1,48 @@
+/* NavDrawerPreferenceDialog: Column(padding 16) { titleLarge (8dp below); LazyColumn } */
+.column {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  width: min(440px, 92vw);
+  max-height: 90dvh;
+}
+
+.title {
+  composes: t-titleLarge from global;
+  composes: t-trim from global;
+  color: var(--c-on-surface);
+  padding-bottom: 8px;
+}
+
+/* The rows span the column (16..424dp of the 440dp dialog). The padding is only room for the focus scale inside
+   the scroll box (a 332dp item grows 8.3dp per side at 1.05) and is cancelled by the margin. */
+.list {
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 4px 12px;
+  margin: -4px -12px;
+}
+
+/* NavDrawerPreferenceListItem: Row spacedBy 8, min height 40; MoveButton 32dp, spacedBy 4 */
+.item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 40px;
+}
+
+.main {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-inline-end: 4px;
+}
+
+/* MoveButton: Button(Modifier.size(32.dp)), a 32dp circle. */
+.move {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  padding: 0;
+}

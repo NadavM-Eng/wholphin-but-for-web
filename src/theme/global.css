@@ -1,0 +1,184 @@
+@import '@fontsource-variable/roboto';
+@import './tokens.css';
+@import './typography.css';
+
+@font-face {
+  font-family: 'Font Awesome Solid';
+  src: url('./fonts/fa_solid_900.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: block;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/*
+ * The box of a Compose Text. tv-material text styles carry no LineHeightStyle, so the default
+ * (LineHeightStyle.Trim.Both) applies: the leading above the first line and below the last line is cut and a
+ * text block is as tall as the font (Roboto ascent + descent = (1900 + 500) / 2048 em) plus the line height
+ * between its lines. The `.t-*` type classes keep CSS's full line boxes; an element that stands for one
+ * Compose Text adds one of these (listed after the type classes, so they win when composed with one):
+ *   t-line     a text that never wraps (maxLines = 1, nowrap): the line is as tall as the font. Exact.
+ *   t-trim     a block of text that may wrap or is line-clamped: the leading is pulled in with negative
+ *              margins. Exact in every engine. For a block-level box in a flex/grid column that sets no
+ *              margin-block of its own and has no padding or background that should shrink with the text.
+ *   t-trimBox  `text-box: trim-both text`, for the cases t-trim cannot serve: a box with its own padding or
+ *              margins, or a slot whose content may already be trimmed (the two do not add up). Engines round
+ *              the font box up to whole pixels (up to 1dp taller) and skip or misplace the end trim in a
+ *              -webkit-line-clamp box.
+ */
+:root {
+  --t-font-height: 1.171875;
+}
+
+.t-line {
+  line-height: var(--t-font-height);
+}
+
+.t-trim {
+  margin-block: calc((var(--t-font-height) * 1em - 1lh) / 2);
+}
+
+.t-trimBox {
+  text-box: trim-both text;
+}
+
+html {
+  /* scale.ts overrides this inline; 16px = scale 1 */
+  font-size: 16px;
+  color-scheme: dark;
+  background: var(--c-surface);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--c-surface);
+  color: var(--c-on-surface);
+  font-family: 'Roboto Variable', Roboto, system-ui, 'Segoe UI', 'Noto Sans', 'Noto Sans Hebrew', Arial, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
+}
+
+#root {
+  min-height: 100dvh;
+  isolation: isolate;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+  font-weight: inherit;
+  font-size: inherit;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Focus rings are drawn per component (the TV "focused" look); never show the UA default. */
+:focus {
+  outline: none;
+}
+
+/* Thin themed scrollbars for the few places that show one. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--c-on-surface) 30%, transparent) transparent;
+}
+
+/*
+ * The same look for Safari before 18.2 (and Chrome 119-120), which ignore scrollbar-width/-color. Chromium
+ * 121+ uses the standard properties above and skips these. Sizes in PX: a scrollbar does not follow the
+ * interface scale. Elements that hide their scrollbar keep their own `::-webkit-scrollbar { display: none }`
+ * (class selectors win over these).
+ */
+::-webkit-scrollbar {
+  width: 8PX;
+  height: 8PX;
+  background: transparent;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2PX solid transparent;
+  border-radius: 4PX;
+  background: color-mix(in srgb, var(--c-on-surface) 30%, transparent) padding-box;
+}
+
+.fa {
+  font-family: 'Font Awesome Solid';
+  font-weight: 900;
+  font-style: normal;
+  line-height: 1;
+  display: inline-block;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1PX;
+  height: 1PX;
+  margin: -1PX;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/*
+ * Transitions get 0s, not a token 0.01ms: with any duration every property transitions (`transition-property`
+ * defaults to `all`), `visibility` included, and an element that has just been made visible still computes as
+ * hidden in that frame and refuses focus (the right-click menu and the player controls then opened unfocused).
+ * Nothing listens for transitionend. Animations keep a token duration: SetupFrame waits for animationend.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0s !important;
+    scroll-behavior: auto !important;
+  }
+}

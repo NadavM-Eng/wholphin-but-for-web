@@ -1,0 +1,46 @@
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-block-end: 32px;
+}
+
+.title {
+  composes: t-titleLarge from global;
+  composes: t-trim from global;
+  color: var(--c-on-background);
+}
+
+.message {
+  composes: t-titleMedium from global;
+  composes: t-trim from global;
+  color: var(--c-on-background);
+}
+
+.error {
+  color: var(--c-error);
+}
+
+/* FocusableItemRow (FocusableItemRow.kt:52-76): 8dp start margin, 8dp padding all round, 8dp corners,
+   border@.25 when focused. The 32dp bottom padding belongs to LoadingRow only. */
+.focusable {
+  margin-inline-start: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background-color 200ms linear;
+}
+
+.focusable .message {
+  padding-inline-start: 8px;
+}
+
+:where(:root:not([data-pointer])) .focusable:focus-visible,
+:global([data-demo-focus]) .focusable {
+  background: rgb(from var(--c-border) r g b / 0.25);
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .focusable:hover {
+    background: rgb(from var(--c-border) r g b / 0.25);
+  }
+}

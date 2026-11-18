@@ -1,0 +1,57 @@
+.layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.area {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  /* animateFloatAsState on the view's size fraction */
+  transition:
+    height 200ms ease,
+    width 200ms ease,
+    left 200ms ease;
+}
+
+.box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 90%;
+  text-align: center;
+  font-family: Roboto, 'Roboto Variable', system-ui, sans-serif;
+  unicode-bidi: plaintext;
+}
+
+.cue {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.line {
+  display: block;
+  white-space: pre-wrap;
+}
+
+.assCanvas {
+  position: absolute;
+  pointer-events: none;
+}
+
+/* PGS (image) subtitles: with the controls up the whole picture shrinks to the top-center 70%, like the text area */
+.pgs {
+  transform-origin: 50% 0;
+  transition: transform 200ms ease;
+}
+
+.pgsCanvas {
+  position: absolute;
+  pointer-events: none;
+  object-fit: contain;
+}

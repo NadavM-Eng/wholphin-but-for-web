@@ -1,0 +1,146 @@
+/* Web-only mini player: a 64dp bar at the bottom edge, right of the drawer rail (--shell-rail-width, NavDrawer.module.css), surface at elevation 3
+   like the app's dialogs. The expanded drawer (224dp) has no background of its own, so the bar moves its start
+   edge with it, like the page content does. */
+:global(body[data-music-bar]) {
+  /* also read by the pages that size themselves to the window in script (TabbedPage / Home useFitViewport,
+     discover/useFillViewport): they end above the bar instead of under it */
+  --page-bottom-reserve: 72px;
+  padding-bottom: var(--page-bottom-reserve);
+}
+
+/* the body's padding already reserves the bar: a full-height root would make every short page scroll by 72dp
+   (the shell's .shell/.content get the same rule in AppShell.module.css) */
+:global(body[data-music-bar] #root) {
+  min-height: calc(100dvh - 72px);
+}
+
+.bar {
+  position: fixed;
+  z-index: 2;
+  inset-inline: var(--shell-rail-width) 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 64px;
+  padding-inline: 8px 16px;
+  background: var(--c-surface-3);
+  color: var(--c-on-surface);
+  box-shadow: 0 -2px 8px rgb(from var(--fx-black-50) r g b / 0.35);
+  /* moves with the drawer: the same curve (NavDrawer.module.css) */
+  transition: inset-inline-start var(--shell-spring-ms) var(--shell-spring);
+}
+
+.drawerOpen {
+  inset-inline-start: var(--shell-rail-open-width);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar {
+    transition: none;
+  }
+}
+
+.compact {
+  inset-inline-start: 0;
+  padding-inline: 4px 8px;
+  gap: 8px;
+}
+
+.progress {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 3px;
+  background: rgb(from var(--c-on-surface) r g b / 0.25);
+  /* fills from the left in every language, like the Now Playing and video seek bars */
+  direction: ltr;
+}
+
+.fill {
+  height: 100%;
+  background: var(--c-border);
+}
+
+.info {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+  height: 56px;
+  padding-inline: 4px 8px;
+  border-radius: 8px;
+  color: inherit;
+  text-decoration: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:where(:root:not([data-pointer])) .info:focus-visible {
+  background: rgb(from var(--c-border) r g b / 0.33);
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .info:hover {
+    background: rgb(from var(--c-border) r g b / 0.33);
+  }
+}
+
+.art {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--c-surface-variant);
+  font-size: 20px;
+}
+
+.art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* dir="auto" texts in a column: each hugs the start edge (beside the cover) whatever its own direction */
+.title,
+.artist {
+  align-self: flex-start;
+  max-width: 100%;
+}
+
+.title {
+  composes: t-titleSmall from global;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.artist {
+  composes: t-bodySmall from global;
+  overflow: hidden;
+  color: var(--c-on-surface-variant);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.buttons {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 12px;
+}
+
+.compact .buttons {
+  gap: 4px;
+}

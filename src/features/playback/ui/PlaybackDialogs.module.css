@@ -1,0 +1,33 @@
+.choice {
+  display: block;
+}
+
+/*
+ * BottomDialog and the stream dialogs always pass a supportingContent lambda, so tv-material sizes every row as a
+ * two-line ListItem (64dp) even when only the headline shows. Doubled class: wins over the shared ListItem rules.
+ */
+.row.row {
+  min-height: 64px;
+}
+
+/*
+ * Headline and supporting text are one-line Compose Texts, as tall as the font (Roboto 1.172em: 18.75dp and
+ * 14dp), not the type scale's 24dp / 16dp line boxes, so the two lines of a row sit 16.4dp apart.
+ */
+.line {
+  composes: t-line from global;
+  display: block;
+}
+
+/*
+ * material3 HorizontalDivider: 1dp, the list's full width, no margin. Its color is the compose-material3 (not tv)
+ * scheme's outlineVariant, which no Wholphin theme sets (Theme.kt:47, ThemeColors `darkSchemeMaterial`), so it is the
+ * library's dark default in every theme.
+ */
+.divider {
+  display: block;
+  height: 1px;
+  margin: 0;
+  border: 0;
+  background: var(--fx-m3-outline-variant);
+}

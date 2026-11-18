@@ -1,0 +1,17 @@
+node_modules
+dist
+dist-server
+.git
+.worktrees
+reference
+refshots
+shots
+test-results
+playwright-report
+dev/testserver/data
+.env
+.env.*
+*.log
+*.local
+Dockerfile
+docker-compose*.yml

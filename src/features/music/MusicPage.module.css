@@ -1,0 +1,74 @@
+/* Album / artist / song pages: a LazyColumn of header (bottom pad 32dp; artist 16dp), "Songs (N)", song rows, item
+   rows, with no content padding (the last row ends at the bottom edge) except the artist page's 16dp. */
+.page {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ArtistDetailsPage.kt:409: contentPadding(bottom = 16dp) */
+.pageArtist {
+  padding-bottom: 16px;
+}
+
+.top {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 32px;
+}
+
+/* ArtistDetailsPage.kt:422: the artist header column ends with 16dp, not 32 */
+.topArtist {
+  padding-bottom: 16px;
+}
+
+/* titleLarge, start padding 8; a Compose Text is as tall as its font (25.8dp), the rows start right under it */
+.sectionTitle {
+  composes: t-titleLarge t-trim from global;
+  padding-inline-start: 8px;
+  color: var(--c-on-background);
+}
+
+/* song rows: fillMaxWidth(.75f), centred, no gap around or between them */
+.songs {
+  display: flex;
+  flex-direction: column;
+  width: 75%;
+  margin-inline: auto;
+}
+
+.song {
+  width: 100%;
+}
+
+.disc {
+  composes: t-titleMedium from global;
+  padding: 16px 12px 4px;
+  color: var(--c-on-surface-variant);
+}
+
+.disc:first-child {
+  padding-top: 4px;
+}
+
+/* the ItemRows follow each other directly (verticalArrangement = spacedBy(0.dp)); each row brings its own 8dp
+   above and below its cards */
+.rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.inlineLoading {
+  min-height: 120px;
+}
+
+.empty {
+  composes: t-bodyLarge from global;
+  padding: 16px 8px;
+}
+
+@media (max-width: 899.98px) {
+  .songs {
+    width: 100%;
+  }
+}

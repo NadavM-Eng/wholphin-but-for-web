@@ -1,0 +1,22 @@
+.clip {
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.name {
+  composes: t-titleLarge from global;
+  font-weight: 700;
+  padding: 16px;
+  text-align: center;
+  color: var(--c-on-surface-variant);
+}

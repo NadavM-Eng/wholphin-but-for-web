@@ -1,0 +1,11 @@
+.page {
+  min-height: 60dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.placeholderText {
+  composes: t-bodyLarge from global;
+  color: var(--c-on-surface);
+  padding: 48px 8px 0;
+}

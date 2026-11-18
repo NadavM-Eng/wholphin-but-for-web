@@ -1,0 +1,15 @@
+.center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--c-on-surface);
+}
+
+/* Icon fillMaxSize(.66f): 66% of the smaller side, kept square. */
+.icon {
+  width: 66% !important;
+  height: 66% !important;
+  max-height: 66%;
+}

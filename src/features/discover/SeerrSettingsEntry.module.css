@@ -1,0 +1,26 @@
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  max-width: 520px;
+}
+
+.title {
+  composes: t-titleLarge from global;
+  margin: 0;
+  text-align: center;
+  color: var(--c-on-surface);
+}
+
+.body {
+  composes: t-bodyMedium from global;
+  margin: 0;
+  color: var(--c-on-surface);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}

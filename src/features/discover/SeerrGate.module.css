@@ -1,0 +1,27 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 48px 16px;
+  text-align: center;
+}
+
+.title {
+  composes: t-displaySmall from global;
+  margin: 0;
+  color: var(--c-on-background);
+}
+
+.message {
+  composes: t-titleMedium from global;
+  margin: 0;
+  max-width: 560px;
+  color: var(--c-on-background);
+}
+
+.detail {
+  composes: t-bodyMedium from global;
+  margin: 0;
+  color: var(--c-on-surface-variant);
+}

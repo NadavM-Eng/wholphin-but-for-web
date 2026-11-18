@@ -1,0 +1,107 @@
+.slider {
+  --h: 6px;
+  /* sliderActiveColor / sliderInactiveColor (SliderBar.kt:141-205). Default (PURPLE): border.copy(alpha = .25f)
+     replaces border's own alpha, hence the explicit `/ 1` before mixing. */
+  --active: var(--c-border);
+  --active-focus: var(--c-border);
+  --inactive: rgb(from color-mix(in srgb, rgb(from var(--c-border) r g b / 1) 25%, var(--c-surface-variant)) r g b / 0.66);
+  --inactive-focus: var(--inactive);
+  /* Vertical room for the 26dp focused thumb without layout shift. */
+  display: flex;
+  align-items: center;
+  min-height: 28px;
+  padding-inline: 4px;
+  cursor: pointer;
+  /* a finger that starts on the slider scrolls the page up and down; only a sideways drag is the slider's
+     (Slider.tsx) */
+  touch-action: pan-y pinch-zoom;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:global(:root:is([data-theme='BLUE'], [data-theme='GREEN'], [data-theme='ORANGE'], [data-theme='BOLD_BLUE'], [data-theme='RED'], [data-theme='BROWN'])) .slider {
+  --inactive: rgb(from var(--c-secondary-container) r g b / 0.66);
+  --inactive-focus: var(--inactive);
+}
+
+:global(:root[data-theme='OLED_BLACK']) .slider {
+  --active-focus: var(--c-primary-container);
+  --inactive: var(--c-primary-container);
+  --inactive-focus: var(--c-tertiary-container);
+}
+
+.rail {
+  position: relative;
+  flex: 1;
+  height: var(--h);
+  transition: height 250ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* drawLine(..., strokeWidth = height, cap = StrokeCap.Round): the round caps add half the track height beyond
+   both ends of the line, into the 4dp side padding (SliderBar.kt:86-104). The thumb travels the line itself. */
+.inactive,
+.active {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: calc(var(--h) / -2);
+  border-radius: 9999px;
+}
+
+.inactive {
+  inset-inline-end: calc(var(--h) / -2);
+  background: var(--inactive);
+}
+
+.active {
+  background: var(--active);
+}
+
+/* drawCircle(radius = height + 2px): diameter 2h + 2dp-ish. */
+.thumb {
+  position: absolute;
+  top: 50%;
+  width: calc(var(--h) * 2 + 2px);
+  height: calc(var(--h) * 2 + 2px);
+  border-radius: 50%;
+  background: var(--fx-white);
+  transform: translate(-50%, -50%);
+  transition:
+    width 250ms cubic-bezier(0.2, 0, 0, 1),
+    height 250ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* one selector: a list with the :dir() pseudo-class in it is dropped whole by Chrome before 120 */
+:global([dir='rtl']) .thumb {
+  transform: translate(50%, -50%);
+}
+
+:where(:root:not([data-pointer])) .slider:focus-visible,
+:global([data-demo-focus]) .slider {
+  --h: 12px;
+}
+
+:where(:root:not([data-pointer])) .slider:focus-visible .active,
+:global([data-demo-focus]) .slider .active {
+  background: var(--active-focus);
+}
+
+:where(:root:not([data-pointer])) .slider:focus-visible .inactive,
+:global([data-demo-focus]) .slider .inactive {
+  background: var(--inactive-focus);
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .slider:hover {
+    --h: 12px;
+  }
+  :where(:root[data-pointer]) .slider:hover .active {
+    background: var(--active-focus);
+  }
+  :where(:root[data-pointer]) .slider:hover .inactive {
+    background: var(--inactive-focus);
+  }
+}
+
+.slider[aria-disabled='true'] {
+  cursor: default;
+  opacity: 0.5;
+}

@@ -1,0 +1,73 @@
+.root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  /* Coil crossfade default (200ms). */
+  transition: opacity 200ms linear;
+}
+
+.loaded {
+  opacity: 1;
+}
+
+.fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--c-surface-variant);
+  color: var(--c-on-surface-variant);
+}
+
+.fallbackText {
+  padding: 8px;
+  font-size: 14px;
+  line-height: 20px;
+  overflow: hidden;
+  max-height: 100%;
+}
+
+/* fillMaxSize(.4f) of the card, Fit inside it. */
+.fallbackIcon {
+  width: 40% !important;
+  height: 40% !important;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.topStart,
+.topEnd {
+  position: absolute;
+  inset-block-start: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+}
+
+.topStart {
+  inset-inline-start: 0;
+}
+
+.topEnd {
+  inset-inline-end: 0;
+}
+
+/* android.R.color.holo_red_light */
+.heart {
+  color: var(--fx-favorite-heart);
+  line-height: 1;
+}

@@ -1,0 +1,60 @@
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 24px;
+  width: min(520px, calc(100vw - 32px));
+  box-sizing: border-box;
+}
+
+.title {
+  composes: t-titleLarge from global;
+  margin: 0;
+  width: fit-content;
+  max-width: 100%;
+  color: var(--c-on-surface);
+}
+
+.topRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-block: 8px;
+  flex-wrap: wrap;
+}
+
+.loading {
+  min-width: 240px;
+  min-height: 160px;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid rgb(from var(--c-on-surface) r g b / 0.2);
+  margin: 8px 0;
+  width: 100%;
+}
+
+.sectionTitle {
+  composes: t-titleLarge from global;
+  margin: 0;
+  color: var(--c-on-surface);
+}
+
+.seasonList {
+  display: flex;
+  flex-direction: column;
+}
+
+.centered {
+  display: flex;
+  justify-content: center;
+  padding-block: 8px;
+}
+
+.badgeSlot {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+}

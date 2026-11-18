@@ -1,0 +1,35 @@
+/* HomePageContent: header fixed on top, rows scroll below it. */
+.page {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.rows {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-bottom: 172px;
+  scrollbar-width: none;
+}
+
+.rows::-webkit-scrollbar {
+  display: none;
+}
+
+.row {
+  padding-bottom: 8px;
+}
+
+.empty {
+  composes: t-titleLarge from global;
+  color: var(--c-on-surface);
+  text-align: center;
+  padding: 48px 16px;
+}

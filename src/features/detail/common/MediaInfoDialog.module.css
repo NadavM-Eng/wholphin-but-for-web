@@ -1,0 +1,97 @@
+/*
+ * Every text is a Compose Text without a LineHeightStyle (Trim.Both): each block is as tall as its lines minus
+ * the leading above the first and below the last (bodyMedium one line 16.4dp). `t-trim` (global.css) does that
+ * exactly; `text-box` would round each box up to a whole pixel and the sections would drift down.
+ */
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.title {
+  composes: t-headlineSmall from global;
+  composes: t-trim from global;
+}
+
+.studios {
+  composes: t-titleMedium from global;
+  composes: t-trim from global;
+}
+
+.genres {
+  composes: t-titleSmall from global;
+  composes: t-trim from global;
+}
+
+.overview {
+  composes: t-bodyMedium from global;
+  composes: t-trim from global;
+  white-space: pre-line;
+}
+
+.divider {
+  border: 0;
+  margin: 8px 0 0;
+  height: 1PX;
+  flex: none;
+  /* material3 HorizontalDivider: outlineVariant of the material3 default scheme (ItemDetailsDialogInfo.kt). */
+  background: var(--fx-m3-outline-variant);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-block: 4px;
+  min-width: 0;
+}
+
+.sectionTitle {
+  composes: t-titleLarge from global;
+  composes: t-trim from global;
+  color: var(--c-on-surface);
+}
+
+.cols {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 24px;
+  padding-inline-start: 12px;
+}
+
+/* A Column of label/value Rows, no spacing; flex so the rows' trim margins do not collapse into each other. */
+.col {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.pair {
+  composes: t-bodyMedium from global;
+  composes: t-trim from global;
+  overflow-wrap: anywhere;
+}
+
+.label {
+  color: rgb(from var(--c-on-surface) r g b / 0.7);
+}
+
+/* Audio / subtitle streams: three per row (two on narrow screens, one on phones). */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 420px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

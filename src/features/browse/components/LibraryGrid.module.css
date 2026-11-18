@@ -1,0 +1,184 @@
+/* Column(fillMaxSize){ header (collapsible); [details]; grid + letters }. The grid scrolls inside. */
+.root {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* AnimatedVisibility(expandVertically / shrinkVertically). */
+.collapse {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 250ms cubic-bezier(0.2, 0, 0, 1);
+  flex: none;
+  /* cancels .collapseInner's padding: upstream's header Row is exactly as tall as its 40dp buttons, and the
+     grid starts right under it (CollectionFolderView.kt Column) */
+  margin-block: -4px;
+}
+
+.collapsed {
+  grid-template-rows: 0fr;
+}
+
+.collapseInner {
+  min-height: 0;
+  overflow: hidden;
+  /* room for the 1.1 focus scale of the buttons */
+  padding-block: 4px;
+}
+
+.collapsed .collapseInner {
+  visibility: hidden;
+  transition: visibility 0s 250ms;
+}
+
+/* HomePageHeader (height 200, HeaderUtils.padding: top 48, bottom 32, start 8). */
+.details {
+  flex: none;
+  height: 200px;
+  overflow: hidden;
+}
+
+.details > header {
+  height: 200px;
+  padding-top: 24px;
+  padding-bottom: 8px;
+}
+
+.body {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.bodyRow {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+}
+
+/* CollectionFolderList.kt: Row(spacedBy 8) of the details pane, the list and the letter column (the grid's Row
+   has no spacing). */
+.bodyRowList {
+  gap: 8px;
+  /* Modifier.padding(bottom = 16.dp) */
+  padding-block-end: 16px;
+  /* Modifier.padding(top = topPadding): 8dp under the header (the header's own spacing here), 48dp once the header
+     is hidden (animateDpAsState), which keeps the rows clear of the clock (CollectionFolderList.kt:120-136) */
+  transition: padding-block-start 250ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.bodyRowListHeaderHidden {
+  padding-block-start: 48px;
+}
+
+/* CardGrid.kt: Box(weight 1f) holding the LazyVerticalGrid and the footer; it starts at the page's start edge
+   (no padding of its own) and ends at the letter column. */
+.gridBox {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+}
+
+.scroller {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* The focused card scales 1.1 past the grid's edges (a Compose lazy grid does not clip across its scroll
+     axis). The clip box is widened by 8dp each side with a negative margin, so the cards keep upstream's
+     width: (838 - 5 x 16) / 6 = 126.33dp on the TV canvas. */
+  margin-inline: -8px;
+  padding-inline: 8px;
+  scrollbar-width: thin;
+}
+
+/* Genre / studio tiles (TileGrid): a ~197.5dp tv Card at the 1.1 focus scale sticks out 9.9dp each side, plus
+   half of the 3dp ring, so their clip box is widened by 16dp instead (StudioCard.kt / GenreCard.kt Card). */
+.scrollerTiles {
+  margin-inline: -16px;
+  padding-inline: 16px;
+}
+
+/* AlphabetButtons: start padding 16, 14dp buttons with 2dp side padding (34dp in all); vertically centered. */
+.letters {
+  flex: none;
+  display: flex;
+  align-items: center;
+  padding-inline-start: 16px;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.letters > * {
+  max-height: 100%;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+/* Safari before 18.2 ignores scrollbar-width */
+.letters > *::-webkit-scrollbar {
+  display: none;
+}
+
+/* Spacer(padding start 16, width 2 x 2 + 14): the cards keep their size without the letter column. */
+.lettersSpacer {
+  flex: none;
+  width: 34px;
+}
+
+/* Footer: bottom-center of the grid box, TransparentBlack50, padding 4, onBackground; the tv Text default
+   style (bodyLarge). Compose trims a one-line Text to the font's own height (LineHeightStyle.Trim.Both with
+   includeFontPadding = false), so the box is 18.75 + 8 = 27dp tall, not 24 + 8 (`t-line` in global.css). */
+.footer {
+  composes: t-bodyLarge t-line from global;
+  position: absolute;
+  bottom: 0;
+  /* centered: physical left is direction-independent here */
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px;
+  background: var(--fx-black-50);
+  color: var(--c-on-background);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.empty {
+  composes: t-titleLarge from global;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--c-on-surface);
+  text-align: center;
+  padding: 16px;
+}
+
+.list {
+  position: relative;
+  width: 100%;
+}
+
+.listRow {
+  position: absolute;
+  inset-inline: 0;
+}
+
+@media (max-width: 599px) {
+  .letters {
+    padding-inline: 8px 2px;
+  }
+  .lettersSpacer {
+    width: 26px;
+  }
+}

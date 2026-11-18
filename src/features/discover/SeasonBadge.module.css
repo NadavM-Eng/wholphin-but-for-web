@@ -1,0 +1,36 @@
+.slot {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 16px;
+  height: 16px;
+  flex: none;
+  border-radius: 50%;
+  border: 0.5px solid var(--fx-white);
+}
+
+.pending {
+  border-color: var(--fx-discover-yellow);
+  background: rgb(from var(--fx-white) r g b / 0.85);
+  color: var(--fx-discover-yellow);
+}
+
+.available {
+  background: rgb(from var(--fx-discover-green) r g b / 0.85);
+  color: var(--fx-white);
+}
+
+.bar {
+  width: 10px;
+  height: 2px;
+  border-radius: 9999px;
+  background: var(--fx-white);
+}

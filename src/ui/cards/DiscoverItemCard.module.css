@@ -1,0 +1,45 @@
+.chip {
+  composes: t-bodySmall from global;
+  position: absolute;
+  inset-block-start: 4px;
+  inset-inline-start: 4px;
+  padding: 4px;
+  border-radius: 9999px;
+  font-size: 10px;
+  line-height: 12px;
+  color: var(--c-on-surface);
+  pointer-events: none;
+}
+
+.badge {
+  position: absolute;
+  inset-block-start: 4px;
+  inset-inline-end: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 0.5px solid var(--fx-white);
+  pointer-events: none;
+}
+
+.pending {
+  border-color: var(--fx-discover-yellow);
+  background: rgb(from var(--fx-white) r g b / 0.85);
+  color: var(--fx-discover-yellow);
+}
+
+.available {
+  background: rgb(from var(--fx-discover-green) r g b / 0.85);
+  color: var(--fx-white);
+}
+
+.bar {
+  width: 10px;
+  height: 2px;
+  border-radius: 9999px;
+  background: var(--fx-white);
+}

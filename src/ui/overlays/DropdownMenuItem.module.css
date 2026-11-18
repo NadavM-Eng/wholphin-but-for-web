@@ -1,0 +1,50 @@
+/* The label is a tv Text inside the M3 item, so it takes tv's ambient bodyLarge (16sp), not M3's labelLarge
+   (refshots 08-library-grid-dialogs-sort-dialog: "Community Rating" is 139dp wide, the menu 200dp). */
+.item {
+  composes: t-bodyLarge from global;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 0 12px;
+  background: var(--c-surface-3);
+  color: var(--c-on-surface);
+  text-align: start;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:where(:root:not([data-pointer])) .item:focus-visible,
+:global([data-demo-focus]) .item {
+  background: var(--c-inverse-surface);
+  color: var(--c-inverse-on-surface);
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .item:hover {
+    background: var(--c-inverse-surface);
+    color: var(--c-inverse-on-surface);
+  }
+}
+
+.item[aria-disabled='true'] {
+  opacity: 0.38;
+  cursor: default;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  min-width: 24px;
+  font-size: 18px;
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

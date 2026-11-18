@@ -1,0 +1,21 @@
+.pill {
+  display: inline-block;
+  flex: none;
+  padding: 4px;
+  /* RoundedCornerShape(25): 25% of the shorter side; CSS 25% is per-axis, close enough for small pills. */
+  border-radius: 25%;
+  background: var(--fx-black-50);
+  color: var(--c-on-surface);
+  white-space: nowrap;
+}
+
+/* Text(...).padding(4.dp): the text is one trimmed line, so the medium pill is 16.4 + 8dp tall. */
+.medium {
+  composes: t-bodyMedium from global;
+  composes: t-line from global;
+}
+
+.small {
+  composes: t-bodySmall from global;
+  composes: t-line from global;
+}

@@ -1,0 +1,100 @@
+/* Wholphin Button (ui/components/Button.kt) on tv-material ClickableSurface.
+   Scale tween: focus 300ms, unfocus 500ms, press 120ms, easing (0,0,.2,1) (tv-material SurfaceScaleTokens). */
+.root {
+  composes: t-labelLarge from global;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  box-sizing: border-box;
+  border-radius: 9999px;
+  background: rgb(from var(--c-surface-variant) r g b / 0.8);
+  color: rgb(from var(--c-on-surface) r g b / 0.8);
+  white-space: nowrap;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transform: scale(1);
+  transition:
+    transform 500ms cubic-bezier(0, 0, 0.2, 1),
+    background-color 120ms linear,
+    color 120ms linear;
+}
+
+/* DefaultButtonPadding 4dp around a 40dp-high Row = 48dp. */
+.default {
+  min-height: 48px;
+  min-width: 48px;
+  padding: 4px;
+  gap: 8px;
+}
+
+/* TextButton: padding 8/4dp, content height 32dp = 40dp. */
+.text {
+  min-height: 40px;
+  padding: 4px 8px;
+  gap: 8px;
+}
+
+/* Square icon button (JumpButton: 40dp wide, 4dp padding). */
+.icon {
+  width: 40px;
+  height: 40px;
+  padding: 4px;
+}
+
+/* ExpandablePlayButton / ExpandableFaButton: requiredSizeIn(min 40, max height 40). */
+.expandable {
+  height: 40px;
+  min-width: 40px;
+  padding: 4px;
+  justify-content: flex-start;
+}
+
+:where(:root:not([data-pointer])) .root:is(:focus-visible, [data-focus-held]),
+:global([data-demo-focus]) .root {
+  background: var(--c-on-surface);
+  color: var(--c-inverse-on-surface);
+  transform: scale(1.1);
+  transition-duration: 300ms, 120ms, 120ms;
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .root:hover {
+    background: var(--c-on-surface);
+    color: var(--c-inverse-on-surface);
+    transform: scale(1.1);
+    transition-duration: 300ms, 120ms, 120ms;
+  }
+}
+
+/* Pressed: same inverted colors, pressedScale = scale (1f). */
+.root:active:not([aria-disabled='true']) {
+  background: var(--c-on-surface);
+  color: var(--c-inverse-on-surface);
+  transform: scale(1);
+  transition-duration: 120ms, 120ms, 120ms;
+}
+
+/* The press shrinks a focused or hovered button from 1.1 to 1.0 under the pointer. A press on its rim must still
+   end on the button (when pointerup lands outside, the click goes to the common ancestor and nothing happens):
+   the 1.1 area stays its hit box while pressed. */
+.root:active:not([aria-disabled='true'])::after {
+  content: '';
+  position: absolute;
+  inset: -5%;
+  border-radius: inherit;
+}
+
+.root[aria-disabled='true'] {
+  background: rgb(from var(--c-surface-variant) r g b / 0.4);
+  color: rgb(from var(--c-on-surface) r g b / 0.4);
+  transform: none;
+  cursor: default;
+}
+
+/* focusedDisabledBorder: 1.5dp onSurfaceVariant@.2, drawn inside the shape. */
+:where(:root:not([data-pointer])) .root[aria-disabled='true']:is(:focus-visible, [data-focus-held]),
+:global([data-demo-focus]) .root[aria-disabled='true'] {
+  box-shadow: inset 0 0 0 1.5px rgb(from var(--c-on-surface-variant) r g b / 0.2);
+}

@@ -1,0 +1,14 @@
+.playing {
+  display: inline-flex;
+  flex: none;
+}
+
+/* 8dp dot with 8dp horizontal padding, in the row's text colour */
+.dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  margin-inline: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}

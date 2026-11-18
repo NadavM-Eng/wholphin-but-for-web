@@ -1,0 +1,71 @@
+/* DialogPopupContent (Dialogs.kt:269-335): the title stays put and the LazyColumn under it scrolls. A menu taller
+   than the window therefore keeps its title and its 24dp bottom padding (refshots 11-movie-tracks-more-menu: the
+   ninth entry is out of sight below the list, not drawn in the padding). */
+div.panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  min-height: 0;
+  flex: 1 1 auto;
+}
+
+/* One Compose Text: 26dp tall, the list starts 8dp under it. */
+.title {
+  composes: t-titleLarge from global;
+  composes: t-trim from global;
+  color: var(--c-on-surface);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  /* a lazy column clips along its scroll axis only: the focused row's 1.05 scale reaches into the panel's side
+     padding, so the scroll box spans the panel's width */
+  margin-inline: -24px;
+  padding-inline: 24px;
+}
+
+.list > * {
+  flex: none;
+}
+
+/* material3 HorizontalDivider(Modifier.height(16.dp)) (Dialogs.kt:296): the caller's height wins, and the 1dp
+   line (material3 outlineVariant) is drawn along the top of that 16dp box, not through its middle
+   (refshots 11-movie-tracks-choose-subtitles: line at 372-373px, next item from 404px). */
+.divider {
+  border: 0;
+  height: 16px;
+  margin: 0;
+  background: linear-gradient(var(--fx-m3-outline-variant), var(--fx-m3-outline-variant)) top / 100% 1px no-repeat;
+}
+
+/* `bare` (LocaleChoiceDialog.kt calls DialogPopupContent without DialogPopup's shadow / clip / background /
+   padding modifiers): the 440dp column on the dimmed page, from the top of the window when the list is long
+   (refshots 22-settings-sub-language: title centre 13dp, focused row 249..711dp). */
+@media (min-width: 720px) {
+  div.bare {
+    /* the Dialog sets its surface colour inline */
+    background: transparent !important;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0;
+    overflow: visible;
+  }
+
+  /* room for the focused row's 1.05 scale beside the 440dp column */
+  .bare .list {
+    margin-inline: -16px;
+    padding-inline: 16px;
+  }
+}

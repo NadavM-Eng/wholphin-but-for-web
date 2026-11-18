@@ -1,0 +1,22 @@
+.page {
+  position: relative;
+  min-height: 100%;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* TabbedPage: tab row padding top/bottom 16dp; start/end leave room for the shell's Back button and clock. */
+.tabs {
+  padding-block: 16px;
+  padding-inline: calc(16px + var(--shell-back-reserve, 0px)) calc(16px + var(--shell-clock-reserve, 0px));
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+}

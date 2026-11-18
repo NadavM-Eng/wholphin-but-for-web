@@ -1,0 +1,31 @@
+.fallback {
+  composes: t-titleMedium from global;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  text-align: center;
+  color: var(--c-on-surface-variant);
+  overflow: hidden;
+}
+
+.topEnd {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  pointer-events: none;
+}
+
+.heart {
+  position: absolute;
+  inset-block-start: 8px;
+  inset-inline-start: 8px;
+  color: var(--fx-favorite-heart);
+  pointer-events: none;
+}

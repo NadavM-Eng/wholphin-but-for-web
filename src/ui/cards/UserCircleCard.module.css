@@ -1,0 +1,61 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  flex: none;
+  width: 129px;
+}
+
+/* Cards.serverUserCircle = 172dp * .75 */
+.circle {
+  width: 129px;
+  height: 129px;
+}
+
+.center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--c-on-surface);
+}
+
+.img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.letter {
+  composes: t-displayLarge from global;
+  composes: t-line from global;
+  font-weight: 700;
+}
+
+/* The label is a Compose Text (trimmed): one line is 18.75dp tall under the 24dp gap, not 24dp. */
+.name {
+  composes: t-bodyLarge from global;
+  composes: t-trim from global;
+  font-weight: 700;
+  width: 129px;
+  padding-inline: 4px;
+  text-align: center;
+  color: var(--c-on-surface);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.nameClickable {
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}

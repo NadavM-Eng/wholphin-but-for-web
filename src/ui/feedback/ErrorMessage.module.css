@@ -1,0 +1,25 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px;
+  color: var(--c-error);
+  overflow-wrap: anywhere;
+}
+
+.title {
+  composes: t-titleMedium from global;
+}
+
+.message {
+  composes: t-titleLarge from global;
+}
+
+.detail {
+  composes: t-titleMedium from global;
+}
+
+.cause {
+  composes: t-titleSmall from global;
+}

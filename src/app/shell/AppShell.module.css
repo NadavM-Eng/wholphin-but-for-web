@@ -1,0 +1,113 @@
+/* ApplicationContent.kt / NavDrawer.kt layout. */
+.shell {
+  --shell-clock-reserve: 0px;
+  --shell-back-reserve: 0px;
+  position: relative;
+  min-height: 100dvh;
+  /* the open drawer pushes the page 160dp past the end edge; never scroll sideways */
+  overflow-x: clip;
+}
+
+/* the music mini player pads the body by 72dp (MiniPlayer.module.css); keep the page one screen tall */
+:global(body[data-music-bar]) .shell,
+:global(body[data-music-bar]) .content {
+  min-height: calc(100dvh - 72px);
+}
+
+/* TabbedPage.kt: 184dp end padding for the clock */
+.clockOn {
+  --shell-clock-reserve: 184px;
+}
+
+.backOn:not(.compact) {
+  --shell-back-reserve: 48px;
+}
+
+/* Page area: padding start 64 + 8 = 72dp, end 16dp; translated by 224 - 64 = 160dp while the drawer is open
+   (spring StiffnessMedium, same curve as the drawer width). */
+.content {
+  position: relative;
+  z-index: 1;
+  min-height: 100dvh;
+  padding-inline: 72px 16px;
+  transition: transform var(--shell-spring-ms) var(--shell-spring);
+  outline: none;
+}
+
+.content[data-open] {
+  transform: translateX(160px);
+}
+
+.rtl .content[data-open] {
+  transform: translateX(-160px);
+}
+
+.page {
+  display: block;
+  min-width: 0;
+}
+
+/* programmatic fallback focus only (tabIndex -1): the page area itself draws no focus ring */
+.page:focus {
+  outline: none;
+}
+
+/* Floating Back button: sticks to the top of the viewport inside the shifting page area. */
+.backSlot {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  height: 0;
+}
+
+.back {
+  position: absolute;
+  top: 8px;
+  inset-inline-start: 0;
+}
+
+/* see AppShell.tsx: keyboard mode on a mouse device, window scrolled, button not focused */
+@media (hover: hover) and (pointer: fine) {
+  :where(:root:not([data-pointer])) .backSlot[data-scrolled] .back:not(:focus-visible) {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+/* tap-opened rail on touch tablets: a tap anywhere else closes it without activating the page */
+.catcher {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+}
+
+/* ---- phone ---- */
+
+.compact .content {
+  padding-inline: 16px;
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 56px;
+  margin-inline: -8px;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 19;
+  background: rgb(from var(--c-scrim) r g b / 0.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .content {
+    transition: none;
+  }
+}

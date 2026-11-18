@@ -1,0 +1,159 @@
+/*
+ * AlbumHeader / ArtistHeader: Row(spacedBy 16dp, top padding 32dp){ cover; Column(spacedBy 4dp) }.
+ * The cover keeps clear of the shell's floating Back button (web adaptation, see .cover); the row does not reserve
+ * room for the clock: upstream lets the 75% / 60% text columns end before it.
+ *
+ * Text boxes: Compose trims a Text to its font's own height (LineHeightStyle.Trim.Both, no font padding), so a
+ * one-line headlineMedium is 32.8dp tall, not its 36dp line. The kit's exact helpers (global.css) do it in every
+ * engine: t-line for one-line texts, t-trim for texts that may wrap.
+ */
+.header {
+  display: flex;
+  gap: 16px;
+  padding-top: 32px;
+  min-width: 0;
+}
+
+/* fillMaxWidth(.20f), ContentScale.FillWidth, r=16dp. The cover stays at the page's start edge, in line with the
+   buttons and the song list, and drops below the shell's floating Back button instead (8 + 40dp, so the cover
+   starts 8dp under it); the text column beside it keeps upstream's 32dp top. */
+.cover {
+  flex: none;
+  align-self: flex-start;
+  /* 48dp reserve: 48 + 8 - 32 = 24dp; no Back button (phones): 0 */
+  margin-top: calc(var(--shell-back-reserve, 0px) / 2);
+  width: 20%;
+  min-width: 96px;
+  height: auto;
+  border-radius: 16px;
+  background: var(--c-surface-variant);
+}
+
+/* no image yet: a square placeholder */
+.noCover {
+  aspect-ratio: 1;
+}
+
+.column {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+/* dir="auto" texts: the block hugs the page's start edge whatever the text's own direction (same rule as
+   DetailHeader / HomeHeader), and its 8dp inset stays on the page's start side: a logical padding would follow
+   the text's direction and move to the other side for a Hebrew title on an English interface. */
+.artists,
+.name,
+.genres {
+  width: fit-content;
+  padding-left: 8px;
+}
+
+:global([dir='rtl']) .artists,
+:global([dir='rtl']) .name,
+:global([dir='rtl']) .genres {
+  padding-left: 0;
+  padding-right: 8px;
+}
+
+/* headlineMedium SemiBold, one line, fillMaxWidth(.75f), start padding 8 */
+.artists {
+  composes: t-headlineMedium t-line from global;
+  overflow: hidden;
+  max-width: 75%;
+  color: var(--c-on-background);
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* headlineSmall, one line, fillMaxWidth(.75f), start padding 8 */
+.name {
+  composes: t-headlineSmall t-line from global;
+  overflow: hidden;
+  max-width: 75%;
+  color: var(--c-on-background);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Column(spacedBy 4dp, fillMaxWidth(.60f)) */
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 60%;
+  min-width: 0;
+}
+
+/* QuickDetails' line is already as tall as its font (t-line) */
+.quick {
+  padding-inline-start: 8px;
+  min-width: 0;
+}
+
+/* QuickDetails with nothing to show is still an empty titleSmall line upstream (an artist has no details) */
+.quickEmpty {
+  composes: t-titleSmall t-line from global;
+  padding-inline-start: 8px;
+}
+
+/* GenreText: bodyMedium, onSurface, start padding 8 */
+.genres {
+  composes: t-bodyMedium t-trim from global;
+  max-width: 100%;
+  color: var(--c-on-surface);
+}
+
+/* OverviewText(maxLines = 3, textBoxHeight = Dp.Unspecified): no fixed box height on these pages */
+.overview {
+  max-width: 100%;
+  width: fit-content;
+}
+
+.overview p {
+  height: auto !important;
+  width: fit-content;
+  max-width: 100%;
+  /* a text block as tall as its lines minus the leading above the first and below the last (the kit's t-trim rule) */
+  margin-block: calc((var(--t-font-height) * 1em - 1lh) / 2);
+}
+
+.dialogTitle {
+  composes: t-titleLarge from global;
+}
+
+.dialogText {
+  composes: t-bodyMedium from global;
+  white-space: pre-wrap;
+}
+
+/* Phones: the 60% / 75% columns would leave a sliver of text; use the full width of the column. */
+@media (max-width: 599.98px) {
+  .header {
+    padding-top: 8px;
+  }
+
+  .cover {
+    width: 30%;
+  }
+
+  .artists {
+    max-width: 100%;
+    font-size: 22px;
+    line-height: 28px;
+  }
+
+  .name {
+    max-width: 100%;
+    font-size: 18px;
+    line-height: 24px;
+  }
+
+  .details {
+    width: 100%;
+  }
+}

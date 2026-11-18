@@ -1,0 +1,4 @@
+/* Icons.AutoMirrored: points toward the end of the line in right-to-left languages. */
+:global([dir='rtl']) .autoMirror {
+  transform: scaleX(-1);
+}

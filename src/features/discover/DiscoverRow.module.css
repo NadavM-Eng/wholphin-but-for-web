@@ -1,0 +1,18 @@
+.loading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-inline-start: 8px;
+}
+
+.title {
+  composes: t-titleLarge from global;
+  margin: 0;
+  color: var(--c-on-background);
+}
+
+.loadingText {
+  composes: t-titleMedium from global;
+  margin: 0;
+  color: var(--c-on-background);
+}

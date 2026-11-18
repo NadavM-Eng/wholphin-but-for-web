@@ -1,0 +1,49 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-width: none;
+  overscroll-behavior: contain;
+  /* the current line can be scrolled to the middle at both ends */
+  padding-block: 33% 50%;
+}
+
+.list::-webkit-scrollbar {
+  display: none;
+}
+
+.line {
+  composes: t-bodyLarge from global;
+  flex: none;
+  padding: 8px;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--c-on-surface);
+  text-align: start;
+  white-space: pre-wrap;
+  transition: color 500ms linear;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dim {
+  color: rgb(from var(--c-on-surface) r g b / 0.4);
+}
+
+:where(:root:not([data-pointer])) .line:focus-visible {
+  background: rgb(from var(--c-border) r g b / 0.33);
+  color: var(--c-on-surface);
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .line:hover {
+    background: rgb(from var(--c-border) r g b / 0.33);
+    color: var(--c-on-surface);
+  }
+}
+
+.line:active {
+  transform: scale(0.9);
+}

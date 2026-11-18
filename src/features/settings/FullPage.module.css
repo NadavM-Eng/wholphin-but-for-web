@@ -1,0 +1,40 @@
+.page {
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--c-background);
+  color: var(--c-on-surface);
+  outline: none;
+  overscroll-behavior: contain;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: 12px 16px;
+  background: var(--c-surface-1);
+}
+
+.title {
+  composes: t-headlineSmall from global;
+  flex: 1;
+  min-width: 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.body {
+  padding: 16px;
+  max-width: 1200px;
+  margin-inline: auto;
+}

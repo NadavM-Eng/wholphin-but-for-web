@@ -1,0 +1,70 @@
+﻿/* Box(TopCenter) > LazyColumn(fillMaxWidth .6, background surface, contentPadding 16, spacedBy 8, CenterHorizontally) */
+.page {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 16px;
+}
+
+.column {
+  box-sizing: border-box;
+  width: 60%;
+  min-width: min(100%, 480px);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--c-surface);
+}
+
+.day {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* The three headings are one-line Compose Texts: as tall as the font (28.1dp for headlineSmall, 32.8dp for
+   headlineMedium; LineHeightStyle.Trim.Both), not the 32 / 36dp line (refshots 34-live-tv-dvr-schedule: the
+   empty text's capitals start 20.75dp under the column's top): `t-trim` in global.css (it owns margin-block). */
+.empty {
+  composes: t-headlineSmall from global;
+  composes: t-trim from global;
+  text-align: center;
+  color: var(--c-on-surface);
+}
+
+.activeTitle {
+  composes: t-headlineMedium from global;
+  composes: t-trim from global;
+  color: var(--c-on-surface);
+}
+
+.dayTitle {
+  composes: t-headlineSmall from global;
+  composes: t-trim from global;
+  color: var(--c-on-surface);
+}
+
+/* ListItem containerColor = surfaceColorAtElevation(1dp) */
+.item {
+  width: 100%;
+}
+
+/* also while the pointer owns the highlight and the keyboard-focused row is not the hovered one */
+.item:not(:focus-visible),
+:where(:root[data-pointer]) .item:not(:hover) {
+  background: var(--c-surface-1);
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .item:hover {
+    background: var(--c-inverse-surface);
+  }
+}
+
+@media (max-width: 599px) {
+  .column {
+    width: 100%;
+    min-width: 0;
+    padding-inline: 0;
+  }
+}

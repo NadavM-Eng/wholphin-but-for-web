@@ -1,0 +1,71 @@
+/* PlaylistDialog: top gravity, 24dp corners, 16dp padding, 8dp gap, elevation 3. */
+.panel {
+  align-self: flex-start;
+  margin-top: 24px;
+  border-radius: 24px;
+  width: min(560px, 100%);
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  min-width: 0;
+  /* the placeholder for the dialog's first focus */
+  outline: none;
+}
+
+.title {
+  composes: t-headlineSmall from global;
+  color: var(--c-on-surface);
+  text-align: center;
+}
+
+/* SearchEditTextBox(Modifier.fillMaxWidth()). */
+.search {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.spinner {
+  display: flex;
+  justify-content: center;
+  padding: 8px;
+}
+
+.error {
+  composes: t-bodyMedium from global;
+  color: var(--c-error);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-block: 2px;
+}
+
+.divider {
+  border: 0;
+  margin: 0;
+  height: 1PX;
+  background: rgb(from var(--c-on-surface) r g b / 0.12);
+}
+
+.create {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  width: min(480px, 90vw);
+}
+
+.create > :nth-child(2) {
+  align-self: stretch;
+}
+
+.createLabel {
+  composes: t-bodyLarge from global;
+}

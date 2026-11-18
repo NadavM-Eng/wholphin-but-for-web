@@ -1,0 +1,103 @@
+.box {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  min-width: min(280px, 100%);
+  min-height: 40px;
+  padding: 8px;
+  border-radius: 9999px;
+  background: rgb(from var(--c-surface-variant) r g b / 0.6);
+  color: var(--c-on-surface-variant);
+  cursor: text;
+  transition: background-color 120ms linear;
+}
+
+.multiline {
+  align-items: flex-start;
+  border-radius: 8px;
+}
+
+.box:focus-within {
+  background: rgb(from var(--c-surface-variant) r g b / 0.8);
+}
+
+/* Single-line = upstream's String overload of EditTextBox (EditTextBox.kt:211-313): text bodyLarge in
+   onPrimaryContainer, and the M3 container draws a 4dp indicator line (primary; error when invalid) along
+   the bottom while focused, 0dp otherwise: a straight band, cut off by the pill shape (refshots
+   01-setup-add-dialog-typed, 20-search-field-focused), so a background layer, not an inset shadow that would
+   follow the curve.
+   Multi-line = the TextFieldState overload (EditTextBox.kt:57-168): no line, onSurfaceVariant text. */
+.box:not(.multiline):focus-within {
+  background-image: linear-gradient(to top, var(--c-primary) 4px, transparent 4px);
+}
+
+.box:not(.multiline, .disabled) .input {
+  color: var(--c-on-primary-container);
+}
+
+.invalid:not(.multiline):focus-within {
+  background-image: linear-gradient(to top, var(--c-error) 4px, transparent 4px);
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .box:hover {
+    background: rgb(from var(--c-surface-variant) r g b / 0.8);
+  }
+}
+
+.disabled,
+:where(:root[data-pointer]) .disabled:hover {
+  background: rgb(from var(--c-surface-variant) r g b / 0.25);
+  color: rgb(from var(--c-on-surface-variant) r g b / 0.25);
+  cursor: default;
+}
+
+.invalid,
+:where(:root[data-pointer]) .invalid:hover,
+.invalid:focus-within {
+  background: rgb(from var(--c-error-container) r g b / 0.75);
+  color: var(--c-on-error-container);
+}
+
+.leading {
+  display: flex;
+  align-items: center;
+  flex: none;
+}
+
+/* The M3 decoration box gives a leading icon a 48dp slot from the field's edge and starts the text right after
+   it: icon centre at 24dp, text at 48dp (refshots 20-search-results). With the box's 8dp padding and 8dp gap
+   that is a 32dp slot here. */
+.box:not(.multiline) > .leading {
+  justify-content: center;
+  width: 32px;
+}
+
+.input {
+  composes: t-bodyLarge from global;
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  /* the text starts at the box's 8dp content padding (EditTextBox.kt contentPadding horizontal 8dp) */
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  outline: none;
+  resize: none;
+  caret-color: var(--c-primary);
+}
+
+.input::placeholder {
+  color: inherit;
+  opacity: 0.6;
+}
+
+/* Hide the native search clear button; it does not match the TV look. */
+.input::-webkit-search-cancel-button {
+  /* WebKit draws it unless the prefixed property is set (seen in WebKit, not in Chromium) */
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+}

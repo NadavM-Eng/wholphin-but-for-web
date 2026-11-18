@@ -1,0 +1,78 @@
+/* ImageOverlay: LazyColumn, 16dp padding, 8dp gap, TransparentBlack50 background, full width.
+   Compose trims a one-line Text to its font's own height (headlineMedium 32.8dp, titleSmall 16.4dp), not its
+   line height: t-line (global.css) here; QuickDetails' line has it already. */
+.overlay {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+  background: var(--fx-black-50);
+  color: var(--c-on-background);
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+.title {
+  composes: t-headlineMedium t-line from global;
+  font-weight: 600;
+  margin: 0;
+  /* dir="auto": hugs the start edge whatever the title's own direction */
+  width: fit-content;
+  max-width: 75%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--c-on-background);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.overview {
+  width: 75%;
+}
+
+/* ImageControlsOverlay: LazyRow, 8dp horizontal content padding, 16dp gap, as tall as its 40dp buttons. The
+   block padding is only room for the buttons' 1.1 focus scale inside the scroll box; the margin cancels it. */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-inline: 8px;
+  padding-block: 4px;
+  margin-block: -4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.controls::-webkit-scrollbar {
+  display: none;
+}
+
+.controls > * {
+  flex: none;
+}
+
+/* ButtonWithIconContentPadding (tv-material): start 12, top/bottom 10, end 16 */
+.clipButton {
+  padding-block: 10px;
+  padding-inline: 12px 16px;
+}
+
+@media (max-width: 599px) {
+  .title,
+  .overview {
+    width: 100%;
+  }
+  /* web: phones wrap the row instead of scrolling it, so no control sits hidden past the edge */
+  .controls {
+    gap: 8px;
+    padding-inline: 0;
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+}

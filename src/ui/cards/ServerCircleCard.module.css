@@ -1,0 +1,10 @@
+.smallLetter {
+  composes: t-titleLarge from global;
+  composes: t-line from global;
+  font-weight: 700;
+}
+
+.add {
+  width: 40% !important;
+  height: 40% !important;
+}

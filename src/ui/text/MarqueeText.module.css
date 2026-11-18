@@ -1,0 +1,20 @@
+.outer {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.inner {
+  white-space: nowrap;
+}
+
+.ellipsis {
+  text-overflow: ellipsis;
+}
+
+.track {
+  display: inline-flex;
+  white-space: nowrap;
+  will-change: transform;
+}

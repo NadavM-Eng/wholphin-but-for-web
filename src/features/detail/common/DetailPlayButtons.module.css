@@ -1,0 +1,11 @@
+/* ExpandablePlayButtons: LazyRow, 16dp apart, 8dp content padding; the row sits below the header with 16dp
+   bottom padding. On narrow screens the buttons wrap instead of scrolling. */
+.row {
+  padding-bottom: 16px;
+  min-width: 0;
+}
+
+.row .buttons {
+  flex-wrap: wrap;
+  overflow: visible;
+}

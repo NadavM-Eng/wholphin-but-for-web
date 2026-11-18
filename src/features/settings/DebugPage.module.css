@@ -1,0 +1,71 @@
+.section {
+  padding-bottom: 16px;
+}
+
+.heading {
+  composes: t-titleMedium from global;
+  padding-block: 8px 4px;
+  color: var(--c-primary);
+}
+
+.rows {
+  composes: t-bodySmall from global;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(120px, 220px) 1fr;
+  gap: 16px;
+}
+
+.row dt {
+  opacity: 0.7;
+}
+
+.row dd {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+}
+
+@media (max-width: 599px) {
+  .row {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding-bottom: 4px;
+  }
+}
+
+.log {
+  composes: t-bodySmall from global;
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+
+.empty {
+  opacity: 0.6;
+}
+
+/* Logcat colours (DebugPage.kt): fixed, not theme colours. */
+.levelD {
+  color: var(--fx-log-debug);
+}
+
+.levelI {
+  color: var(--fx-log-info);
+}
+
+.levelW {
+  color: var(--fx-log-warn);
+}
+
+.levelE {
+  color: var(--fx-log-error);
+}

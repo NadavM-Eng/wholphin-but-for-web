@@ -1,0 +1,87 @@
+.iconBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding-inline-start: 2px;
+  margin-block: -4px;
+}
+
+.iconBox > svg {
+  width: 28px;
+  height: 28px;
+}
+
+.faBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+}
+
+.label {
+  composes: t-titleSmall from global;
+  padding-inline-end: 4px;
+  white-space: nowrap;
+}
+
+/* AnimatedVisibility default: fadeIn + expandHorizontally (spring). Grid 0fr -> 1fr animates the width. */
+.reveal {
+  display: grid;
+  grid-template-columns: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-columns 250ms cubic-bezier(0.2, 0, 0, 1),
+    opacity 200ms linear;
+}
+
+.revealInner {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+}
+
+:where(:root:not([data-pointer])) .button:is(:focus-visible, [data-focus-held]) .reveal,
+:global([data-demo-focus]) .button .reveal {
+  grid-template-columns: 1fr;
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .button:hover .reveal {
+    grid-template-columns: 1fr;
+    opacity: 1;
+  }
+}
+
+/* Touch screens have no hover-focus: the button marked labelOnTouch keeps its label visible. */
+@media (hover: none) {
+  .button[data-touch-label] .reveal {
+    grid-template-columns: 1fr;
+    opacity: 1;
+  }
+}
+
+.destructive .iconBox {
+  color: rgb(from var(--c-on-surface) r g b / 0.8);
+  transition: color 300ms linear;
+}
+
+:where(:root:not([data-pointer])) .destructive:is(:focus-visible, [data-focus-held]) .iconBox,
+:global([data-demo-focus]) .destructive .iconBox {
+  color: var(--fx-delete-red);
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .destructive:hover .iconBox {
+    color: var(--fx-delete-red);
+  }
+}
+
+.destructive .iconBox > svg {
+  width: 24px;
+  height: 24px;
+}

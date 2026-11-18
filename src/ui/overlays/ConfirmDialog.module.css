@@ -1,0 +1,69 @@
+/* ConfirmDialogContent (Dialogs.kt:478-516): LazyColumn, 16dp padding, 8dp between title, body and buttons. Its
+   title fills the parent width, so the dialog takes the platform default width (440dp on the TV canvas;
+   refshots 31-settings-advanced-experimental-confirm). */
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  width: 440px;
+  max-width: 100%;
+}
+
+.title {
+  composes: t-titleLarge from global;
+  composes: t-trim from global;
+  text-align: center;
+  color: var(--c-on-surface);
+}
+
+/* Text(body) with no style: the ambient bodyLarge. pre-wrap keeps the leading space some upstream strings have
+   after a line break. */
+.body {
+  composes: t-bodyLarge from global;
+  composes: t-trim from global;
+  color: var(--c-on-surface);
+  white-space: pre-wrap;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.deleteColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+}
+
+.deleteHeading {
+  composes: t-titleMedium from global;
+  composes: t-trim from global;
+  color: var(--c-on-surface);
+}
+
+.deleteName {
+  composes: t-titleLarge from global;
+  composes: t-trim from global;
+  text-align: center;
+  color: var(--c-on-surface);
+  padding-block-end: 8px;
+}
+
+.deleteButtons {
+  display: flex;
+  gap: 32px;
+}
+
+.fixedWidth {
+  width: 72px;
+}
+
+.confirmInner {
+  display: flex;
+  align-items: center;
+  padding-inline: 4px;
+}

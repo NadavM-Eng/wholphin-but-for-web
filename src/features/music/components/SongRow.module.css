@@ -1,0 +1,152 @@
+/* SongListItem: Row{ DenseListItem (40dp, 10/12dp padding, r=8dp, scale 1 when focused); 32dp more button },
+   nothing between them. */
+.row {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.item {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  min-width: 0;
+  min-height: 40px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--c-on-surface);
+  cursor: pointer;
+  outline: none;
+  transition:
+    background-color 120ms linear,
+    color 120ms linear,
+    transform 150ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* rows with a long-press menu: no native callout or text selection under the finger */
+.hasMenu {
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.two {
+  min-height: 56px;
+}
+
+.selected {
+  background: rgb(from var(--c-secondary-container) r g b / 0.4);
+  color: var(--c-on-secondary-container);
+}
+
+:where(:root:not([data-pointer])) .item:focus-visible {
+  background: var(--c-inverse-surface);
+  color: var(--c-inverse-on-surface);
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .item:hover {
+    background: var(--c-inverse-surface);
+    color: var(--c-inverse-on-surface);
+  }
+}
+
+/* pressedScale .95 */
+.item:active {
+  transform: scale(0.95);
+}
+
+/* ListItem leading slot: at least 20 x 20dp (IconSizeDense), content centred, 8dp before the headline, alpha .8.
+   Its Text has no style of its own, so the track number is the theme default bodyLarge; the number and the queue
+   marker sit side by side with no gap (Row). */
+.leading {
+  composes: t-bodyLarge from global;
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  min-height: 20px;
+  margin-inline-end: 8px;
+  opacity: 0.8;
+}
+
+/* a Compose Text is as tall as its font (18.75dp), so the row stays 40dp; the 24dp playing arrow makes it 44 */
+.index {
+  composes: t-line from global;
+  white-space: nowrap;
+}
+
+.text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* dir="auto" texts in a column: each hugs the row's start edge (beside the track number) whatever its own
+   direction, instead of stretching and aligning an English title to the far edge of a Hebrew interface */
+.title,
+.artist {
+  align-self: flex-start;
+  max-width: 100%;
+}
+
+.title {
+  composes: t-titleSmall from global;
+}
+
+.artist {
+  composes: t-bodySmall from global;
+  overflow: hidden;
+  opacity: 0.8;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.runtime {
+  composes: t-labelSmall from global;
+  flex: none;
+  margin-inline-start: 8px;
+}
+
+/* tv Button 32dp: surface-variant circle, inverse surface when focused, scale 1.1 */
+.more {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgb(from var(--c-surface-variant) r g b / 0.8);
+  color: var(--c-on-surface);
+  font-size: 20px;
+  outline: none;
+  transition:
+    transform 300ms cubic-bezier(0, 0, 0.2, 1),
+    background-color 120ms linear;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:where(:root:not([data-pointer])) .more:focus-visible {
+  background: var(--c-inverse-surface);
+  color: var(--c-inverse-on-surface);
+  transform: scale(1.1);
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .more:hover {
+    background: var(--c-inverse-surface);
+    color: var(--c-inverse-on-surface);
+    transform: scale(1.1);
+  }
+}
+
+@media (pointer: coarse) {
+  .more {
+    width: 40px;
+    height: 40px;
+  }
+}

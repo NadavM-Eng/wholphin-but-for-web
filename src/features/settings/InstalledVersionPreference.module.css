@@ -1,0 +1,63 @@
+/* Upstream fills this dialog with the release notes (InstallUpdatePage.kt ReleaseNotes): h1 headlineLarge for
+   the version, bodyLarge paragraphs, links bold and underlined in the text color. */
+.heading {
+  composes: t-headlineLarge from global;
+}
+
+.text {
+  composes: t-bodyLarge from global;
+}
+
+.facts {
+  composes: t-bodyLarge from global;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 16px;
+  margin: 0;
+}
+
+.facts dt {
+  opacity: 0.7;
+}
+
+.facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.link {
+  composes: t-bodyLarge from global;
+  font-weight: 700;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  border-radius: 4px;
+}
+
+:where(:root:not([data-pointer])) .link:focus-visible {
+  outline: 2px solid var(--c-border);
+  outline-offset: 2px;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 8px;
+  padding-top: 8px;
+}
+
+/* ScrollableDialog's 380dp cap is 70% of the TV's 540dp screen. On a phone the window is far taller and the about
+   text runs past 380dp, cutting the buttons off with nothing showing that the box scrolls: there the dialog may
+   use the whole height (web adaptation; Dialogs.kt ScrollableDialog maxHeight = 380.dp). */
+@media (max-width: 719px) {
+  [role='dialog'].dialog {
+    max-height: 100%;
+  }
+}

@@ -1,0 +1,132 @@
+/* LazyColumn(verticalArrangement = spacedBy(16.dp)) without content padding (PersonPage.kt:358-362). */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+/* PersonHeader: Row(gap 32, centered), photo weight 1, info weight 3; max height 480, padding top 16 / bottom 40.
+   Compose weights share what is left after the 32dp gap (1/4 and 3/4 of it, paddings inside), which is a 1fr 3fr
+   grid, not flex-grow on padded items. */
+.header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
+  align-items: center;
+  column-gap: 32px;
+  max-height: 480px;
+  padding: 16px 0 40px;
+  /* The photo starts at the top-start corner: keep it clear of the shell's floating Back button. */
+  padding-inline-start: var(--shell-back-reserve, 0px);
+  min-width: 0;
+}
+
+.photoBox {
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+}
+
+/* AsyncImage(weight 1).clip(RoundedCornerShape(10)): the img box hugs the picture so the corners round the
+   visible image (an object-fit box would round its empty letterbox instead). A Compose percent corner is a
+   circle arc of 10% of the shorter side; a CSS percent radius is an ellipse (10% of each side), so the longer
+   side's share is scaled by the picture's aspect ratio (--ar = width / height, set once the image loads;
+   person photos are 2:3 until then). */
+.photo {
+  --ar: 0.6667;
+  --max-h: 424px;
+  display: block;
+  flex: none;
+  /* weight(1f): as wide as its cell (a small file is scaled up), unless the 480dp header limit caps the height */
+  width: min(100%, calc(var(--max-h) * var(--ar)));
+  height: auto;
+  border-radius: calc(10% * min(1, 1 / var(--ar))) / calc(10% * min(1, var(--ar)));
+}
+
+/* Column(gap 8).weight(3).padding(top 16, end 32): the padded cell the panel sits in. */
+.infoCell {
+  min-width: 0;
+  padding-top: 16px;
+  padding-inline-end: 32px;
+}
+
+/* surface@1dp with RoundedCornerShape(10): 10% of the panel's shorter side (set from its measured size, see
+   PersonPage.tsx; the fallback is the TV canvas value), then padding 16. */
+.info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border-radius: var(--info-radius, 24px);
+  background: var(--c-surface-1);
+}
+
+/* Every text here is a Compose Text without a LineHeightStyle: the leading above the first and below the last
+   line is trimmed (see common/DetailHeader.module.css). */
+.name {
+  composes: t-displaySmall t-trim from global;
+  color: var(--c-on-surface);
+  padding-bottom: 8px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.line {
+  composes: t-titleSmall t-line from global;
+  width: fit-content;
+  max-width: 100%;
+  color: var(--c-on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* OverviewText(...).padding(top = 8.dp): a Box that hugs its text (an empty overview is just the 8dp paddings
+   wide), in a fixed 3-line box. */
+.overview {
+  margin-top: 8px;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.overview p {
+  /* dir="auto" text hugging the start edge (DetailHeader.module.css) */
+  width: fit-content;
+  max-width: 100%;
+}
+
+.favorite {
+  display: flex;
+}
+
+/* Phones: photo above the panel. */
+@media (max-width: 760px) {
+  .header {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    max-height: none;
+    gap: 16px;
+    padding-bottom: 16px;
+  }
+
+  .photo {
+    --max-h: 320px;
+    width: min(60%, calc(var(--max-h) * var(--ar)));
+  }
+
+  .infoCell {
+    padding: 0;
+  }
+
+  /* room above the phone's system bar, as the other detail pages have */
+  .page {
+    padding-bottom: 16px;
+  }
+}

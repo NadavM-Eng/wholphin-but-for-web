@@ -1,0 +1,42 @@
+/*
+ * Box aligned BottomEnd. Children of a Box overlap at its top-start:
+ *   dot 1: padding 4, size 16 -> 24x24 box, dot at (4, 4)
+ *   dot 2 (series): padding start/top/bottom 4, end 10, offset x 6 -> 30x24 box, dot drawn at (10, 4)
+ */
+.marker {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-end: 0;
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+  /* Color.Red / Color.Gray (Compose fixed colors, not theme roles): --fx-favorite-active and --fx-gray. */
+  --rec: var(--fx-favorite-active);
+}
+
+.marker[data-series] {
+  width: 30px;
+}
+
+.marker:not([data-active]) {
+  --rec: var(--fx-gray);
+}
+
+.dot,
+.dot2 {
+  position: absolute;
+  top: 4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
+.dot {
+  inset-inline-start: 4px;
+  background: var(--rec);
+}
+
+.dot2 {
+  inset-inline-start: 10px;
+  background: rgb(from var(--rec) r g b / 0.5);
+}

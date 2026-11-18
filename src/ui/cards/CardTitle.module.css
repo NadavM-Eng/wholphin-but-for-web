@@ -1,0 +1,50 @@
+.text {
+  /* SlidingCardText: total extra height 12dp; unfocused text sits at the top, focused 8dp lower. */
+  padding-block-end: 12px;
+  text-align: center;
+  color: var(--c-on-surface);
+  transform: translateY(0);
+  /* animateDpAsState default spring (no bounce, stiffness 1500): about 250ms. */
+  transition: transform 250ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+:where(:root:not([data-pointer])) :global([data-card-root]):has(:global([data-card-surface]):is(:focus-visible, [data-focus-held])) .text,
+:global([data-demo-focus]) .text {
+  transform: translateY(8px);
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) :global([data-card-root]):has(:global([data-card-scaler]):hover) .text {
+    transform: translateY(8px);
+  }
+}
+
+/* Each line is a one-line Compose Text: as tall as the font (bodyMedium 16.4dp, bodySmall 14dp), not the
+   type scale's line height (refshots 20-search-results: title centre 12dp, year 27dp under the card). */
+.line {
+  composes: t-line from global;
+  padding-inline: 4px;
+  min-height: 1lh;
+}
+
+.titlePoster {
+  composes: line;
+  composes: t-bodyMedium from global;
+  font-weight: 600;
+}
+
+.subtitlePoster {
+  composes: line;
+  composes: t-bodySmall from global;
+}
+
+.titleBanner {
+  composes: line;
+  composes: t-bodyLarge from global;
+  font-weight: 600;
+}
+
+.subtitleBanner {
+  composes: line;
+  composes: t-bodyMedium from global;
+}

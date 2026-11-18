@@ -1,0 +1,114 @@
+/* CollectionDetailsContent: Column(verticalArrangement = spacedBy(8.dp)) of the header block and the items
+   (CollectionDetails.kt:310-313), where the other detail pages have 16dp between rows. Doubled selector: it must
+   win over common/DetailPage.module.css whatever the order of the two style sheets. */
+.page.page {
+  gap: 8px;
+}
+
+/*
+ * CollectionDetailsHeader: .padding(top = 48, bottom = 32).height(180) (CollectionDetails.kt:382-388, HeaderUtils),
+ * then the Column's 8dp before CollectionButtons. A minimum on the web so a long overview is never clipped.
+ * `header.header` outranks DetailHeader's own `.header` padding.
+ */
+header.header {
+  box-sizing: border-box;
+  min-height: calc(48px + 180px + 32px + 8px);
+  padding-bottom: calc(32px + 8px);
+}
+
+/* Phones (the other detail headers go full width below 760px too): the header hugs its text, so the buttons
+   and rows are not pushed half a screen down. */
+@media (max-width: 759.98px) {
+  header.header {
+    min-height: 0;
+    padding-bottom: 16px;
+  }
+}
+
+/* CollectionButtons: Row(SpaceBetween) of two LazyRows (16dp gap, 8dp padding). */
+/* State B: HomePageHeader .padding(start 8, top 48, bottom 8).height(180) for the focused item. */
+.focusedHeader > header {
+  height: calc(48px + 180px + 8px);
+  padding-bottom: 8px;
+}
+
+/* `div.` outranks DetailPage's .headerBlock display. */
+div.away {
+  display: none;
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0 16px;
+  padding-bottom: 16px;
+  min-width: 0;
+}
+
+.buttons .group {
+  flex-wrap: wrap;
+  overflow: visible;
+}
+
+.end {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px;
+  margin-inline-start: auto;
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-top: 8px;
+}
+
+.rows > section {
+  padding-bottom: 8px;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 48px;
+}
+
+.empty {
+  composes: t-titleMedium from global;
+  text-align: center;
+  padding: 32px;
+}
+
+/* AnimatedContent(header_transition): slideInVertically { it / 2 } + fadeIn for the item header, { -it / 2 } for
+   the collection header coming back (the outgoing one is removed at once). */
+.enterFromBelow {
+  animation: enterFromBelow 300ms cubic-bezier(0.05, 0.7, 0.1, 1);
+}
+
+.enterFromAbove {
+  animation: enterFromAbove 300ms cubic-bezier(0.05, 0.7, 0.1, 1);
+}
+
+@keyframes enterFromBelow {
+  from {
+    transform: translateY(50%);
+    opacity: 0;
+  }
+}
+
+@keyframes enterFromAbove {
+  from {
+    transform: translateY(-50%);
+    opacity: 0;
+  }
+}

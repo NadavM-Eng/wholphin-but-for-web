@@ -1,0 +1,49 @@
+/* GridTitle: displaySmall, onBackground, centered, one line, clear of the clock and the Back button. */
+.title {
+  /* Compose trims a one-line Text to the font's own height (LineHeightStyle.Trim.Both with includeFontPadding
+     = false): 42.2dp for displaySmall, not its 44dp line (`t-line` in global.css). */
+  composes: t-displaySmall t-line from global;
+  flex: none;
+  color: var(--c-on-background);
+  text-align: center;
+  /* Centred over the whole width like GridTitle, but a long title may take the room beside the Back button and
+     the clock that it does not cover: the side columns shrink to the reserves, the text gets the rest. */
+  display: grid;
+  grid-template-columns:
+    minmax(var(--shell-back-reserve, 0px), 1fr) minmax(0, max-content)
+    minmax(var(--shell-clock-reserve, 0px), 1fr);
+}
+
+.title::before,
+.title::after {
+  content: '';
+}
+
+.titleText {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.missing {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 24px;
+  text-align: center;
+}
+
+.missingText {
+  composes: t-titleLarge from global;
+  color: var(--c-on-surface);
+}
+
+@media (max-width: 599px) {
+  .title {
+    font-size: 24px;
+  }
+}

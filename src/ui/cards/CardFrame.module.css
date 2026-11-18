@@ -1,0 +1,124 @@
+.scaler {
+  --card-bg: transparent;
+  --card-scale: 1.1;
+  position: relative;
+  flex: none;
+  /* an aspect-ratio box (grid cards) must not grow to a taller image's intrinsic height */
+  min-height: 0;
+  transform: scale(1);
+  /* tv-material SurfaceScaleTokens: unfocus 500ms, focus 300ms, press 120ms; CubicBezier(0,0,.2,1). */
+  transition: transform 500ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.surface {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--card-bg);
+  color: var(--c-on-surface);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.circle {
+  border-radius: 50%;
+}
+
+/*
+ * Focused border. tv-material draws it after the content as a stroke on the surface's outline
+ * (SurfaceBorderNode: drawOutline(outline, brush, Stroke(width)), Border.inset 0), and a stroke is centred on
+ * its path: half of the 3dp lies outside the card and half over its content, and it scales with the card.
+ * It lives on the scaler because the surface clips its content. Seen in refshots 02-home-row-3 (ring from
+ * 161px, scaled card edge at 164.5px) and 01-setup-server-empty (outer diameter 129 x 1.2 + 3 x 1.2 dp).
+ */
+.scaler::after {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border: 3px solid transparent;
+  border-radius: 9.5px;
+  pointer-events: none;
+}
+
+.scalerCircle::after {
+  border-radius: 50%;
+}
+
+.ringOnSurface {
+  --card-ring: var(--c-on-surface);
+}
+
+:where(:root:not([data-pointer])) .scaler:has(> .surface:is(:focus-visible, [data-focus-held])),
+:global([data-demo-focus]) .scaler {
+  transform: scale(var(--card-scale));
+  transition-duration: 300ms;
+  z-index: 2;
+}
+
+:where(:root:not([data-pointer])) .scaler:has(> .surface:is(:focus-visible, [data-focus-held])) > .surface,
+:global([data-demo-focus]) .scaler > .surface {
+  background: var(--card-bg-focus, var(--card-bg));
+}
+
+:where(:root:not([data-pointer])) .scaler:has(> .surface:is(:focus-visible, [data-focus-held]))::after,
+:global([data-demo-focus]) .scaler::after {
+  border-color: var(--card-ring, var(--c-border));
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .scaler:hover {
+    transform: scale(var(--card-scale));
+    transition-duration: 300ms;
+    z-index: 2;
+  }
+
+  :where(:root[data-pointer]) .scaler:hover > .surface {
+    background: var(--card-bg-focus, var(--card-bg));
+  }
+
+  :where(:root[data-pointer]) .scaler:hover::after {
+    border-color: var(--card-ring, var(--c-border));
+  }
+}
+
+/* pressedScale = scale (1f). */
+.scaler:has(> .surface:active) {
+  transform: scale(1);
+  transition-duration: 120ms;
+}
+
+/* "More" affordance for devices without right-click. */
+.more {
+  position: absolute;
+  inset-block-end: 4px;
+  inset-inline-end: 4px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--fx-black-50);
+  color: var(--fx-white);
+  z-index: 1;
+}
+
+@media (hover: none) {
+  .more {
+    display: flex;
+  }
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .scaler:hover > .more {
+    display: flex;
+  }
+  :where(:root[data-pointer]) .more:hover {
+    background: var(--fx-black-75);
+  }
+}

@@ -1,0 +1,71 @@
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1px;
+  padding: 1.1px 2px;
+  max-height: 100%;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.picker::-webkit-scrollbar {
+  display: none;
+}
+
+.letter {
+  composes: t-bodySmall from global;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  padding: 0;
+  background: transparent;
+  color: var(--c-on-surface);
+  opacity: 0.25;
+  font-size: 12px;
+  line-height: 14px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Current letter: tv ButtonDefaults colors (surfaceVariant@.8) with tertiary text, full opacity. */
+.current {
+  background: rgb(from var(--c-surface-variant) r g b / 0.8);
+  color: var(--c-tertiary);
+  opacity: 1;
+}
+
+.picker:focus-within .letter {
+  opacity: 0.85;
+}
+
+/* A focused letter always takes the default tv Button colors (CardGrid.kt AlphabetButtons: `if (isCurrentLetter ||
+   focused) ButtonDefaults.colors()`): onSurface container, inverseOnSurface text (`border` on the current letter).
+   The primaryContainer pair of the other branch is never reached while focused. */
+:where(:root:not([data-pointer])) .letter:focus-visible,
+:global([data-demo-focus]) .letter {
+  background: var(--c-on-surface);
+  color: var(--c-inverse-on-surface);
+}
+
+:where(:root:not([data-pointer])) .current:focus-visible,
+:global([data-demo-focus]) .current {
+  background: var(--c-on-surface);
+  color: var(--c-border);
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .picker:hover .letter {
+    opacity: 0.85;
+  }
+  :where(:root[data-pointer]) .letter:hover {
+    background: var(--c-on-surface);
+    color: var(--c-inverse-on-surface);
+  }
+  :where(:root[data-pointer]) .current:hover {
+    background: var(--c-on-surface);
+    color: var(--c-border);
+  }
+}

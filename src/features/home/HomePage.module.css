@@ -1,0 +1,66 @@
+/* Header fixed on top, rows scroll below it (HomePageContent: Column { header; LazyColumn }).
+   The height is refined in JS to the space below the page's top edge (phone top bar). */
+.page {
+  position: relative;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.rows {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* LazyColumn bottom contentPadding = Cards.height2x3 */
+  padding-bottom: 172px;
+  scrollbar-width: none;
+  container-type: size;
+}
+
+.rows::-webkit-scrollbar {
+  display: none;
+}
+
+/* Row bottom padding 8dp, spacing between rows 0. */
+.row {
+  padding-bottom: 8px;
+}
+
+/* A row without items composes nothing on the TV (HomePage.kt: only `if (row.items.isNotEmpty())`), so it
+   takes no room, not even the 8dp. */
+.row:empty {
+  display: none;
+}
+
+/*
+ * The focused row always scrolls to the top of the list (ScrollToTopBringIntoViewSpec). On the TV's 280dp
+ * list the 172dp bottom padding is enough for the last row to get there; a taller window needs the last
+ * row to fill what is left of the list (100cqh is the list without its bottom padding; 5dp is about the
+ * row's offset from the top of the list when its cards sit 50dp below it). Touch-only devices have no
+ * focused row to bring up, so they keep the plain padding.
+ */
+@media (hover: hover) {
+  .row:nth-last-child(1 of :not(:empty)) {
+    min-height: calc(100cqh - 5px);
+  }
+}
+
+/* Refresh spinner: 40dp, top-end, padding 40dp when the clock shows else 20dp. */
+.spinner,
+.spinnerClock {
+  position: absolute;
+  top: 20px;
+  inset-inline-end: 20px;
+  width: 40px;
+  height: 40px;
+  pointer-events: none;
+}
+
+.spinnerClock {
+  top: 40px;
+  inset-inline-end: 40px;
+}

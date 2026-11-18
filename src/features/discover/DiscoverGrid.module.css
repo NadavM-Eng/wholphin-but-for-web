@@ -1,0 +1,111 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-inline: 16px;
+  padding-block-end: 40px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* GridTitle: displaySmall, centered. */
+.title {
+  composes: t-displaySmall from global;
+  margin: 0;
+  text-align: center;
+  color: var(--c-on-background);
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-inline: 16px;
+  flex-wrap: wrap;
+}
+
+.filterButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding-inline: 8px;
+}
+
+.filterLabel {
+  composes: t-titleSmall from global;
+}
+
+.flipRtl {
+  transform: none;
+}
+
+:global([dir='rtl']) .flipRtl {
+  transform: scaleX(-1);
+}
+
+.menuSpinner {
+  display: flex;
+  justify-content: center;
+  padding: 8px;
+}
+
+.menuEmpty {
+  composes: t-bodyMedium from global;
+  margin: 0;
+  padding: 12px;
+  color: var(--c-on-surface);
+}
+
+.rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.star {
+  color: var(--fx-star-filled);
+  width: 1em;
+  height: 1em;
+}
+
+.empty {
+  composes: t-titleLarge from global;
+  text-align: center;
+  color: var(--c-on-background);
+}
+
+.sentinel {
+  height: 1px;
+}
+
+.more {
+  min-height: 80px;
+}
+
+.pageError {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding-block: 16px;
+}
+
+.pageErrorText {
+  composes: t-titleMedium from global;
+  margin: 0;
+  text-align: center;
+  color: var(--c-error);
+}
+
+@media (max-width: 600px) {
+  .root {
+    padding-inline: 8px;
+  }
+  .controls {
+    padding-inline: 0;
+  }
+}

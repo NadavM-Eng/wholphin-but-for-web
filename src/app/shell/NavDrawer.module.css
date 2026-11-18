@@ -1,0 +1,304 @@
+/* W/ui/nav/NavDrawer.kt + NavigationDrawerAndroid.kt (ModalNavigationDrawer re-implementation).
+   Sizes in dp: collapsed item 64, expanded 224, item 56 (two-line 64), spacing 4, ListItem padding 16,
+   32dp leading slot holding the 24dp icon, 8dp gap to the headline. Measured against refshots 03-nav-drawer-*. */
+
+/*
+ * Rail widths and the drawer's motion, published for UI that moves with the drawer (the page area, the music
+ * mini player outside the shell's tree).
+ */
+:global(:root) {
+  --shell-rail-width: 64px;
+  --shell-rail-open-width: 224px;
+  /* Safari before 17.2 has no linear() easing: a plain ease-out of the same length */
+  --shell-spring: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --shell-spring-ms: 280ms;
+}
+
+@supports (transition-timing-function: linear(0, 1)) {
+  :global(:root) {
+    /* spring(stiffness = StiffnessMedium), no bounce: x(t) = 1 - (1 + wt) e^-wt, w = sqrt(1500) */
+    --shell-spring: linear(0, 0.1033 5%, 0.2953 10%, 0.4836 15%, 0.6378 20%, 0.7533 25%, 0.8356 30%, 0.8922 35%, 0.9303 40%,
+        0.9553 45%, 0.9716 50%, 0.9821 55%, 0.9888 60%, 0.993 65%, 0.9957 70%, 0.9973 75%, 0.9983 80%, 0.999 85%, 1);
+  }
+}
+
+.drawer {
+  --drawer-spring: var(--shell-spring);
+  --drawer-spring-ms: var(--shell-spring-ms);
+  position: fixed;
+  inset-block: 0;
+  inset-inline-start: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: var(--shell-rail-width);
+  transition: width var(--drawer-spring-ms) var(--drawer-spring);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.drawer[data-open] {
+  width: var(--shell-rail-open-width);
+}
+
+.list {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+}
+
+.list::-webkit-scrollbar {
+  display: none;
+}
+
+/* Arrangement.spacedByWithFooter: Settings sits at the bottom when the list is shorter than the drawer. */
+.footer {
+  margin-top: auto;
+  width: 100%;
+  flex: none;
+}
+
+/* ---- item ---- */
+
+.item {
+  composes: t-titleMedium from global;
+  --content: var(--c-on-surface);
+  --icon-alpha: 0.2;
+  --icon-base: var(--c-on-surface);
+  --icon-color: rgb(from var(--icon-base) r g b / var(--icon-alpha));
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: none;
+  gap: 8px;
+  width: 100%;
+  height: 56px;
+  padding-inline: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: transparent;
+  /* inactiveContentColor: content @ .4 while the drawer has no focus */
+  color: rgb(from var(--content) r g b / 0.4);
+  text-align: start;
+  white-space: nowrap;
+  user-select: none;
+  cursor: pointer;
+}
+
+.drawer[data-open] .item {
+  color: var(--content);
+}
+
+.twoLine {
+  height: 64px;
+}
+
+:where(.drawer[data-open]) .moreChild {
+  background: rgb(from var(--c-surface) r g b / 0.5);
+}
+
+/* focused (hover / keyboard): inverseSurface container, inverseOnSurface content, no scale.
+   Only one item looks focused, like the TV: while an item has keyboard focus, hover does not highlight. */
+:where(:root:not([data-pointer])) .item:focus-visible {
+  --content: var(--c-inverse-on-surface);
+  --icon-base: var(--c-inverse-on-surface);
+  background: var(--c-inverse-surface);
+  color: var(--content);
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .item:hover {
+    --content: var(--c-inverse-on-surface);
+    --icon-base: var(--c-inverse-on-surface);
+    background: var(--c-inverse-surface);
+    color: var(--content);
+  }
+}
+
+.leading {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Compose drops the half-leading above the first and below the last line of a Text (LineHeightStyle.Default =
+   Trim.Both): the headline is 18.75dp tall and the supporting line 14dp, so the two lines of the profile
+   entry sit 16.4dp apart (refshots 03-nav-drawer-*: 16.5dp), not 20dp. The kit's exact helpers (global.css) do
+   it in every engine: t-line for the one-line headline, t-trim for the supporting text. */
+.headline {
+  composes: t-line from global;
+  min-width: 0;
+}
+
+.supporting {
+  composes: t-bodySmall t-trim from global;
+  /* ListItem supporting content @ .8 */
+  opacity: 0.8;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trailing {
+  flex: none;
+  display: flex;
+  margin-inline-start: 8px;
+}
+
+.moreArrow {
+  display: block;
+}
+
+/* ---- icon tint: navItemColor(selected, focused, drawerOpen) ---- */
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: var(--icon-color);
+}
+
+.drawer[data-open] .item {
+  --icon-alpha: 0.85;
+}
+
+.drawer:not([data-open]) .item[data-selected] {
+  --icon-alpha: 0.5;
+}
+
+.item[data-selected] {
+  --icon-base: var(--c-border);
+}
+
+:global(:root[data-theme='BOLD_BLUE']:where(:not([data-pointer]))) .item[data-selected]:focus-visible {
+  --icon-base: var(--c-primary);
+}
+
+@media (hover: hover) {
+  :global(:root[data-theme='BOLD_BLUE']:where([data-pointer])) .item[data-selected]:hover {
+    --icon-base: var(--c-primary);
+  }
+}
+
+/* OLED_BLACK: fixed colours. Every rule has the same specificity (0,3,0), so source order decides:
+   they are written in the REVERSE of the Kotlin `when` order (the first Kotlin match comes last here). */
+:global(:root[data-theme='OLED_BLACK']) .item {
+  --icon-color: var(--fx-nav-oled-default);
+}
+
+:global(:root[data-theme='OLED_BLACK']) :where(.drawer[data-open]) .item {
+  --icon-color: var(--fx-nav-oled-drawer-open);
+}
+
+:global(:root[data-theme='OLED_BLACK']:where(:not([data-pointer]))) .item:where(:focus-visible) {
+  --icon-color: var(--fx-nav-oled-focused);
+}
+
+@media (hover: hover) {
+  :global(:root[data-theme='OLED_BLACK']:where([data-pointer])) .item:where(:hover) {
+    --icon-color: var(--fx-nav-oled-focused);
+  }
+}
+
+:global(:root[data-theme='OLED_BLACK']) :where(.drawer:not([data-open])) .item:where([data-selected]) {
+  --icon-color: var(--fx-nav-oled-selected-closed);
+}
+
+:global(:root[data-theme='OLED_BLACK']) :where(.drawer[data-open]) .item:where([data-selected]) {
+  --icon-color: var(--fx-nav-oled-selected-open);
+}
+
+:global(:root[data-theme='OLED_BLACK']:where(:not([data-pointer]))) .item:where([data-selected]:focus-visible) {
+  --icon-color: var(--fx-nav-oled-selected-focused);
+}
+
+@media (hover: hover) {
+  :global(:root[data-theme='OLED_BLACK']:where([data-pointer])) .item:where([data-selected]:hover) {
+    --icon-color: var(--fx-nav-oled-selected-focused);
+  }
+}
+
+/* ---- profile avatar (UserIconCardImage, 24dp circle) ---- */
+
+.avatar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex: none;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatarLetter {
+  composes: t-bodyLarge from global;
+  font-size: 14px;
+  line-height: 1;
+  font-weight: 400;
+  color: var(--c-on-surface);
+}
+
+/* ---- phone: overlay sheet ---- */
+
+.sheet {
+  z-index: 20;
+  width: 240px;
+  padding: 8px;
+  background: var(--c-surface-1);
+  box-shadow: 0 0 24px rgb(from var(--fx-black) r g b / 0.5);
+  transform: translateX(-100%);
+  visibility: hidden;
+  transition:
+    transform var(--drawer-spring-ms) var(--drawer-spring),
+    visibility 0s linear var(--drawer-spring-ms);
+}
+
+:global([dir='rtl']) .sheet {
+  transform: translateX(100%);
+}
+
+.sheet[data-open] {
+  width: 240px;
+  transform: none;
+  visibility: visible;
+  transition: transform var(--drawer-spring-ms) var(--drawer-spring);
+}
+
+:global([dir='rtl']) .sheet[data-open] {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawer,
+  .sheet {
+    transition: none;
+  }
+}

@@ -1,0 +1,176 @@
+/* LazyColumn: horizontal 32dp, vertical 8dp, 16dp between sections. */
+.page {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 8px 32px 80px;
+}
+
+/* Header: top padding HeaderUtils.topPadding (48dp), bottom 16dp. */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-block-start: 48px;
+  padding-block-end: 16px;
+}
+
+.titleBox {
+  width: fit-content;
+  max-width: 75%;
+  padding-inline-start: 8px;
+}
+
+.headerColumn {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.padded {
+  padding-inline-start: 8px;
+}
+
+.genres {
+  composes: t-bodyMedium from global;
+  margin: 0;
+  color: var(--c-on-surface);
+}
+
+.tagline {
+  composes: t-bodyLarge from global;
+  margin: 0;
+  font-style: italic;
+  color: var(--c-on-surface);
+}
+
+.directed {
+  composes: t-bodyMedium from global;
+  margin: 0;
+  color: var(--c-on-surface);
+}
+
+.overview {
+  max-width: 100%;
+}
+
+.dialogTitle {
+  composes: t-titleLarge from global;
+  margin: 0;
+  color: var(--c-on-surface);
+}
+
+.dialogText {
+  composes: t-bodyMedium from global;
+  margin: 0;
+  color: var(--c-on-surface);
+  white-space: pre-line;
+}
+
+.dialogGenres {
+  composes: t-bodySmall from global;
+  margin: 0;
+  color: var(--c-on-surface-variant);
+}
+
+/* ExpandableDiscoverButtons: 16dp apart, 8dp padding. */
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  padding: 8px;
+}
+
+.alwaysLabel {
+  flex: none;
+}
+
+.unknown {
+  composes: t-titleLarge from global;
+  padding: 48px 16px;
+  text-align: center;
+  color: var(--c-on-background);
+}
+
+/* Season status list (web addition: the TV page's commented-out seasons row). */
+.seasons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.seasonsTitle {
+  composes: t-titleLarge from global;
+  margin: 0;
+  padding-inline-start: 8px;
+  color: var(--c-on-background);
+}
+
+.seasonChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-inline: 16px;
+}
+
+.seasonChip {
+  composes: t-labelLarge from global;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  background: rgb(from var(--c-surface-variant) r g b / 0.8);
+  color: var(--c-on-surface-variant);
+}
+
+.person {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 16px 40px;
+}
+
+.personTitle {
+  composes: t-displaySmall from global;
+  margin: 0;
+  text-align: center;
+  color: var(--c-on-background);
+}
+
+.empty {
+  composes: t-titleLarge from global;
+  text-align: center;
+  color: var(--c-on-background);
+}
+
+/* Mixed-direction text sizes to its content so RTL titles stay at the UI's start edge. */
+.headerColumn > p,
+.headerColumn > div {
+  width: fit-content;
+  max-width: 100%;
+}
+
+@media (max-width: 900px) {
+  .titleBox {
+    max-width: 100%;
+  }
+  .headerColumn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .page {
+    padding-inline: 8px;
+  }
+  .header {
+    padding-block-start: 16px;
+  }
+}

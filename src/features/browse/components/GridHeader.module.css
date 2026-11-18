@@ -1,0 +1,138 @@
+/* CollectionFolderHeader: Column(gap 8){ title; Row(start 16, end 16 [+24 with letters], gap 8) }. */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* GridTitle: displaySmall, onBackground, centered, one line. */
+.title {
+  /* Compose trims a one-line Text to the font's own height (LineHeightStyle.Trim.Both with includeFontPadding
+     = false): 42.2dp for displaySmall, not its 44dp line (`t-line` in global.css). */
+  composes: t-displaySmall t-line from global;
+  color: var(--c-on-background);
+  text-align: center;
+  /* Centred over the whole width like GridTitle, but a long title may take the room beside the Back button and
+     the clock that it does not cover: the side columns shrink to the reserves, the text gets the rest. */
+  display: grid;
+  grid-template-columns:
+    minmax(var(--shell-back-reserve, 0px), 1fr) minmax(0, max-content)
+    minmax(var(--shell-clock-reserve, 0px), 1fr);
+}
+
+.title::before,
+.title::after {
+  content: '';
+}
+
+.titleText {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-inline: 16px 16px;
+  min-width: 0;
+}
+
+.rowLetters {
+  padding-inline-end: 40px;
+}
+
+.group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.sort {
+  gap: 4px;
+}
+
+/* ExpandableFaButton: a 32dp glyph box, the label revealed on focus / hover (fadeIn + expandHorizontally). */
+.expand {
+  gap: 0;
+}
+
+.faBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+}
+
+.label {
+  composes: t-titleSmall from global;
+  padding-inline: 4px;
+  white-space: nowrap;
+}
+
+.reveal {
+  display: grid;
+  grid-template-columns: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-columns 250ms cubic-bezier(0.2, 0, 0, 1),
+    opacity 200ms linear;
+}
+
+.revealInner {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+}
+
+:where(:root:not([data-pointer])) .expand:is(:focus-visible, [data-focus-held]) .reveal {
+  grid-template-columns: 1fr;
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .expand:hover .reveal {
+    grid-template-columns: 1fr;
+    opacity: 1;
+  }
+}
+
+@media (max-width: 599px) {
+  .title {
+    font-size: 24px;
+  }
+  /* Web-only: a phone is narrower than the buttons once one shows its label (View options stays expanded
+     while its dialog is open), so the row scrolls sideways instead of letting the groups overlap; the block
+     padding is room for the 1.1 focus scale inside the scroll box. */
+  .row {
+    padding-inline: 8px;
+    gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-block: 4px;
+    margin-block: -4px;
+  }
+  .row::-webkit-scrollbar {
+    display: none;
+  }
+  .row > .group {
+    flex: none;
+  }
+  .rowLetters {
+    padding-inline-end: 8px;
+  }
+  .group {
+    gap: 6px;
+  }
+}

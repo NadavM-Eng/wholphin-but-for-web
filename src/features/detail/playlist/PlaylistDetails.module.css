@@ -1,0 +1,121 @@
+/* PlaylistItem: Row(gap 16, centered){ ListItemWrapper(weight 1); Row(gap 4){ move up, move down, more } }. */
+.row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.rowItem {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.rowPlaceholder {
+  height: 64px;
+}
+
+.rowPlaceholderDense {
+  height: 40px;
+}
+
+.leading {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* The position number is a bare Text in the ListItem's leading slot: the tv theme's default text style
+   (bodyLarge, 16sp), not the 14sp of the trailing slot. */
+.index {
+  composes: t-bodyLarge t-line from global;
+}
+
+.trailing {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.durationCol {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+/* 0.75x font size */
+.endsAt {
+  font-size: 0.75em;
+}
+
+/* WatchedIcon(padding = 0.dp): the check fills the 24dp circle. */
+.trailing .watched {
+  padding: 0;
+}
+
+.rowButtons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
+
+/* Button(contentHeight = 24.dp) with DefaultButtonPadding (4dp all round): a 32dp-high pill that is only as
+   wide as its Font Awesome glyph plus the padding (17dp for the carets, 12dp for the ellipsis on the TV). */
+.smallButton {
+  height: 32px;
+  min-height: 0 !important;
+  min-width: 0 !important;
+  padding: 4px !important;
+}
+
+/* Fingers need more than a 12dp-wide target, but a wider button squeezes the title column on a phone (titles
+   then wrap over two or three lines). The pill keeps its TV size and an invisible hit area grows instead:
+   48dp high, and across half of the 4dp gap on each side. */
+@media (pointer: coarse) {
+  .smallButton::after {
+    content: '';
+    position: absolute;
+    inset: -8px -2px;
+  }
+  /* the first one also takes most of the 16dp gap before the row's text */
+  .smallButton:first-child::after {
+    inset-inline-start: -12px;
+  }
+}
+
+.playAs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+}
+
+.playAsTitle {
+  composes: t-titleLarge from global;
+  text-align: center;
+}
+
+.playAsButtons {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+/* Phones: the row is narrow and titles wrapped while its gaps stayed empty; the gaps go to the text. The buttons
+   keep their TV size (.smallButton above: 4dp padding and a 4dp gap, which the touch hit areas are built on). */
+@media (max-width: 599.98px) {
+  .row {
+    gap: 4px;
+  }
+  .row .rowItem {
+    padding-inline: 8px;
+  }
+}
+
+/* With that 4dp row gap the first button's hit area may take the gap and no more: the 12dp above is sized for the
+   16dp gap and would reach 8dp into the list item here, taking taps on its end (where the duration sits). */
+@media (max-width: 599.98px) and (pointer: coarse) {
+  .smallButton:first-child::after {
+    inset-inline-start: -4px;
+  }
+}

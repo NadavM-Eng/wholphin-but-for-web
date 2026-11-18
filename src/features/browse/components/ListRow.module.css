@@ -1,0 +1,15 @@
+/* listItemColors(): container surfaceColorAtElevation(1dp) at 50% alpha. */
+.row {
+  background: rgb(from var(--c-surface-1) r g b / 0.5);
+}
+
+.heart {
+  color: var(--fx-favorite-heart);
+  font-size: 18px;
+}
+
+.trailing {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}

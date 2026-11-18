@@ -1,0 +1,35 @@
+/* Dialog gravity END, no dim: 256dp wide, max 380dp tall, 8dp corners, surfaceColorAtElevation(6dp). */
+.panel {
+  position: fixed;
+  z-index: 40;
+  inset-inline-end: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 256px;
+  max-width: calc(100vw - 32px);
+  max-height: min(380px, calc(100dvh - 32px));
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  /* tonal elevation 6dp: surfaceTint at (4.5 ln(7) + 2)% = 10.8% over surface */
+  background: color-mix(in srgb, var(--c-primary) 10.8%, var(--c-surface));
+  color: var(--c-on-surface);
+  /* a Compose Dialog whose content only has a background draws no shadow (Dialogs.kt adds .shadow() only in
+     DialogPopup, BasicDialog and ScrollableDialog) */
+  box-shadow: none;
+}
+
+.title {
+  composes: t-titleMedium from global;
+  margin: 0;
+  padding-block: 8px;
+  text-align: center;
+}
+
+.list {
+  overflow-y: auto;
+  padding: 16px;
+  padding-block-start: 0;
+  display: flex;
+  flex-direction: column;
+}

@@ -1,0 +1,169 @@
+/*
+ * Text boxes: tv-material's default text style has no LineHeightStyle (tokens/TypographyTokens.kt), so Compose
+ * uses LineHeightStyle.Default = Trim.Both: a Text is as tall as its lines minus the extra leading above the
+ * first and below the last line (bodyMedium 14sp/20sp: 16.4dp for one line, not 20). The kit's exact helpers
+ * (global.css) do that: `t-line` for one-line texts, `t-trim` for texts that wrap or are line-clamped.
+ * `text-box: trim-both` would round each box up to a whole pixel and misplace the trim in a line-clamp box.
+ */
+
+/* MovieDetailsHeader: column, 4dp gap; top padding 48 (HeaderUtils.topPadding), bottom 16. */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 48px;
+  padding-bottom: 16px;
+  min-width: 0;
+}
+
+/* EpisodeDetailsHeader uses an 8dp gap. */
+.episodeGap {
+  gap: 8px;
+}
+
+/* Physical on purpose: several of these elements carry dir="auto", and a logical padding follows the element's own
+   (text) direction, which put a Hebrew genres or tagline line 8dp outside the column on an English interface. */
+.padStart {
+  padding-left: 8px;
+}
+
+:global([dir='rtl']) .padStart {
+  padding-left: 0;
+  padding-right: 8px;
+}
+
+/* fillMaxWidth(.75f) */
+.title {
+  width: 75%;
+  min-width: 0;
+}
+
+/* A Compose Text hugs its content at the start edge, whatever the text direction (TitleOrLogo is t-line). */
+.title h1,
+.title p {
+  width: fit-content;
+  max-width: 100%;
+}
+
+/* SeriesName: headlineMedium SemiBold, 2 lines. */
+.seriesName {
+  composes: t-headlineMedium from global;
+  composes: t-trim from global;
+  font-weight: 600;
+  color: var(--c-on-surface);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+/* EpisodeName: headlineSmall at 20sp, 1 line. */
+.episodeName {
+  composes: t-headlineSmall from global;
+  composes: t-line from global;
+  font-size: 20px;
+  color: var(--c-on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* fillMaxWidth(.60f), 4dp gap */
+.details {
+  width: 60%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* QuickDetails is already one t-line. */
+.quick {
+  min-width: 0;
+}
+
+.genres {
+  composes: t-bodyMedium from global;
+  composes: t-line from global;
+  color: var(--c-on-surface);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Row, 4dp apart; the TV row clips, the web wraps on narrow screens. */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-width: 0;
+}
+
+.chipsMovie {
+  padding-top: 4px;
+  padding-bottom: 16px;
+}
+
+.chipsEpisode {
+  padding-bottom: 8px;
+}
+
+/* widthIn(max = 200dp) */
+.audioChip {
+  max-width: 200px;
+}
+
+.tagline {
+  composes: t-bodyLarge from global;
+  composes: t-trim from global;
+  font-style: italic;
+  color: var(--c-on-surface);
+}
+
+/*
+ * OverviewText(maxLines = 3, textBoxHeight = Dp.Unspecified): no fixed box height on detail pages, so the
+ * paragraph is trimmed at both ends with the t-trim margins (it is the only child of the padded box, so the
+ * margins cannot collapse); the shared text keeps a fixed-height box and only moves its first line up.
+ */
+.overview p {
+  height: auto !important;
+  margin-block: calc((var(--t-font-height) * 1em - 1lh) / 2);
+}
+
+/*
+ * Metadata texts carry dir="auto" (a Hebrew overview on an English interface, or the reverse). A Compose Text
+ * wraps its content and sits at the layout's start edge; only its lines follow the text's own direction. Without
+ * fit-content such a block would be pushed to the far end of its column (same rule as HomeHeader).
+ */
+.genres,
+.tagline,
+.directed,
+.overview p {
+  width: fit-content;
+  max-width: 100%;
+}
+
+.directed {
+  composes: t-bodyMedium from global;
+  composes: t-trim from global;
+  color: var(--c-on-surface);
+}
+
+/* Narrow windows: the 75% / 60% columns would be too tight. */
+@media (max-width: 1100px) {
+  .details {
+    width: 80%;
+  }
+}
+
+@media (max-width: 760px) {
+  .title,
+  .details {
+    width: 100%;
+  }
+
+  .header {
+    padding-top: 16px;
+  }
+}

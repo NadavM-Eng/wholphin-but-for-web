@@ -1,0 +1,42 @@
+.page {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* The guide scrolls inside its own box, so its page is exactly one viewport tall. */
+.page[data-guide] {
+  height: 100dvh;
+}
+
+/* TabbedPage: tab row padding top/bottom 16dp; start/end leave room for the shell's Back button and clock. */
+.tabs {
+  padding-block: 16px;
+  padding-inline: calc(16px + var(--shell-back-reserve, 0px)) calc(16px + var(--shell-clock-reserve, 0px));
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* The music mini player pads the body by 72dp: keep the guide's last row clear of the bar and the page unscrolled. */
+:global(body[data-music-bar]) .page[data-guide] {
+  height: calc(100dvh - 72px);
+}
+
+/* phone: the shell's 56dp top bar sits above the page */
+@media (max-width: 599.98px) {
+  .page[data-guide] {
+    height: calc(100dvh - 56px);
+  }
+  :global(body[data-music-bar]) .page[data-guide] {
+    height: calc(100dvh - 56px - 72px);
+  }
+  .tabs {
+    padding-block: 8px;
+  }
+}

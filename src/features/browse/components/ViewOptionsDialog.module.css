@@ -1,0 +1,32 @@
+/* 256dp wide, max 380dp tall, 8dp radius, surfaceColorAtElevation(6dp). */
+.panel {
+  width: 256px;
+  min-width: 0;
+  max-height: min(380px, 100%);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--c-surface-3), var(--c-primary) 4%) !important;
+  /* a Compose Dialog whose content only has a background draws no shadow (Dialogs.kt adds .shadow() only in
+     DialogPopup, BasicDialog and ScrollableDialog) */
+  box-shadow: none;
+}
+
+/* Text(titleMedium, centered, padding vertical 8). Compose trims a one-line Text to the font's own height
+   (LineHeightStyle.Trim.Both with includeFontPadding = false): 18.75dp, not the 24dp line (`t-line` in
+   global.css). */
+.title {
+  composes: t-titleMedium t-line from global;
+  text-align: center;
+  padding-block: 8px;
+  flex: none;
+}
+
+/* LazyColumn(contentPadding 16, no spacing). */
+.list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px;
+  overscroll-behavior: contain;
+}

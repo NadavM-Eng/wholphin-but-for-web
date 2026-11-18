@@ -1,0 +1,140 @@
+.notice {
+  composes: t-bodyMedium from global;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  background: var(--c-surface-1);
+}
+
+.heading {
+  composes: t-titleMedium from global;
+  padding-block: 8px 4px;
+}
+
+.subheading {
+  composes: t-titleSmall from global;
+  margin: 0;
+  padding-top: 4px;
+}
+
+.link {
+  color: var(--c-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  overflow-wrap: anywhere;
+  border-radius: 4px;
+}
+
+:where(:root:not([data-pointer])) .link:focus-visible {
+  outline: 2px solid var(--c-border);
+  outline-offset: 2px;
+}
+
+/*
+ * The library list of AboutLibraries 15 (upstream LicenseInfo.kt -> LibrariesContainer, compose.material3 type
+ * scale). The library's sources are not in reference/, so the numbers are measured on the TV reference picture
+ * (31-settings-advanced-license.png): rows edge to edge with 20dp / 12dp padding and 2dp between them; name and
+ * version on one line, the author 2dp below, the license badge 3dp below that.
+ */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  /* edge to edge, as on the TV: undo the page's 16dp padding */
+  margin-inline: -16px;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  padding: 12px 20px;
+  background: transparent;
+  color: var(--c-on-surface);
+  text-align: start;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* The TV rows show no focus highlight at all; the web needs one: the Material 3 state layer plus the focus ring. */
+:where(:root:not([data-pointer])) .row:focus-visible,
+:global([data-demo-focus]) .row {
+  background: rgb(from var(--c-on-surface) r g b / 0.1);
+  outline: 2px solid var(--c-border);
+  outline-offset: -2px;
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .row:hover {
+    background: rgb(from var(--c-on-surface) r g b / 0.08);
+  }
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* compose.material3 titleSmall: 14/20sp medium, 0.1sp */
+.name {
+  composes: t-titleSmall from global;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 11sp monospace in onSurfaceVariant */
+.version {
+  flex: none;
+  font-family: 'Droid Sans Mono', 'Roboto Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--c-on-surface-variant);
+}
+
+/* 12/16sp regular in onSurfaceVariant */
+.author {
+  composes: t-bodySmall from global;
+  margin-top: 2px;
+  letter-spacing: 0;
+  color: var(--c-on-surface-variant);
+  overflow-wrap: anywhere;
+}
+
+.badges {
+  display: flex;
+  margin-top: 3px;
+}
+
+/* License badge: labelSmall on a 22dp pill, 10dp side padding; the badge color at 15% as its container. */
+.chip {
+  composes: t-labelSmall from global;
+  --chip: var(--c-on-secondary-container);
+  display: inline-block;
+  max-width: 100%;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--chip) 15%, transparent);
+  color: var(--chip);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chipRow {
+  display: flex;
+}
+
+.text {
+  composes: t-bodySmall from global;
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+}

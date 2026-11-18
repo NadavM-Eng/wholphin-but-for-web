@@ -1,0 +1,157 @@
+.page {
+  min-height: 100dvh;
+  background: var(--c-surface);
+  color: var(--c-on-surface);
+  padding: 0 16px 120px;
+}
+
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-inline: -16px;
+  padding: 8px 16px;
+  background: rgb(from var(--c-surface-3) r g b / 0.95);
+  box-shadow: 0 1px 4px rgb(from var(--fx-black) r g b / 0.4);
+}
+
+.brand {
+  composes: t-titleMedium from global;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.themes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.theme,
+.themeOn {
+  composes: t-labelMedium from global;
+  padding: 4px 8px;
+  border-radius: 9999px;
+  background: rgb(from var(--c-surface-variant) r g b / 0.8);
+  color: var(--c-on-surface);
+}
+
+.themeOn {
+  background: var(--c-on-surface);
+  color: var(--c-inverse-on-surface);
+}
+
+.log {
+  composes: t-bodySmall from global;
+  margin-inline-start: auto;
+  color: var(--c-on-surface-variant);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-block: 24px 8px;
+  border-bottom: 1PX solid rgb(from var(--c-on-surface) r g b / 0.1);
+}
+
+.sectionTitle {
+  composes: t-headlineSmall from global;
+}
+
+.subTitle {
+  composes: t-titleMedium from global;
+  margin-block: 8px;
+  color: var(--c-on-surface-variant);
+}
+
+.wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px 24px;
+}
+
+.cardStrip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 24px 20px;
+  padding: 8px;
+}
+
+.demo,
+.demoWide {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.demoWide {
+  max-width: 100%;
+}
+
+.demoBody {
+  padding: 8px;
+  max-width: 100%;
+}
+
+.demoLabel {
+  composes: t-labelSmall from global;
+  color: var(--c-on-surface-variant);
+  padding-inline: 8px;
+}
+
+.iconCell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgb(from var(--c-surface-variant) r g b / 0.4);
+}
+
+.gridWithPicker {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.gridArea {
+  flex: 1;
+  min-width: 0;
+}
+
+.picker {
+  position: sticky;
+  top: 72px;
+  align-self: flex-start;
+  max-height: calc(100dvh - 96px);
+}
+
+.listPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: min(420px, 100%);
+  padding: 24px;
+  border-radius: 28px;
+  background: var(--c-surface-1);
+}
+
+.overviewBox {
+  max-width: 400px;
+}
+
+.rtl {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}

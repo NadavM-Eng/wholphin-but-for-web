@@ -1,0 +1,71 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* A platform dialog window may be as tall as the screen (refshots 15-episode-detail-menu: a 530dp menu on the
+     540dp screen; 11-movie-tracks-choose-subtitles runs edge to edge), so only the sides keep a gutter. */
+  padding: env(safe-area-inset-top, 0px) 16px env(safe-area-inset-bottom, 0px);
+  /* Android dialog window dim (backgroundDimAmount .6). */
+  background: rgb(from var(--c-scrim) r g b / 0.6);
+  animation: fade 150ms linear;
+}
+
+.noScrim {
+  background: transparent;
+}
+
+.panel {
+  position: relative;
+  max-width: 100%;
+  max-height: 100%;
+  overflow: auto;
+  color: var(--c-on-surface);
+  outline: none;
+  animation: pop 150ms cubic-bezier(0.2, 0, 0, 1);
+  overscroll-behavior: contain;
+}
+
+/* DialogPopup: 28dp clip, 24dp padding, shadow at its elevation. Width: the platform default dialog width
+   (DialogProperties() keeps usePlatformDefaultWidth), which is 440dp on the TV's 960dp canvas and which the
+   fillMaxWidth list items fill: every DialogPopup reference spans 520..1400px. Narrower windows cap it. */
+.popup {
+  border-radius: 28px;
+  padding: 24px;
+  width: 440px;
+  box-shadow: 0 1px 3px rgb(from var(--fx-black) r g b / 0.3);
+}
+
+.basic {
+  border-radius: 8px;
+  min-width: min(280px, 100%);
+  max-width: min(560px, 100%);
+  box-shadow: 0 1px 3px rgb(from var(--fx-black) r g b / 0.3);
+}
+
+/* ScrollableDialog: 600dp x max 380dp, 16dp padding, 8dp gap, 8dp radius, 8dp shadow. */
+.scrollable {
+  width: 600px;
+  max-height: min(380px, 100%);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgb(from var(--fx-black) r g b / 0.45);
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}

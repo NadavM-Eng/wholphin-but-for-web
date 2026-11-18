@@ -1,0 +1,72 @@
+/* Dialog gravity TOP|END, dim 0; 8dp padding; secondaryContainer@40%; 40% of the screen width. */
+.dialog {
+  position: absolute;
+  z-index: 6;
+  top: 8px;
+  inset-inline-end: 8px;
+  width: 40%;
+  min-width: min(340px, calc(100% - 16px));
+  max-width: calc(100% - 16px);
+  max-height: calc(100% - 16px);
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: rgb(from var(--c-secondary-container) r g b / 0.4);
+  color: var(--c-on-surface);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.label {
+  composes: t-bodyMedium from global;
+  flex: none;
+  width: 96px;
+}
+
+.slider {
+  flex: 1;
+  min-width: 0;
+}
+
+.value {
+  composes: t-bodyMedium from global;
+  flex: none;
+  width: 48px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* SliderColors for the red / green / blue rows: active @.75, inactive @.33 */
+.red[role='slider'] {
+  --active: rgb(from var(--fx-red) r g b / 0.75);
+  --active-focus: rgb(from var(--fx-red) r g b / 0.75);
+  --inactive: rgb(from var(--fx-red) r g b / 0.33);
+  --inactive-focus: rgb(from var(--fx-red) r g b / 0.33);
+}
+
+.green[role='slider'] {
+  --active: rgb(from var(--fx-green) r g b / 0.75);
+  --active-focus: rgb(from var(--fx-green) r g b / 0.75);
+  --inactive: rgb(from var(--fx-green) r g b / 0.33);
+  --inactive-focus: rgb(from var(--fx-green) r g b / 0.33);
+}
+
+.blue[role='slider'] {
+  --active: rgb(from var(--fx-blue) r g b / 0.75);
+  --active-focus: rgb(from var(--fx-blue) r g b / 0.75);
+  --inactive: rgb(from var(--fx-blue) r g b / 0.33);
+  --inactive-focus: rgb(from var(--fx-blue) r g b / 0.33);
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}

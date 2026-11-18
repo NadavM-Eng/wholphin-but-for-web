@@ -1,0 +1,167 @@
+/* PreferenceTitle / PreferenceSummary (ComposablePreference.kt:274-310): titleSmall + bodySmall. */
+/* Compose Text in tv-material (includeFontPadding = false, default LineHeightStyle = Trim.Both) drops the extra
+   line height above the first and below the last line, so a one-line titleSmall is 16.4dp tall, not 20dp.
+   The kit's `t-trim` (exact negative margins, every engine) does it: `text-box-trim` rounds each box up to a whole
+   pixel, which made a row with a wrapped title 1dp taller than on the TV (refshots 34-live-tv-view-options). */
+.title {
+  composes: t-titleSmall t-trim from global;
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.summary {
+  composes: t-bodySmall t-trim from global;
+  display: block;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
+/* A Compose Text inside a dialog ListItem slot (headline titleMedium, supporting bodySmall): trimmed the same way. */
+.itemText {
+  composes: t-trim from global;
+  display: block;
+}
+
+.error {
+  color: var(--c-error);
+  white-space: pre-line;
+}
+
+.row {
+  display: block;
+}
+
+/* ClickPreference.kt / SwitchPreference.kt always pass `supportingContent` (an empty lambda when there is no
+   summary), so tv-material sizes every preference row as a two-line ListItem: min 64dp. */
+.row > .item {
+  min-height: 64px;
+}
+
+/* SeerrSettingsEntry (features/discover) renders the ListItem's own titleMedium headline; upstream draws this row
+   with ClickPreference (PreferencesContent.kt), so the headline is PreferenceTitle: titleSmall. The ListItem slots
+   already trim themselves (margins from --t-font-height); trimming them again here would pull the summary up. */
+.seerr > .item > span > span:first-child {
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.1px;
+}
+
+/* trimmed with t-trim: its padding has no background, so the negative margins place the text where a trimmed
+   content box would */
+.groupHeader {
+  composes: t-titleMedium t-trim from global;
+  color: var(--c-on-surface);
+  text-align: start;
+  padding-top: 8px;
+  padding-bottom: 4px;
+}
+
+/* SliderPreference.kt: min 72dp, 16/12dp padding, inverseSurface 8dp rounded background while focused. */
+.slider {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  min-height: 72px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  color: var(--c-on-surface);
+  transition:
+    background-color 120ms linear,
+    color 120ms linear;
+}
+
+:where(:root:not([data-pointer])) .slider:focus-within,
+:global([data-demo-focus]) .slider {
+  background: var(--c-inverse-surface);
+  color: var(--c-inverse-on-surface);
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .slider:hover {
+    background: var(--c-inverse-surface);
+    color: var(--c-inverse-on-surface);
+  }
+}
+
+.sliderTitle {
+  composes: title;
+  padding-bottom: 8px;
+}
+
+.sliderRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* SliderBar.kt: the focusable Canvas is only as tall as the unfocused track (6dp; the 12dp track and the thumb are
+   drawn outside it), so the Row is as tall as its summary text, the preference stays at the 72dp minimum, and the
+   pivot scroll on focus (src/ui/lib/bringIntoView) lines up the 6dp bar, not a taller box: the row top lands
+   46.8dp above the pivot like the TV (refshots 21-settings-main-page-7). The shared Slider's 28dp pointer target
+   is kept by a pseudo-element that hit-tests as the slider without adding to its layout box. */
+.sliderRow .sliderBar {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 6px;
+  height: 6px;
+}
+
+.sliderRow .sliderBar::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block: -11px;
+}
+
+/* Touch: a 44px tall hit area around the 6dp track. */
+@media (pointer: coarse) {
+  .sliderRow .sliderBar::before {
+    inset-block: -19px;
+  }
+}
+
+.sliderSummary {
+  composes: summary;
+  flex: none;
+  max-width: 50%;
+  text-align: end;
+}
+
+.disabled {
+  opacity: 0.38;
+}
+
+/* Dialog content shared by the settings dialogs (BasicDialog 8dp, 16dp padding). */
+.dialogColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  min-width: min(360px, 100%);
+}
+
+.dialogTitle {
+  composes: t-titleLarge t-trim from global;
+  color: var(--c-on-surface);
+}
+
+.dialogText {
+  composes: t-bodyMedium from global;
+  color: var(--c-on-surface);
+  white-space: pre-line;
+}
+
+.dialogButtons {
+  display: flex;
+  justify-content: space-around;
+  gap: 8px;
+  padding-top: 8px;
+}
+
+.dialogList {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  min-height: 0;
+}

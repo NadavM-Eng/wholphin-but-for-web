@@ -1,0 +1,21 @@
+/* DialogPopupContent (Dialogs.kt:269-335): titleLarge title, 8dp gap, the list of tv ListItems. The dialog is the
+   platform default width, 440dp on the TV (24dp padding each side of this 392dp column). */
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 392px;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.title {
+  composes: t-titleLarge t-trim from global;
+  color: var(--c-on-surface);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  padding-block: 2px;
+}

@@ -1,0 +1,33 @@
+.row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 20px;
+  background: rgb(from var(--c-surface-variant) r g b / 0.8);
+  color: var(--c-on-surface-variant);
+  transition: background-color 120ms linear;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.label {
+  composes: t-labelLarge from global;
+  color: inherit;
+}
+
+:where(:root:not([data-pointer])) .row:focus-visible,
+:global([data-demo-focus]) .row {
+  background: var(--c-on-surface);
+  color: var(--c-surface-variant);
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .row:hover {
+    background: var(--c-on-surface);
+    color: var(--c-surface-variant);
+  }
+}
+
+.row[aria-disabled='true'] {
+  cursor: default;
+}

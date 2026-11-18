@@ -1,0 +1,37 @@
+.screen {
+  min-height: 60dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 32px 16px;
+  text-align: center;
+}
+
+.message {
+  composes: t-bodyMedium from global;
+  color: var(--c-error);
+  max-width: 640px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.actions {
+  display: flex;
+  gap: 16px;
+}
+
+.button {
+  composes: t-labelLarge from global;
+  padding: 10px 20px;
+  border-radius: 20px;
+  background: var(--c-surface-variant);
+  color: var(--c-on-surface-variant);
+}
+
+:where(:root[data-pointer]) .button:hover,
+:where(:root:not([data-pointer])) .button:focus-visible {
+  background: var(--c-inverse-surface);
+  color: var(--c-inverse-on-surface);
+}

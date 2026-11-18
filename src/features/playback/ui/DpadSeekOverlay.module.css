@@ -1,0 +1,77 @@
+.root {
+  position: absolute;
+  left: 2.5%;
+  right: 2.5%;
+  bottom: 16px;
+  direction: ltr;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+  color: var(--c-on-surface);
+  animation: rise 200ms ease-out;
+}
+
+.preview {
+  align-self: flex-start;
+  padding-bottom: 8px;
+}
+
+/* StaticSeekBarImpl: the controller's bar, unfocused (6dp, round caps reaching 3dp past both ends) */
+.track {
+  position: relative;
+  height: 6px;
+  margin-inline: 4px;
+}
+
+.track::before,
+.buffered,
+.progress {
+  position: absolute;
+  inset-block: 0;
+  left: -3px;
+  border-radius: 6px;
+}
+
+.track::before {
+  content: '';
+  right: -3px;
+  background: rgb(from var(--c-on-surface) r g b / 0.25);
+}
+
+.buffered,
+.progress {
+  width: calc(var(--p, 0) * 100% + 6px);
+}
+
+.buffered {
+  background: rgb(from var(--c-on-surface) r g b / 0.65);
+}
+
+.progress {
+  background: var(--c-border);
+}
+
+.knob {
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--fx-white);
+  transform: translate(-50%, -50%);
+}
+
+.timecodes {
+  composes: t-labelLarge from global;
+  line-height: var(--t-font-height);
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(50%);
+  }
+}

@@ -1,0 +1,45 @@
+.root {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  max-width: 100%;
+  color: var(--c-on-surface);
+  text-align: start;
+}
+
+.title {
+  composes: t-labelMedium from global;
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+.value {
+  composes: t-labelLarge from global;
+  font-weight: 400;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clickable {
+  border-radius: 4px;
+  transition:
+    transform 300ms cubic-bezier(0, 0, 0.2, 1),
+    background-color 120ms linear;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:where(:root:not([data-pointer])) .clickable:is(:focus-visible, [data-focus-held]),
+:global([data-demo-focus]) .clickable {
+  background: rgb(from var(--c-on-primary) r g b / 0.75);
+  transform: scale(1.1);
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .clickable:hover {
+    background: rgb(from var(--c-on-primary) r g b / 0.75);
+    transform: scale(1.1);
+  }
+}

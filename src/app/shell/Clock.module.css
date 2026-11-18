@@ -1,0 +1,25 @@
+.clock {
+  composes: t-bodyLarge from global;
+  font-size: 18px;
+  color: var(--c-on-surface);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* A sibling of the (shifting) page content: it does not move when the drawer opens.
+   The text box is trimmed like a Compose Text (no half-leading above or below the line), so the digits
+   start 20dp below the window edge as on the TV. */
+.overlay {
+  position: fixed;
+  top: 0;
+  inset-inline-end: 0;
+  z-index: 2;
+  padding: 16px 24px;
+  line-height: var(--t-font-height);
+}
+
+.inline {
+  padding-inline: 8px;
+}

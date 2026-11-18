@@ -1,0 +1,43 @@
+.inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/*
+ * Inside a quick-details line the icon is inline text content (QuickDetails.kt: Placeholder(fontSize, fontSize,
+ * PlaceholderVerticalAlign.TextCenter) appended right after the number, BaseItem.kt:238-256): a 1em box with no
+ * gap before it, centred on the text (Roboto: ascent .928em, descent .244em, so the centre is .342em above
+ * the baseline), which never makes the line taller.
+ */
+.text {
+  white-space: nowrap;
+  /* the number and its icon stay together and in order inside a right-to-left line */
+  unicode-bidi: isolate;
+}
+
+.text > svg,
+.text > img {
+  display: inline-block;
+  width: 1em !important;
+  height: 1em !important;
+  vertical-align: -0.158em;
+}
+
+.text > .star {
+  color: var(--fx-star-filled);
+}
+
+/* Icon height = the text's font size (LocalTextStyle.fontSize.toDp()). */
+.star {
+  width: 1em !important;
+  height: 1em !important;
+  color: var(--fx-star-filled);
+}
+
+.tomato {
+  height: 0.8em !important;
+  width: auto !important;
+}

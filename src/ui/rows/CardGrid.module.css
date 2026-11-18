@@ -1,0 +1,25 @@
+.grid {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.row {
+  position: absolute;
+  inset-inline: 0;
+  display: grid;
+  align-items: start;
+}
+
+.cell {
+  position: relative;
+  min-width: 0;
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: var(--c-on-background);
+}

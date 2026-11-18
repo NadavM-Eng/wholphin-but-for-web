@@ -1,0 +1,287 @@
+/*
+ * --player-strip-h: the height of the control strip at the bottom edge (Controller.module.css lays it out as
+ * shares of this height; the sheets stand on it). Owner request: the strip must fit inside the black bar that a
+ * 2.39:1 film leaves at the bottom of a 16:9 screen, which is (1 - (16/9) / 2.39) / 2 = 12.8% of the height.
+ *   - 62dp, which is 8.6% of a 1280x720 window, 7.2% of 1920x1080 (interface scale 1.25) and 8.6% of 2560x1080
+ *     (scale 1.5);
+ *   - never more than 12.8% of the window height, whatever the window and the interface scale (the dynamic
+ *     viewport height where the browser has it: a phone's address bar);
+ *   - never less than 46 real pixels (uppercase PX: not scaled), which is 12.8% of a 360px high window, the
+ *     lowest phone in landscape. A window lower than that gets a strip above the share.
+ * Phones in portrait (two rows of buttons, see Controller.module.css): 100dp, with the same 12.8% limit, and at
+ * least 72 real pixels (12.8% of a 563px high window).
+ */
+.root {
+  --player-strip-h: max(46PX, min(62px, 12.8vh));
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--fx-black);
+  color: var(--c-on-surface);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 300ms ease;
+}
+
+@supports (height: 1dvh) {
+  .root {
+    --player-strip-h: max(46PX, min(62px, 12.8dvh));
+  }
+}
+
+@media (max-width: 699px) and (min-height: 500px) {
+  .root {
+    --player-strip-h: max(72PX, min(100px, 12.8vh));
+  }
+
+  @supports (height: 1dvh) {
+    .root {
+      --player-strip-h: max(72PX, min(100px, 12.8dvh));
+    }
+  }
+}
+
+/* Next Up: the theme background shows around the shrunken video */
+.withNextUp {
+  background: var(--c-background);
+}
+
+.hideCursor,
+.hideCursor * {
+  cursor: none !important;
+}
+
+/* fillMaxSize(1f -> .6f), aligned top-center, animated */
+.player {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  transform: translateX(-50%);
+  transition:
+    width 300ms ease,
+    height 300ms ease;
+}
+
+.shrunk {
+  width: 60%;
+  height: 60%;
+}
+
+/* portrait screens: only the height shrinks, the video is letterboxed anyway */
+@media (max-aspect-ratio: 1/1) {
+  .shrunk {
+    width: 100%;
+  }
+}
+
+.catcher {
+  position: absolute;
+  inset: 0;
+}
+
+/* black cover with a spinner until the first frame (presentationState.coverSurface) */
+.cover {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--fx-black);
+  pointer-events: none;
+}
+
+/* buffering: spinner over TransparentBlack25 */
+.buffering {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--fx-black-25);
+  pointer-events: none;
+  animation: fade-in 150ms linear;
+}
+
+.skipIndicator {
+  position: absolute;
+  left: 50%;
+  bottom: 70px;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+/* SEEKBAR_MINIMAL: 3dp bar along the very bottom, theme border color, LTR */
+.miniProgress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--c-border);
+  pointer-events: none;
+}
+
+.hud {
+  composes: t-labelLarge from global;
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  background: var(--fx-black-50);
+  pointer-events: none;
+  z-index: 12;
+}
+
+/* ------------------------------------------------------------------------------------------- */
+/* Controls overlay */
+
+/*
+ * Web layout (owner request): a strip at the top and a strip at the bottom, each on its own dark gradient, and
+ * the picture between them untouched. The safe-area insets are paddings of the strips, so their gradients reach
+ * the screen edges.
+ */
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 200ms linear,
+    visibility 0s linear 200ms;
+  z-index: 10;
+}
+
+.overlayVisible {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 200ms linear,
+    visibility 0s;
+}
+
+/*
+ * The TV's scrim (PlaybackOverlay.kt:133-151: vertical gradient transparent -> black 50% -> black 80% over the
+ * whole screen), only with the web preference "Dim the video while the controls are shown" (off by default) and,
+ * as upstream, not while the debug info shows.
+ */
+.dim::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent, rgb(from var(--fx-black) r g b / 0.5), rgb(from var(--fx-black) r g b / 0.8));
+  pointer-events: none;
+}
+
+/* the top strip's own gradient: nothing under the strip is darkened */
+.top {
+  position: relative;
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) 0 env(safe-area-inset-left, 0px);
+  background: linear-gradient(to bottom, rgb(from var(--fx-black) r g b / 0.75), rgb(from var(--fx-black) r g b / 0.45) 60%, transparent);
+}
+
+/* between the two strips */
+.debug {
+  position: absolute;
+  top: calc(56px + env(safe-area-inset-top, 0px));
+  left: 0;
+  max-width: calc(100% - 16px);
+  max-height: calc(100% - 72px - var(--player-strip-h));
+  min-height: 80px;
+  padding-bottom: 16px;
+  display: flex;
+  pointer-events: auto;
+  z-index: 1;
+}
+
+/* the control strip's own gradient, from its top edge to the screen edge; nothing above it is darkened */
+.bottom {
+  position: relative;
+  padding: 0 env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+  background: linear-gradient(to bottom, rgb(from var(--fx-black) r g b / 0.3), rgb(from var(--fx-black) r g b / 0.65) 40%, rgb(from var(--fx-black) r g b / 0.8));
+  pointer-events: auto;
+}
+
+.slideUp {
+  animation: slide-up 250ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 11;
+}
+
+.center > * {
+  pointer-events: auto;
+}
+
+/* floating Skip button: bottom-end, 40dp padding */
+.segment {
+  position: absolute;
+  inset-inline-end: 40px;
+  bottom: calc(40px + env(safe-area-inset-bottom, 0));
+  z-index: 15;
+  animation: fade-in 200ms linear;
+}
+
+.error {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  background: var(--fx-black-75);
+  text-align: center;
+  overflow-y: auto;
+}
+
+.errorActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(25%);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 599px) {
+  .segment {
+    inset-inline-end: 16px;
+    bottom: 24px;
+  }
+}

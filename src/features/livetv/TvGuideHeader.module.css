@@ -1,0 +1,197 @@
+﻿/*
+ * Row(SpaceBetween), padding top 48dp (HeaderUtils.topPadding), start 8dp; each text element adds another 8dp.
+ * Height: fillMaxHeight(.30f) of the guide column (set on the slot by TvGuide).
+ */
+.header {
+  flex: none;
+  box-sizing: border-box;
+  height: 100%;
+  min-height: 0;
+  padding-top: 48px;
+  padding-inline-start: 8px;
+  display: flex;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+/*
+ * Column(spacedBy 4dp). Every Text below is trimmed as Compose does it (LineHeightStyle.Trim.Both: no
+ * half-leading above the first or below the last line; `t-line` in global.css), so the title is 32.8dp, the
+ * episode name 23.4dp and the details line 16.4dp tall (refshots 34-live-tv-guide: the three baselines are
+ * 131 / 160.5 / 190.5dp from the top).
+ * The column is as wide as its widest child, the title box (8dp + 75% of the rest of the row), with or without
+ * an image; the image gets what is left.
+ */
+.texts {
+  flex: none;
+  width: calc(8px + (100% - 8px) * 0.75);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* dir="auto" texts: the block hugs the page's start edge whatever the text's own direction (same rule as
+   DetailHeader / HomeHeader), and its 8dp inset stays on the page's start side: a logical padding would follow
+   the text's direction and move to the other side for a Hebrew title on an English interface. */
+.title,
+.subtitle {
+  width: fit-content;
+  padding-left: 8px;
+}
+
+:global([dir='rtl']) .title,
+:global([dir='rtl']) .subtitle {
+  padding-left: 0;
+  padding-right: 8px;
+}
+
+/* TitleOrLogo(showLogo = false): headlineMedium SemiBold in a Box(heightIn(max = 60dp)). It asks for two lines,
+   but two lines are 68.8dp and a Compose Text with TextOverflow.Ellipsis keeps only the lines that fit: one
+   line ending in an ellipsis (the same rule as src/ui/text/TitleOrLogo). */
+.title {
+  composes: t-headlineMedium from global;
+  composes: t-line from global;
+  font-weight: 600;
+  max-width: 100%;
+  margin: 0;
+  color: var(--c-on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: none;
+}
+
+/* Column(spacedBy 8dp), fillMaxWidth(.6f) of the row: the text column is 75% of the row + 2dp, so 60% of the row
+   is 80% of the column - 1.6dp. It gets the height the title leaves. */
+.details {
+  width: calc(80% - 1.6px);
+  min-width: 0;
+  min-height: 0;
+  flex: 0 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* EpisodeName: headlineSmall @ 20sp, one line */
+.subtitle {
+  composes: t-headlineSmall from global;
+  composes: t-line from global;
+  font-size: 20px;
+  margin: 0;
+  max-width: 100%;
+  color: var(--c-on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: none;
+}
+
+/* Row(spacedBy 8dp, CenterVertically), start 8dp; QuickDetails with vertical padding 4dp */
+.quickRow {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-inline-start: 8px;
+  min-width: 0;
+}
+
+/* the shared QuickDetails is already one trimmed line (16.4dp) */
+.quick {
+  padding-block: 4px;
+  min-width: 0;
+}
+
+/* OverviewText(maxLines 3, enabled false): a Box whose Text has padding(8dp).height(3 x 20dp). It is the last
+   child of the column, so when the header is short it gets less than its 76dp: the padding stays and the text
+   is cut at what is left (refshots 34-live-tv-guide: 13.9dp of the first line).
+   The Text's first line starts at the top of its 60dp box without the half-leading (--lead) a CSS line box puts
+   there: the paragraph is pulled up by it and made that much taller, so its bottom edge stays where it was. */
+.overviewBox {
+  flex: 0 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+}
+
+.overview {
+  composes: t-bodyMedium from global;
+  --lead: calc((1lh - var(--t-font-height) * 1em) / 2);
+  --lines: 3;
+  margin: 0;
+  margin-block-start: calc(-1 * var(--lead));
+  flex: 0 1 calc(var(--lines) * 20px + var(--lead));
+  min-height: 0;
+  /* dir="auto": the paragraph hugs the start edge of its box whatever its own direction (see .title) */
+  align-self: flex-start;
+  max-width: 100%;
+  color: var(--c-on-surface);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+
+/* AsyncImage: scaled to fit what the text column leaves (a quarter of the row), at the top end */
+.imageBox {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+}
+
+.image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: right top;
+}
+
+.image[data-fade] {
+  animation: fade 300ms linear;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 599px) {
+  .header {
+    padding-top: 8px;
+    padding-inline-start: 0;
+  }
+  .texts {
+    width: 100%;
+  }
+  .title {
+    font-size: 22px;
+  }
+  .details {
+    width: 100%;
+  }
+  .subtitle {
+    font-size: 16px;
+  }
+  .overview {
+    --lines: 2;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+  .imageBox {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .image[data-fade] {
+    animation: none;
+  }
+}

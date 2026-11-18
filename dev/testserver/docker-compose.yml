@@ -1,0 +1,19 @@
+# Throwaway Jellyfin for developing / screenshot-testing the web client. Port 8097.
+# Never touches a real Jellyfin server on 8096. See tools/testserver/README.md.
+name: wholphin-web-test
+services:
+  jellyfin:
+    image: jellyfin/jellyfin:10.11.11
+    container_name: wholphin-web-test-jellyfin
+    restart: unless-stopped
+    ports:
+      - "8097:8096"
+    environment:
+      - TZ=UTC
+    volumes:
+      - ./data/config:/config
+      - ./data/cache:/cache
+      - ./data/media:/media
+    # CPU cap so the throwaway server (scans, trickplay, transcodes) never starves the development machine. Kept here so a
+    # recreated container keeps it (the same as `docker update --cpus 3`).
+    cpus: 3

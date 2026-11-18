@@ -1,0 +1,112 @@
+/*
+ * SeekBarDisplay (overlay/SeekBar.kt): a Canvas 6dp tall (12dp focused) with 4dp horizontal padding. The element
+ * is exactly that tall, so the rows around it sit where they do on TV; the pointer / finger hit area reaches
+ * further without taking part in the layout. The video player's compact strip sets a thinner bar through
+ * --seek-bar / --seek-bar-active (Controller.module.css); without them the bar has the TV sizes.
+ */
+.root {
+  --bar: var(--seek-bar, 6px);
+  position: relative;
+  direction: ltr;
+  height: var(--bar);
+  padding-inline: 4px;
+  cursor: pointer;
+  touch-action: none;
+  outline: none;
+  transition: height 150ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.root::before {
+  content: '';
+  position: absolute;
+  inset: -9px 0;
+}
+
+.active,
+:where(:root:not([data-pointer])) .root:focus-visible {
+  --bar: var(--seek-bar-active, 12px);
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .root:hover {
+    --bar: var(--seek-bar-active, 12px);
+  }
+}
+
+.root[aria-disabled='true'] {
+  cursor: default;
+}
+
+.track {
+  position: relative;
+  height: 100%;
+}
+
+/* drawLine(cap = StrokeCap.Round): each line reaches half its thickness beyond both end points */
+.track::before,
+.buffered,
+.progress {
+  position: absolute;
+  inset-block: 0;
+  left: calc(var(--bar) / -2);
+  border-radius: var(--bar);
+}
+
+.track::before {
+  content: '';
+  right: calc(var(--bar) / -2);
+  background: rgb(from var(--c-on-surface) r g b / 0.25);
+}
+
+.buffered,
+.progress {
+  width: calc(var(--p, 0) * 100% + var(--bar));
+}
+
+.buffered {
+  background: rgb(from var(--c-on-surface) r g b / 0.65);
+}
+
+.progress {
+  background: var(--c-border);
+}
+
+/* drawCircle(radius = size.height + 2): bar height + 2 physical px, which is 1dp at the TV's density of 2 */
+.knob {
+  position: absolute;
+  top: 50%;
+  width: calc(var(--bar) * 2 + 2px);
+  height: calc(var(--bar) * 2 + 2px);
+  border-radius: 50%;
+  background: var(--fx-white);
+  transform: translate(-50%, -50%);
+  transition:
+    width 150ms ease,
+    height 150ms ease;
+}
+
+.preview,
+.previewHosted {
+  position: absolute;
+  left: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* stand-alone use: right above the bar */
+.preview {
+  bottom: calc(100% + 16px);
+}
+
+/* inside the controller's anchor, which sits on the line the preview's bottom edge belongs to */
+.previewHosted {
+  bottom: 0;
+}
+
+/* Touch screens: a taller grab area. */
+@media (pointer: coarse) {
+  .root::before {
+    inset: -16px 0;
+  }
+}

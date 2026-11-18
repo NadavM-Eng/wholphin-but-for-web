@@ -1,0 +1,147 @@
+/* HeaderUtils: padding top 48, start 8, bottom 32, inner height 180 => 260dp. */
+.header {
+  flex: none;
+  box-sizing: border-box;
+  height: 260px;
+  padding: 48px 16px 32px 8px;
+  padding-inline: 8px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.title {
+  width: 75%;
+  min-width: 0;
+  /* Compose trims the leading of a Text (see .details below) */
+  --trim: var(--t-font-height);
+}
+
+/*
+ * The text title sits in the same 60dp-high box as the logo (TitleOrLogo.kt: heightIn(max = logoHeight)).
+ * A second headlineMedium line would end at 68.8dp, and a Compose Text with TextOverflow.Ellipsis keeps
+ * only the lines that fit its height: the title is one line, ending in an ellipsis. One line is
+ * ascent + descent tall (1.172em), not the 36dp line height.
+ */
+.title h1 {
+  display: block;
+  line-height: var(--trim);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.details {
+  width: max(60%, min(100%, 420px));
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/*
+ * Compose trims the line-height leading above the first and below the last line (LineHeightStyle
+ * Trim.Both), so a text block is only as tall as the font's ascent + descent (Roboto: 1.172em) plus
+ * the inner line gaps. Matching it keeps the TV rhythm of the header column (ref 02-home-top).
+ */
+.details {
+  --trim: var(--t-font-height);
+}
+
+/*
+ * Texts carry dir="auto". A Compose Text wraps its content and sits at the layout's start edge; only
+ * the lines inside follow the text's own direction. Without fit-content a Hebrew title in an LTR page
+ * would be pushed to the far end of its column.
+ */
+.title h1,
+.subtitle,
+.overviewText {
+  width: fit-content;
+  max-width: 100%;
+}
+
+/* EpisodeName: headlineSmall at 20sp, one line. */
+.subtitle {
+  composes: t-headlineSmall from global;
+  font-size: 20px;
+  line-height: var(--trim);
+  color: var(--c-on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.details .quick {
+  min-width: 0;
+  line-height: var(--trim);
+}
+
+.overview3,
+.overview2 {
+  flex: none;
+  width: 400px;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Fixed box (60dp, or 48dp for episodes); the text inside is clamped to 3 / 2 lines. */
+.overview3 {
+  height: 60px;
+  --lines: 3;
+}
+
+.overview2 {
+  height: 48px;
+  --lines: 2;
+}
+
+.overviewText {
+  composes: t-bodyMedium from global;
+  color: var(--c-on-surface);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--lines);
+  line-clamp: var(--lines);
+  /* first line's top leading trimmed (20dp line box, 14sp text) */
+  margin-top: calc((var(--trim) * 1em - 20px) / 2);
+}
+
+/* Phones: a compact header so a full row stays visible below it. */
+@media (max-width: 599px) {
+  .header {
+    height: 172px;
+    padding-block: 12px 8px;
+    gap: 2px;
+  }
+  .title {
+    width: 100%;
+  }
+  .title h1 {
+    font-size: 22px;
+    line-height: 28px;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+  }
+  .title img {
+    height: 40px;
+  }
+  .title > div {
+    max-height: 40px;
+  }
+  .details {
+    width: 100%;
+    gap: 4px;
+  }
+  .subtitle {
+    font-size: 16px;
+    line-height: 24px;
+  }
+  .overview3,
+  .overview2 {
+    width: 100%;
+    height: 40px;
+    --lines: 2;
+  }
+}

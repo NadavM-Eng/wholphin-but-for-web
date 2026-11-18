@@ -1,0 +1,24 @@
+.root {
+  position: relative;
+  display: inline-flex;
+  isolation: isolate;
+}
+
+/* drawBehind: a round rect 6dp outside the button, color onSurface <-> transparent, 1500 ms linear, reverse */
+.halo {
+  position: absolute;
+  inset: -6px;
+  z-index: -1;
+  border-radius: 9999px;
+  background: var(--c-on-surface);
+  animation: pulse 1500ms linear infinite alternate;
+}
+
+@keyframes pulse {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

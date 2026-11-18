@@ -1,0 +1,36 @@
+.menu {
+  position: fixed;
+  /* The same layer as dialogs: whichever opened later is on top (both are portals appended to <body>). A menu
+     opened inside a dialog covers it, and a dialog opened from a menu entry that keeps the menu open (Delete,
+     the choosers) covers and dims the menu, as the TV's second dialog covers the first. */
+  z-index: 900;
+  min-width: 112px;
+  max-width: min(280px, calc(100vw - 16px));
+  max-height: calc(100dvh - 16px);
+  overflow-y: auto;
+  padding-block: 8px;
+  border-radius: 4px;
+  background: var(--c-surface-3);
+  color: var(--c-on-surface);
+  box-shadow:
+    0 2px 6px 2px rgb(from var(--fx-black) r g b / 0.15),
+    0 1px 2px rgb(from var(--fx-black) r g b / 0.3);
+  animation: open 120ms cubic-bezier(0.2, 0, 0, 1);
+  overscroll-behavior: contain;
+}
+
+.header {
+  composes: t-titleSmall from global;
+  padding: 8px 12px 4px;
+  color: var(--c-on-surface-variant);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@keyframes open {
+  from {
+    opacity: 0;
+    transform: scaleY(0.9);
+  }
+}

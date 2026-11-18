@@ -1,0 +1,12 @@
+.line {
+  composes: t-titleSmall from global;
+  composes: t-line from global;
+  color: var(--c-on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dot {
+  white-space: pre;
+}

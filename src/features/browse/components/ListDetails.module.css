@@ -1,0 +1,60 @@
+.pane {
+  flex: 0 0 33%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  overflow: hidden;
+}
+
+/* SimpleTitleOrLogo: Box(contentAlignment = Center) of HeaderUtils.logoHeight */
+.logo {
+  height: 60px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  flex: none;
+}
+
+.imageBox {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.image {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+/* OverviewText: Text.padding(8.dp).height(5 x 20.dp), drawn whether or not the item has an overview */
+.overviewBox {
+  flex: none;
+  box-sizing: content-box;
+  height: 100px;
+  padding: 8px;
+  max-width: 100%;
+}
+
+.overview {
+  composes: t-bodyMedium t-trim from global;
+  color: var(--c-on-surface);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
+}
+
+@media (max-width: 599px) {
+  .pane {
+    display: none;
+  }
+}

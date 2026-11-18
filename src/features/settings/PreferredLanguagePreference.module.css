@@ -1,0 +1,34 @@
+/* BasicDialog at the platform default dialog width (440dp on the TV), the content padded 16dp (dialogColumn) and
+   filling the height the window allows (FilterableLanguagePreference's fillMaxSize). */
+.column {
+  width: 440px;
+  max-width: 100%;
+  max-height: calc(100dvh - 32px);
+}
+
+/* The LazyColumn: clipped along the scroll axis only, so the 1.05 focus scale of a row may spill sideways into
+   the dialog padding. A scroll container clips both axes: it is widened into that padding instead. */
+.list {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  margin-inline: -12px;
+  padding: 2px 12px;
+}
+
+.search {
+  flex: none;
+  margin-bottom: 8px;
+}
+
+/* material3 HorizontalDivider() (FilterableLanguagePreference.kt:104): 1dp, DividerDefaults.color = the
+   material3 outlineVariant; no material3 theme is provided, so it is the baseline #49454F for every app theme. */
+.divider {
+  border: 0;
+  height: 1px;
+  margin: 0;
+  flex: none;
+  background: var(--fx-m3-outline-variant);
+}

@@ -1,0 +1,5041 @@
+{
+  "$comment": "Generated from Wholphin source. 'default' = value actually stored for a fresh install (AppPreferencesSerializer.defaultValue + upgrade handler on first run); 'uiDefault' = AppPreference.defaultValue shown to the UI where it differs. protoPath is snake_case from WholphinDataStore.proto; JSON name = lowerCamelCase of each segment. screens[].order is the 0-based index inside the group's rendered list (conditional items appended after the group's static items). AUDIT 2026-11: 'defaultRaw' (optional, only on the three subtitle colour prefs) records the raw int32 the serializer writes when it differs from the masked RGB shown in 'default'. Where default != uiDefault a fresh install behaves with 'default' (the stored value); uiDefault is only AppPreference.defaultValue (slider-index / UI-only default). Pref ids appended by the audit: SearchExcludedTypes, SearchIncludeDiscover (per-user KeyValue store, not proto).",
+  "screens": {
+    "BASIC": {
+      "titleKey": "settings",
+      "titleEn": "Settings",
+      "groups": [
+        "ui_interface",
+        "playback",
+        "next_up",
+        "profile_specific_settings",
+        "about",
+        "more"
+      ]
+    },
+    "ADVANCED": {
+      "titleKey": "advanced_settings",
+      "titleEn": "Advanced Settings",
+      "groups": [
+        "ui_interface",
+        "playback",
+        "player_backend",
+        "updates",
+        "more"
+      ]
+    },
+    "EXO_PLAYER": {
+      "titleKey": "exoplayer_options",
+      "titleEn": "ExoPlayer Options",
+      "groups": [
+        "exoplayer_options"
+      ]
+    },
+    "MPV": {
+      "titleKey": "mpv_options",
+      "titleEn": "MPV Options",
+      "groups": [
+        "mpv_options"
+      ]
+    },
+    "SCREENSAVER": {
+      "titleKey": "screensaver_settings",
+      "titleEn": "Screensaver settings",
+      "groups": [
+        "screensaver",
+        "dim_screen"
+      ]
+    },
+    "SKIP_SEGMENTS": {
+      "titleKey": "skip_behavior",
+      "titleEn": "Skip behavior",
+      "groups": [
+        "skip"
+      ]
+    },
+    "EXPERIMENTAL": {
+      "titleKey": "experimental_settings",
+      "titleEn": "Experimental settings",
+      "groups": [
+        "experimental_settings"
+      ]
+    },
+    "HDR_FORMATS": {
+      "titleKey": "hdr_formats",
+      "titleEn": "HDR formats",
+      "groups": [
+        "hdr_formats"
+      ]
+    },
+    "SUBTITLE_STYLE": {
+      "titleKey": "subtitle_style",
+      "titleEn": "Subtitle style",
+      "hdrTitleKey": "hdr_subtitle_style",
+      "groups": [
+        "font",
+        "edge_style",
+        "background",
+        "more",
+        "hdr"
+      ]
+    },
+    "USER_PROFILE": {
+      "titleKey": "profile_specific_settings",
+      "titleEn": "User Profile Settings",
+      "groups": [
+        "profile_specific_settings_from_server"
+      ]
+    },
+    "HOME_SETTINGS_GLOBAL": {
+      "note": "ui/main/settings/HomeSettingsGlobal.kt"
+    },
+    "LIVE_TV_VIEW_OPTIONS": {
+      "note": "ui/detail/livetv/LiveTvViewOptionsDialog.kt"
+    },
+    "MUSIC_VIEW_OPTIONS": {
+      "note": "ui/detail/music/MusicViewOptionsDialog.kt (items from getMusicPreferences() in ui/detail/music/MusicPreference.kt; dialog title view_options)"
+    },
+    "SEARCH_VIEW_OPTIONS": {
+      "note": "ui/search/SearchViewOptionsDialog.kt (dialog title view_options; rows: combined results, voice button, then 'Include types' click row -> SearchTypeOptionsDialog)"
+    }
+  },
+  "preferences": [
+    {
+      "kotlinName": "SignInAuto",
+      "store": "appPreferences",
+      "protoPath": "sign_in_automatically",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "sign_in_auto",
+      "titleEn": "Sign in automatically",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "enabled",
+      "summaryOnEn": "Enabled",
+      "summaryOffKey": "disabled",
+      "summaryOffEn": "Disabled",
+      "default": true,
+      "uiDefault": true,
+      "classification": "web-adapted",
+      "classificationNote": "Web: when on, restore last server+user session from persisted token on page load; when off always show server/user picker on load and discard in-memory session on tab hide/background (Android hides content on ON_STOP).",
+      "screens": [
+        {
+          "screen": "BASIC",
+          "groupTitleKey": "ui_interface",
+          "groupTitleEn": "Interface",
+          "order": 0,
+          "visibleWhen": null
+        }
+      ],
+      "id": "SignInAuto"
+    },
+    {
+      "kotlinName": "RememberSelectedTab",
+      "store": "appPreferences",
+      "protoPath": "interface_preferences.remember_selected_tab",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "remember_selected_tab",
+      "titleEn": "Remember selected tabs",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "enabled",
+      "summaryOnEn": "Enabled",
+      "summaryOffKey": "disabled",
+      "summaryOffEn": "Disabled",
+      "default": false,
+      "uiDefault": false,
+      "classification": "web",
+      "classificationNote": "Per-user, per-library tab index is stored in RememberedTab table (not in this proto flag).",
+      "screens": [
+        {
+          "screen": "BASIC",
+          "groupTitleKey": "ui_interface",
+          "groupTitleEn": "Interface",
+          "order": 1,
+          "visibleWhen": null
+        }
+      ],
+      "id": "RememberSelectedTab"
+    },
+    {
+      "kotlinName": "PlayThemeMusic",
+      "store": "appPreferences",
+      "protoPath": "interface_preferences.play_theme_songs",
+      "type": "choice",
+      "valueType": "enum:ThemeSongVolume",
+      "titleKey": "play_theme_music",
+      "titleEn": "Play theme music",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "MEDIUM",
+      "uiDefault": "MEDIUM",
+      "classification": "web",
+      "classificationNote": "Plays a random theme song (GET Items/{id}/ThemeSongs + universal audio) on detail pages. Source bug: HIGHEST maps to volume 75f (clamped to 1.0 by Media3); port should use 0.75. Browser autoplay policy may block audio until first user gesture.",
+      "screens": [
+        {
+          "screen": "BASIC",
+          "groupTitleKey": "ui_interface",
+          "groupTitleEn": "Interface",
+          "order": 2,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": "DISABLED",
+          "index": 0,
+          "labelKey": "disabled",
+          "labelEn": "Disabled",
+          "volume": null
+        },
+        {
+          "value": "LOWEST",
+          "index": 1,
+          "labelKey": "volume_lowest",
+          "labelEn": "Lowest",
+          "volume": 0.05
+        },
+        {
+          "value": "LOW",
+          "index": 2,
+          "labelKey": "volume_low",
+          "labelEn": "Low",
+          "volume": 0.1
+        },
+        {
+          "value": "MEDIUM",
+          "index": 3,
+          "labelKey": "volume_medium",
+          "labelEn": "Medium",
+          "volume": 0.25
+        },
+        {
+          "value": "HIGH",
+          "index": 4,
+          "labelKey": "volume_high",
+          "labelEn": "High",
+          "volume": 0.5
+        },
+        {
+          "value": "HIGHEST",
+          "index": 5,
+          "labelKey": "volume_full",
+          "labelEn": "Full",
+          "volume": 0.75
+        }
+      ],
+      "id": "PlayThemeMusic"
+    },
+    {
+      "kotlinName": "SubtitleStyle",
+      "store": "appPreferences",
+      "protoPath": null,
+      "type": "destination",
+      "valueType": "none",
+      "titleKey": "subtitle_style",
+      "titleEn": "Subtitle style",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": null,
+      "uiDefault": null,
+      "classification": "web-adapted",
+      "classificationNote": "Opens subtitle style editor (SUBTITLE_STYLE page, hdr=false). Web renders subtitles with its own cue renderer/CSS; see section 'Subtitle style editor'.",
+      "screens": [
+        {
+          "screen": "BASIC",
+          "groupTitleKey": "ui_interface",
+          "groupTitleEn": "Interface",
+          "order": 3,
+          "visibleWhen": null
+        }
+      ],
+      "destination": "SubtitleSettings(hdr=false)",
+      "id": "SubtitleStyle"
+    },
+    {
+      "kotlinName": "ThemeColors",
+      "store": "appPreferences",
+      "protoPath": "interface_preferences.app_theme_colors",
+      "type": "choice",
+      "valueType": "enum:AppThemeColors",
+      "titleKey": "app_theme",
+      "titleEn": "Application Theme",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "PURPLE",
+      "uiDefault": "PURPLE",
+      "classification": "web",
+      "classificationNote": "Map to CSS custom-property sets; 8 palettes in ui/theme/colors/*ThemeColors.kt.",
+      "screens": [
+        {
+          "screen": "BASIC",
+          "groupTitleKey": "ui_interface",
+          "groupTitleEn": "Interface",
+          "order": 4,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": "PURPLE",
+          "index": 0,
+          "labelKey": "purple",
+          "labelEn": "Purple"
+        },
+        {
+          "value": "BLUE",
+          "index": 1,
+          "labelKey": "blue",
+          "labelEn": "Blue"
+        },
+        {
+          "value": "GREEN",
+          "index": 2,
+          "labelKey": "green",
+          "labelEn": "Green"
+        },
+        {
+          "value": "ORANGE",
+          "index": 3,
+          "labelKey": "orange",
+          "labelEn": "Orange"
+        },
+        {
+          "value": "BOLD_BLUE",
+          "index": 4,
+          "labelKey": "bold_blue",
+          "labelEn": "Bold Blue"
+        },
+        {
+          "value": "OLED_BLACK",
+          "index": 5,
+          "labelKey": "black",
+          "labelEn": "Black"
+        },
+        {
+          "value": "RED",
+          "index": 6,
+          "labelKey": "red",
+          "labelEn": "Red"
+        },
+        {
+          "value": "BROWN",
+          "index": 7,
+          "labelKey": "brown",
+          "labelEn": "Brown"
+        }
+      ],
+      "id": "ThemeColors"
+    },
+    {
+      "kotlinName": "ScreensaverSettings",
+      "store": "appPreferences",
+      "protoPath": null,
+      "type": "destination",
+      "valueType": "none",
+      "titleKey": "screensaver_settings",
+      "titleEn": "Screensaver settings",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": null,
+      "uiDefault": null,
+      "classification": "web-adapted",
+      "classificationNote": "Opens SCREENSAVER screen. Web: in-app screensaver only (no Android DreamService).",
+      "screens": [
+        {
+          "screen": "BASIC",
+          "groupTitleKey": "ui_interface",
+          "groupTitleEn": "Interface",
+          "order": 5,
+          "visibleWhen": null
+        }
+      ],
+      "destination": "Settings(SCREENSAVER)",
+      "id": "ScreensaverSettings"
+    },
+    {
+      "kotlinName": "SkipForward",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.skip_forward_ms",
+      "type": "slider",
+      "valueType": "int(seconds; stored as ms)",
+      "titleKey": "skip_forward_preference",
+      "titleEn": "Skip forward",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": 30,
+      "uiDefault": 30,
+      "classification": "web",
+      "classificationNote": null,
+      "screens": [
+        {
+          "screen": "BASIC",
+          "groupTitleKey": "playback",
+          "groupTitleEn": "Playback",
+          "order": 0,
+          "visibleWhen": null
+        }
+      ],
+      "min": 5,
+      "max": 300,
+      "step": 5,
+      "storedUnit": "ms",
+      "uiUnit": "seconds",
+      "summaryFormat": "plural seconds: '%d second(s)'",
+      "id": "SkipForward"
+    },
+    {
+      "kotlinName": "SkipBack",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.skip_back_ms",
+      "type": "slider",
+      "valueType": "int(seconds; stored as ms)",
+      "titleKey": "skip_back_preference",
+      "titleEn": "Skip back",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": 10,
+      "uiDefault": 10,
+      "classification": "web",
+      "classificationNote": null,
+      "screens": [
+        {
+          "screen": "BASIC",
+          "groupTitleKey": "playback",
+          "groupTitleEn": "Playback",
+          "order": 1,
+          "visibleWhen": null
+        }
+      ],
+      "min": 5,
+      "max": 300,
+      "step": 5,
+      "storedUnit": "ms",
+      "uiUnit": "seconds",
+      "summaryFormat": "plural seconds",
+      "id": "SkipBack"
+    },
+    {
+      "kotlinName": "SkipBackOnResume",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.skip_back_on_resume_seconds",
+      "type": "slider",
+      "valueType": "int(seconds; stored as ms)",
+      "titleKey": "skip_back_on_resume_preference",
+      "titleEn": "Skip back when resuming playback",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": 0,
+      "uiDefault": 0,
+      "classification": "web",
+      "classificationNote": "Field is named *_seconds but stores milliseconds (value.seconds.inWholeMilliseconds). 0 = disabled.",
+      "screens": [
+        {
+          "screen": "BASIC",
+          "groupTitleKey": "playback",
+          "groupTitleEn": "Playback",
+          "order": 2,
+          "visibleWhen": null
+        }
+      ],
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "storedUnit": "ms",
+      "uiUnit": "seconds",
+      "summaryFormat": "0 -> 'Disabled' else '{n}s'",
+      "id": "SkipBackOnResume"
+    },
+    {
+      "kotlinName": "ShowNextUpTiming",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.show_next_up_when",
+      "type": "choice",
+      "valueType": "enum:ShowNextUpWhen",
+      "titleKey": "show_next_up_when",
+      "titleEn": "Show next up",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "END_OF_PLAYBACK",
+      "uiDefault": "END_OF_PLAYBACK",
+      "classification": "web",
+      "classificationNote": null,
+      "screens": [
+        {
+          "screen": "BASIC",
+          "groupTitleKey": "next_up",
+          "groupTitleEn": "Next Up",
+          "order": 0,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": "END_OF_PLAYBACK",
+          "index": 0,
+          "labelKey": "next_up_playback_end",
+          "labelEn": "At the end of playback"
+        },
+        {
+          "value": "DURING_CREDITS",
+          "index": 1,
+          "labelKey": "next_up_outro",
+          "labelEn": "During end credits/outro"
+        },
+        {
+          "value": "NEXT_UP_NEVER",
+          "index": 2,
+          "labelKey": "next_up_never",
+          "labelEn": "Never"
+        }
+      ],
+      "id": "ShowNextUpTiming"
+    },
+    {
+      "kotlinName": "AutoPlayNextUp",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.auto_play_next",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "auto_play_next",
+      "titleEn": "Auto play next up",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "enabled",
+      "summaryOnEn": "Enabled",
+      "summaryOffKey": "disabled",
+      "summaryOffEn": "Disabled",
+      "default": true,
+      "uiDefault": true,
+      "classification": "web",
+      "classificationNote": null,
+      "screens": [
+        {
+          "screen": "BASIC",
+          "groupTitleKey": "next_up",
+          "groupTitleEn": "Next Up",
+          "order": 1,
+          "visibleWhen": null
+        }
+      ],
+      "id": "AutoPlayNextUp"
+    },
+    {
+      "kotlinName": "AutoPlayNextDelay",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.auto_play_next_delay_seconds",
+      "type": "slider",
+      "valueType": "int(seconds)",
+      "titleKey": "auto_play_next_delay",
+      "titleEn": "Delay before playing next up",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": 15,
+      "uiDefault": 15,
+      "classification": "web",
+      "classificationNote": null,
+      "screens": [
+        {
+          "screen": "BASIC",
+          "groupTitleKey": "next_up",
+          "groupTitleEn": "Next Up",
+          "order": 2,
+          "visibleWhen": null
+        }
+      ],
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "summaryFormat": "0 -> 'Immediate' else plural seconds",
+      "id": "AutoPlayNextDelay"
+    },
+    {
+      "kotlinName": "PassOutProtection",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.pass_out_protection_ms",
+      "type": "slider",
+      "valueType": "int(hours; stored as ms)",
+      "titleKey": "pass_out_protection",
+      "titleEn": "Passout Protection",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": 2,
+      "uiDefault": 2,
+      "classification": "web",
+      "classificationNote": "After N hours of continuous auto-played episodes ask 'Are you still watching?'. 0 = disabled.",
+      "screens": [
+        {
+          "screen": "BASIC",
+          "groupTitleKey": "next_up",
+          "groupTitleEn": "Next Up",
+          "order": 3,
+          "visibleWhen": null
+        }
+      ],
+      "min": 0,
+      "max": 3,
+      "step": 1,
+      "storedUnit": "ms",
+      "uiUnit": "hours",
+      "summaryFormat": "0 -> 'Disabled' else plural hours",
+      "id": "PassOutProtection"
+    },
+    {
+      "kotlinName": "ProtectProfilePreference",
+      "store": "localDb.users",
+      "protoPath": "(users table: pin, requireLogin)",
+      "type": "choice",
+      "valueType": "enum:ProfileProtection(NONE|PIN|LOGIN)",
+      "titleKey": "profile_protection",
+      "titleEn": "Profile protection",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "NONE",
+      "uiDefault": "NONE",
+      "classification": "web",
+      "classificationNote": "Not in proto. Writes JellyfinUser.pin / requireLogin via ServerRepository.updateUserAuth. Options: none, require_pin_code, require_login. Selecting PIN opens SetPinFlow; NONE clears both. Summary shows the current state.",
+      "screens": [
+        {
+          "screen": "BASIC",
+          "groupTitleKey": "profile_specific_settings",
+          "groupTitleEn": "User Profile Settings",
+          "order": 0,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": "NONE",
+          "index": 0,
+          "labelKey": "none",
+          "labelEn": "None"
+        },
+        {
+          "value": "PIN",
+          "index": 1,
+          "labelKey": "require_pin_code",
+          "labelEn": "Require PIN for profile"
+        },
+        {
+          "value": "LOGIN",
+          "index": 2,
+          "labelKey": "require_login",
+          "labelEn": "Require login for profile"
+        }
+      ],
+      "id": "ProtectProfilePreference"
+    },
+    {
+      "kotlinName": "CustomizeHome",
+      "store": "appPreferences",
+      "protoPath": null,
+      "type": "destination",
+      "valueType": "none",
+      "titleKey": "customize_home",
+      "titleEn": "Customize home page",
+      "summaryKey": "customize_home_summary",
+      "summaryEn": "Choose rows and images on the home page",
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": null,
+      "uiDefault": null,
+      "classification": "web",
+      "classificationNote": "Opens HomeSettings page (ui/main/settings). Persists as JSON (see doc section 'Home page settings storage').",
+      "screens": [
+        {
+          "screen": "BASIC",
+          "groupTitleKey": "profile_specific_settings",
+          "groupTitleEn": "User Profile Settings",
+          "order": 1,
+          "visibleWhen": null
+        }
+      ],
+      "destination": "HomeSettings",
+      "id": "CustomizeHome"
+    },
+    {
+      "kotlinName": "UserPinnedNavDrawerItems",
+      "store": "localDb.NavDrawerPinnedItem",
+      "protoPath": null,
+      "type": "click",
+      "valueType": "none",
+      "titleKey": "nav_drawer_pins",
+      "titleEn": "Customize Navigation Drawer Items",
+      "summaryKey": "nav_drawer_pins_summary",
+      "summaryEn": "Choose the default items to show, others will be hidden",
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": null,
+      "uiDefault": null,
+      "classification": "web",
+      "classificationNote": "Opens dialog with a Switch + up/down buttons per drawer item; saves NavDrawerPinnedItem rows on dialog dismiss.",
+      "screens": [
+        {
+          "screen": "BASIC",
+          "groupTitleKey": "profile_specific_settings",
+          "groupTitleEn": "User Profile Settings",
+          "order": 2,
+          "visibleWhen": null
+        }
+      ],
+      "id": "UserPinnedNavDrawerItems"
+    },
+    {
+      "kotlinName": "UserInterfaceLanguage",
+      "store": "localDb.users",
+      "protoPath": "(users table: uiLanguage)",
+      "type": "click",
+      "valueType": "string(BCP47 tag)",
+      "titleKey": "user_interface_language",
+      "titleEn": "User interface language",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": null,
+      "uiDefault": null,
+      "classification": "web-adapted",
+      "classificationNote": "Per-user language override. Opens LocaleChoiceDialog listing app locales as 'native name' + English name; saves JellyfinUser.uiLanguage and applies via AppCompatDelegate.setApplicationLocales on user switch. Web: i18next.changeLanguage(tag).",
+      "screens": [
+        {
+          "screen": "BASIC",
+          "groupTitleKey": "profile_specific_settings",
+          "groupTitleEn": "User Profile Settings",
+          "order": 3,
+          "visibleWhen": null
+        }
+      ],
+      "id": "UserInterfaceLanguage"
+    },
+    {
+      "kotlinName": "UserProfileSettings",
+      "store": "appPreferences",
+      "protoPath": null,
+      "type": "destination",
+      "valueType": "none",
+      "titleKey": "override_user_profile_settings",
+      "titleEn": "More user profile settings",
+      "summaryKey": "override_user_profile_settings_summary",
+      "summaryEn": "Override your user profile settings from the server",
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": null,
+      "uiDefault": null,
+      "classification": "web",
+      "classificationNote": null,
+      "screens": [
+        {
+          "screen": "BASIC",
+          "groupTitleKey": "profile_specific_settings",
+          "groupTitleEn": "User Profile Settings",
+          "order": 4,
+          "visibleWhen": null
+        }
+      ],
+      "destination": "UserAppPreferences",
+      "id": "UserProfileSettings"
+    },
+    {
+      "kotlinName": "InstalledVersion",
+      "store": "appPreferences",
+      "protoPath": null,
+      "type": "click",
+      "valueType": "none",
+      "titleKey": "installed_version",
+      "titleEn": "Installed version",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": null,
+      "uiDefault": null,
+      "classification": "web-adapted",
+      "classificationNote": "Summary = app version. Click shows release notes dialog (fetched from GitHub releases). Long click opens Debug page. Web: show build version; release notes optional.",
+      "screens": [
+        {
+          "screen": "BASIC",
+          "groupTitleKey": "about",
+          "groupTitleEn": "About",
+          "order": 0,
+          "visibleWhen": null
+        }
+      ],
+      "id": "InstalledVersion"
+    },
+    {
+      "kotlinName": "Update",
+      "store": "appPreferences",
+      "protoPath": null,
+      "type": "click",
+      "valueType": "none",
+      "titleKey": "check_for_updates",
+      "titleEn": "Check for updates",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": null,
+      "uiDefault": null,
+      "classification": "android-only",
+      "classificationNote": "APK self-update via GitHub releases (UpdateChecker, InstallUpdatePage, REQUEST_INSTALL_PACKAGES). Only shown when BuildConfig.UPDATING_ENABLED (build.gradle.kts: true ONLY in `default` flavor; false in `appstore` and `firetv`). Title switches between install_update / no_update_available / check_for_updates. Web: replace by service-worker update prompt.",
+      "screens": [
+        {
+          "screen": "BASIC",
+          "groupTitleKey": "about",
+          "groupTitleEn": "About",
+          "order": 1,
+          "visibleWhen": "UpdateChecker.ACTIVE (BuildConfig.UPDATING_ENABLED, true only in default flavor)"
+        }
+      ],
+      "id": "Update"
+    },
+    {
+      "kotlinName": "SeerrIntegration",
+      "store": "appPreferences",
+      "protoPath": null,
+      "type": "click",
+      "valueType": "none",
+      "titleKey": "seerr_integration",
+      "titleEn": "Seerr integration",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": null,
+      "uiDefault": null,
+      "classification": "web-adapted",
+      "classificationNote": "Only when BuildConfig.DISCOVER_ENABLED (build.gradle.kts: true in `default` and `appstore` flavors, FALSE in `firetv`). Opens a dialog to add/remove/inspect Seerr server (add via URL + API key, or Jellyfin/local login; plugin-provided config can auto-configure). Summary: Add Server / Enabled / Server error. Web: CORS to Seerr must be allowed; optional feature.",
+      "screens": [
+        {
+          "screen": "BASIC",
+          "groupTitleKey": "more",
+          "groupTitleEn": "More",
+          "order": 0,
+          "visibleWhen": "BuildConfig.DISCOVER_ENABLED (false only in firetv flavor)"
+        }
+      ],
+      "id": "SeerrIntegration"
+    },
+    {
+      "kotlinName": "AdvancedSettings",
+      "store": "appPreferences",
+      "protoPath": null,
+      "type": "destination",
+      "valueType": "none",
+      "titleKey": "advanced_settings",
+      "titleEn": "Advanced Settings",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": null,
+      "uiDefault": null,
+      "classification": "web",
+      "classificationNote": null,
+      "screens": [
+        {
+          "screen": "BASIC",
+          "groupTitleKey": "more",
+          "groupTitleEn": "More",
+          "order": 1,
+          "visibleWhen": null
+        }
+      ],
+      "destination": "Settings(ADVANCED)",
+      "id": "AdvancedSettings"
+    },
+    {
+      "kotlinName": "ShowClock",
+      "store": "appPreferences",
+      "protoPath": "interface_preferences.show_clock",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "show_clock",
+      "titleEn": "Show Clock",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "enabled",
+      "summaryOnEn": "Enabled",
+      "summaryOffKey": "disabled",
+      "summaryOffEn": "Disabled",
+      "default": true,
+      "uiDefault": true,
+      "classification": "web",
+      "classificationNote": null,
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "ui_interface",
+          "groupTitleEn": "Interface",
+          "order": 0,
+          "visibleWhen": null
+        }
+      ],
+      "id": "ShowClock"
+    },
+    {
+      "kotlinName": "BackdropStylePref",
+      "store": "appPreferences",
+      "protoPath": "interface_preferences.backdrop_style",
+      "type": "choice",
+      "valueType": "enum:BackdropStyle",
+      "titleKey": "backdrop_display",
+      "titleEn": "Backdrop style",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "BACKDROP_DYNAMIC_COLOR",
+      "uiDefault": "BACKDROP_DYNAMIC_COLOR",
+      "classification": "web",
+      "classificationNote": null,
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "ui_interface",
+          "groupTitleEn": "Interface",
+          "order": 1,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": "BACKDROP_DYNAMIC_COLOR",
+          "index": 0,
+          "labelKey": "backdrop_style_dynamic",
+          "labelEn": "Image with dynamic color"
+        },
+        {
+          "value": "BACKDROP_IMAGE_ONLY",
+          "index": 1,
+          "labelKey": "backdrop_style_image",
+          "labelEn": "Image only"
+        },
+        {
+          "value": "BACKDROP_NONE",
+          "index": 2,
+          "labelKey": "none",
+          "labelEn": "None"
+        }
+      ],
+      "id": "BackdropStylePref"
+    },
+    {
+      "kotlinName": "ShowLogos",
+      "store": "appPreferences",
+      "protoPath": "interface_preferences.show_logos",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "prefer_logos",
+      "titleEn": "Prefer showing logos for titles",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "enabled",
+      "summaryOnEn": "Enabled",
+      "summaryOffKey": "disabled",
+      "summaryOffEn": "Disabled",
+      "default": true,
+      "uiDefault": true,
+      "classification": "web",
+      "classificationNote": null,
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "ui_interface",
+          "groupTitleEn": "Interface",
+          "order": 2,
+          "visibleWhen": null
+        }
+      ],
+      "id": "ShowLogos"
+    },
+    {
+      "kotlinName": "ManageMedia",
+      "store": "appPreferences",
+      "protoPath": "interface_preferences.enable_media_management",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "show_media_management",
+      "titleEn": "Show media management options",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "enabled",
+      "summaryOnEn": "Enabled",
+      "summaryOffKey": "disabled",
+      "summaryOffEn": "Disabled",
+      "default": false,
+      "uiDefault": false,
+      "classification": "web",
+      "classificationNote": "Shows delete (DELETE Items/{id}) in context menus when item CanDelete.",
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "ui_interface",
+          "groupTitleEn": "Interface",
+          "order": 3,
+          "visibleWhen": null
+        }
+      ],
+      "id": "ManageMedia"
+    },
+    {
+      "kotlinName": "DisplayTogglesPref",
+      "store": "appPreferences",
+      "protoPath": "interface_preferences.display_toggles",
+      "type": "multichoice",
+      "valueType": "enum[]:DisplayToggle",
+      "titleKey": "display_toggles_title",
+      "titleEn": "Ratings display",
+      "summaryKey": "display_toggles_summary",
+      "summaryEn": "Customize which to display",
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": [
+        "OFFICIAL_RATING",
+        "CRITIC_RATING",
+        "COMMUNITY_RATING"
+      ],
+      "uiDefault": [
+        "OFFICIAL_RATING",
+        "CRITIC_RATING",
+        "COMMUNITY_RATING"
+      ],
+      "classification": "web",
+      "classificationNote": "Which rating badges to show. Dialog lists each option with a Switch and subtitle.",
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "ui_interface",
+          "groupTitleEn": "Interface",
+          "order": 4,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": "OFFICIAL_RATING",
+          "index": 0,
+          "labelKey": "official_rating",
+          "labelEn": "Parental Rating"
+        },
+        {
+          "value": "CRITIC_RATING",
+          "index": 1,
+          "labelKey": "critic_rating",
+          "labelEn": "Critic Rating",
+          "subtitleKey": "tomatoes",
+          "subtitleEn": "Tomatoes"
+        },
+        {
+          "value": "COMMUNITY_RATING",
+          "index": 2,
+          "labelKey": "community_rating",
+          "labelEn": "Community Rating",
+          "subtitleKey": "stars",
+          "subtitleEn": "Stars"
+        }
+      ],
+      "id": "DisplayTogglesPref"
+    },
+    {
+      "kotlinName": "NavDrawerSwitchOnFocus",
+      "store": "appPreferences",
+      "protoPath": "interface_preferences.nav_drawer_switch_on_focus",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "nav_drawer_switch_on_focus",
+      "titleEn": "Switch nav drawer pages on focus",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "enabled",
+      "summaryOnEn": "Enabled",
+      "summaryOffKey": "nav_drawer_switch_on_focus_summary_off",
+      "summaryOffEn": "Click to switch pages",
+      "default": true,
+      "uiDefault": true,
+      "classification": "android-only",
+      "classificationNote": "Commented out of the advanced list (temporarily disabled); focus-driven page switching is a D-pad concept. Keep field for fidelity but do not surface.",
+      "screens": [],
+      "id": "NavDrawerSwitchOnFocus"
+    },
+    {
+      "kotlinName": "SlideshowDuration",
+      "store": "appPreferences",
+      "protoPath": "photo_preferences.slideshow_duration",
+      "type": "slider",
+      "valueType": "int(ms)",
+      "titleKey": "slideshow_duration",
+      "titleEn": "Slideshow duration",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": 5000,
+      "uiDefault": 5000,
+      "classification": "web",
+      "classificationNote": null,
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "ui_interface",
+          "groupTitleEn": "Interface",
+          "order": 5,
+          "visibleWhen": null
+        }
+      ],
+      "min": 1000,
+      "max": 30000,
+      "step": 250,
+      "summaryFormat": "decimal_seconds '%.2f seconds' of value/1000",
+      "id": "SlideshowDuration"
+    },
+    {
+      "kotlinName": "SlideshowPlayVideos",
+      "store": "appPreferences",
+      "protoPath": "photo_preferences.slideshow_play_videos",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "play_videos_during_slideshow",
+      "titleEn": "Play videos during slideshow",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "enabled",
+      "summaryOnEn": "Enabled",
+      "summaryOffKey": "disabled",
+      "summaryOffEn": "Disabled",
+      "default": false,
+      "uiDefault": false,
+      "classification": "web",
+      "classificationNote": null,
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "ui_interface",
+          "groupTitleEn": "Interface",
+          "order": 6,
+          "visibleWhen": null
+        }
+      ],
+      "id": "SlideshowPlayVideos"
+    },
+    {
+      "kotlinName": "OneClickPause",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.one_click_pause",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "one_click_pause",
+      "titleEn": "Pause with one click",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "one_click_pause_summary_on",
+      "summaryOnEn": "Press D-Pad center to pause/play",
+      "summaryOffKey": "disabled",
+      "summaryOffEn": "Disabled",
+      "default": false,
+      "uiDefault": false,
+      "classification": "web-adapted",
+      "classificationNote": "Web: click/Enter on video toggles pause immediately instead of showing controls.",
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "playback",
+          "groupTitleEn": "Playback",
+          "order": 0,
+          "visibleWhen": null
+        }
+      ],
+      "id": "OneClickPause"
+    },
+    {
+      "kotlinName": "ControllerTimeout",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.controller_timeout_ms",
+      "type": "slider",
+      "valueType": "int(ms)",
+      "titleKey": "hide_controller_timeout",
+      "titleEn": "Hide playback controls",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": 5000,
+      "uiDefault": 5000,
+      "classification": "web",
+      "classificationNote": null,
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "playback",
+          "groupTitleEn": "Playback",
+          "order": 1,
+          "visibleWhen": null
+        }
+      ],
+      "min": 500,
+      "max": 15000,
+      "step": 100,
+      "summaryFormat": "decimal_seconds of value/1000",
+      "id": "ControllerTimeout"
+    },
+    {
+      "kotlinName": "CinemaMode",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.cinema_mode",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "cinema_mode",
+      "titleEn": "Cinema mode",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "enabled",
+      "summaryOnEn": "Enabled",
+      "summaryOffKey": "disabled",
+      "summaryOffEn": "Disabled",
+      "default": true,
+      "uiDefault": true,
+      "classification": "web",
+      "classificationNote": "When starting from 0:00, fetches intros via GET Items/{id}/Intros and plays them before the item.",
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "playback",
+          "groupTitleEn": "Playback",
+          "order": 2,
+          "visibleWhen": null
+        }
+      ],
+      "id": "CinemaMode"
+    },
+    {
+      "kotlinName": "GlobalContentScale",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.global_content_scale",
+      "type": "choice",
+      "valueType": "enum:PrefContentScale",
+      "titleKey": "global_content_scale",
+      "titleEn": "Default content scale",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "FIT",
+      "uiDefault": "FIT",
+      "classification": "web-adapted",
+      "classificationNote": "Maps to CSS object-fit on the <video> (FIT=contain, NONE=none, CROP=cover, FILL=fill; FILL_WIDTH/FILL_HEIGHT need custom sizing). Note proto enum spelling 'Fill_WIDTH'.",
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "playback",
+          "groupTitleEn": "Playback",
+          "order": 3,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": "FIT",
+          "index": 0,
+          "labelKey": "content_scale_fit",
+          "labelEn": "Fit"
+        },
+        {
+          "value": "NONE",
+          "index": 1,
+          "labelKey": "none",
+          "labelEn": "None"
+        },
+        {
+          "value": "CROP",
+          "index": 2,
+          "labelKey": "content_scale_crop",
+          "labelEn": "Crop"
+        },
+        {
+          "value": "FILL",
+          "index": 3,
+          "labelKey": "content_scale_fill",
+          "labelEn": "Fill"
+        },
+        {
+          "value": "Fill_WIDTH",
+          "index": 4,
+          "labelKey": "content_scale_fill_width",
+          "labelEn": "Fill width"
+        },
+        {
+          "value": "FILL_HEIGHT",
+          "index": 5,
+          "labelKey": "content_scale_fill_height",
+          "labelEn": "Fill height"
+        }
+      ],
+      "id": "GlobalContentScale"
+    },
+    {
+      "kotlinName": "SkipSegments",
+      "store": "appPreferences",
+      "protoPath": null,
+      "type": "destination",
+      "valueType": "none",
+      "titleKey": "skip_behavior",
+      "titleEn": "Skip behavior",
+      "summaryKey": "skip_behavior_summary",
+      "summaryEn": "For intros, credits, etc",
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": null,
+      "uiDefault": null,
+      "classification": "web",
+      "classificationNote": null,
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "playback",
+          "groupTitleEn": "Playback",
+          "order": 4,
+          "visibleWhen": null
+        }
+      ],
+      "destination": "Settings(SKIP_SEGMENTS)",
+      "id": "SkipSegments"
+    },
+    {
+      "kotlinName": "DpadSeekModePref",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.dpad_seek_mode",
+      "type": "choice",
+      "valueType": "enum:DpadSeekMode",
+      "titleKey": "d_pad_seek_mode_title",
+      "titleEn": "D-Pad seek bar mode",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "SEEKBAR_MINIMAL",
+      "uiDefault": "SEEKBAR_MINIMAL",
+      "classification": "web-adapted",
+      "classificationNote": "Arrow-key seeking presentation. Web: keyboard left/right; apply minimal / trickplay-preview / no seek bar.",
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "playback",
+          "groupTitleEn": "Playback",
+          "order": 5,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": "SEEKBAR_MINIMAL",
+          "index": 0,
+          "labelKey": "dpad_seek_mode_minimal",
+          "labelEn": "Minimal",
+          "subtitleKey": "dpad_seek_mode_minimal_summary",
+          "subtitleEn": "Small seek bar along the bottom of the screen (default)"
+        },
+        {
+          "value": "SEEKBAR_TRICKPLAY",
+          "index": 1,
+          "labelKey": "dpad_seek_mode_trickplay",
+          "labelEn": "Trickplay",
+          "subtitleKey": "dpad_seek_mode_trickplay_summary",
+          "subtitleEn": "Seek bar with trickplay preview images"
+        },
+        {
+          "value": "SEEKBAR_NONE",
+          "index": 2,
+          "labelKey": "none",
+          "labelEn": "None",
+          "subtitleKey": "dpad_seek_mode_none_summary",
+          "subtitleEn": "No seek bar"
+        }
+      ],
+      "id": "DpadSeekModePref"
+    },
+    {
+      "kotlinName": "MaxResolutionPref",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.overrides.max_resolution",
+      "type": "choice",
+      "valueType": "enum:MaxResolution(int height)",
+      "titleKey": "max_resolution",
+      "titleEn": "Max resolution before transcoding",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "NO_LIMIT",
+      "uiDefault": "NO_LIMIT",
+      "classification": "web",
+      "classificationNote": "Stored as the pixel height (0, 4320, 2160, 1080, 720, 576, 480, 360). Feeds device profile max height / transcode decision.",
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "playback",
+          "groupTitleEn": "Playback",
+          "order": 6,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": "NO_LIMIT",
+          "index": 0,
+          "labelKey": "no_limit",
+          "labelEn": "No limit",
+          "intValue": 0
+        },
+        {
+          "value": "ULTRA_HD_8K",
+          "index": 1,
+          "labelKey": "resolution_8k",
+          "labelEn": "8K",
+          "intValue": 4320
+        },
+        {
+          "value": "ULTRA_HD_4K",
+          "index": 2,
+          "labelKey": "resolution_4k",
+          "labelEn": "4K",
+          "intValue": 2160
+        },
+        {
+          "value": "FULL_HD",
+          "index": 3,
+          "labelKey": "resolution_1080",
+          "labelEn": "1080",
+          "intValue": 1080
+        },
+        {
+          "value": "HD",
+          "index": 4,
+          "labelKey": "resolution_720",
+          "labelEn": "720",
+          "intValue": 720
+        },
+        {
+          "value": "PAL_SD",
+          "index": 5,
+          "labelKey": "resolution_576",
+          "labelEn": "576",
+          "intValue": 576
+        },
+        {
+          "value": "NTSC_SD",
+          "index": 6,
+          "labelKey": "resolution_480",
+          "labelEn": "480",
+          "intValue": 480
+        },
+        {
+          "value": "LOW_DEF",
+          "index": 7,
+          "labelKey": "resolution_360",
+          "labelEn": "360",
+          "intValue": 360
+        }
+      ],
+      "id": "MaxResolutionPref"
+    },
+    {
+      "kotlinName": "MaxBitrate",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.max_bitrate",
+      "type": "slider",
+      "valueType": "index into bitrateValues -> int64 bits/s",
+      "titleKey": "max_bitrate",
+      "titleEn": "Max bitrate",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": 104857600,
+      "uiDefault": 17,
+      "classification": "web",
+      "classificationNote": "Slider index (0..22) over a fixed list of bit/s values (1 Mbit = 1048576). Default stored value 100*1048576 (index of 100 Mbit). Sent as maxStreamingBitrate in PlaybackInfo. Summary via formatMaxBitrate (e.g. '100 Mbit/s', '500 Kbit/s').",
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "playback",
+          "groupTitleEn": "Playback",
+          "order": 7,
+          "visibleWhen": null
+        }
+      ],
+      "min": 0,
+      "max": 22,
+      "step": 1,
+      "valueList": [
+        512000,
+        768000,
+        1048576,
+        2097152,
+        3145728,
+        5242880,
+        8388608,
+        10485760,
+        15728640,
+        20971520,
+        31457280,
+        41943040,
+        52428800,
+        62914560,
+        73400320,
+        83886080,
+        94371840,
+        104857600,
+        125829120,
+        146800640,
+        167772160,
+        188743680,
+        209715200
+      ],
+      "id": "MaxBitrate"
+    },
+    {
+      "kotlinName": "RefreshRateSwitching",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.refresh_rate_switching",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "refresh_rate_switching",
+      "titleEn": "Refresh rate switching",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "automatic",
+      "summaryOnEn": "Automatic",
+      "summaryOffKey": "disabled",
+      "summaryOffEn": "Disabled",
+      "default": false,
+      "uiDefault": false,
+      "classification": "android-only",
+      "classificationNote": "Android Display.Mode switching (RefreshRateService). Browsers cannot change display refresh rate. Turning off also turns off ResolutionSwitching.",
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "playback",
+          "groupTitleEn": "Playback",
+          "order": 8,
+          "visibleWhen": null
+        }
+      ],
+      "id": "RefreshRateSwitching"
+    },
+    {
+      "kotlinName": "ResolutionSwitching",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.resolution_switching",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "resolution_switching",
+      "titleEn": "Resolution switching",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "automatic",
+      "summaryOnEn": "Automatic",
+      "summaryOffKey": "disabled",
+      "summaryOffEn": "Disabled",
+      "default": false,
+      "uiDefault": false,
+      "classification": "android-only",
+      "classificationNote": "Android Display.Mode resolution switching. Turning on also turns on RefreshRateSwitching.",
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "playback",
+          "groupTitleEn": "Playback",
+          "order": 9,
+          "visibleWhen": null
+        }
+      ],
+      "id": "ResolutionSwitching"
+    },
+    {
+      "kotlinName": "PlaybackDebugInfo",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.show_debug_info",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "playback_debug_info",
+      "titleEn": "Show playback debug info",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "show",
+      "summaryOnEn": "Show",
+      "summaryOffKey": "hide",
+      "summaryOffEn": "Hide",
+      "default": false,
+      "uiDefault": false,
+      "classification": "web",
+      "classificationNote": "Shows the playback debug overlay.",
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "playback",
+          "groupTitleEn": "Playback",
+          "order": 10,
+          "visibleWhen": null
+        }
+      ],
+      "id": "PlaybackDebugInfo"
+    },
+    {
+      "kotlinName": "PlayerBackendPref",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.player_backend",
+      "type": "choice",
+      "valueType": "enum:PlayerBackend",
+      "titleKey": "player_backend",
+      "titleEn": "Playback Backend",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "EXO_PLAYER",
+      "uiDefault": "EXO_PLAYER",
+      "classification": "android-only",
+      "classificationNote": "ExoPlayer / MPV / Prefer MPV / External player are native choices. Web has exactly one backend (HTMLVideoElement + hls.js/MSE). Do not surface; treat as fixed 'browser'.",
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "player_backend",
+          "groupTitleEn": "Playback Backend",
+          "order": 0,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": "EXO_PLAYER",
+          "index": 0,
+          "labelKey": "exoplayer",
+          "labelEn": "ExoPlayer"
+        },
+        {
+          "value": "MPV",
+          "index": 1,
+          "labelKey": "mpv",
+          "labelEn": "MPV"
+        },
+        {
+          "value": "PREFER_MPV",
+          "index": 2,
+          "labelKey": "prefer_mpv",
+          "labelEn": "Prefer MPV",
+          "subtitleKey": "player_backend_options_subtitles_prefer_mpv",
+          "subtitleEn": "Use ExoPlayer for HDR playback"
+        },
+        {
+          "value": "EXTERNAL_PLAYER",
+          "index": 3,
+          "labelKey": "external_player",
+          "labelEn": "External Player"
+        }
+      ],
+      "id": "PlayerBackendPref"
+    },
+    {
+      "kotlinName": "ExternalPlayerApp",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.external_player",
+      "type": "choice",
+      "valueType": "string(component name)",
+      "titleKey": "external_player",
+      "titleEn": "External Player",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "",
+      "uiDefault": "",
+      "classification": "android-only",
+      "classificationNote": "Android intent target for external video players (queryIntentActivities). Shown when backend=EXTERNAL_PLAYER. First option 'System default' (system_default) = ''.",
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "player_backend",
+          "groupTitleEn": "Playback Backend",
+          "order": 1,
+          "visibleWhen": "playerBackend == EXTERNAL_PLAYER"
+        }
+      ],
+      "id": "ExternalPlayerApp"
+    },
+    {
+      "kotlinName": "ExoPlayerSettings",
+      "store": "appPreferences",
+      "protoPath": null,
+      "type": "destination",
+      "valueType": "none",
+      "titleKey": "exoplayer_options",
+      "titleEn": "ExoPlayer Options",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": null,
+      "uiDefault": null,
+      "classification": "android-only",
+      "classificationNote": "Link to EXO_PLAYER screen, shown when backend == PREFER_MPV.",
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "player_backend",
+          "groupTitleEn": "Playback Backend",
+          "order": 1,
+          "visibleWhen": "playerBackend == PREFER_MPV"
+        }
+      ],
+      "destination": "Settings(EXO_PLAYER)",
+      "id": "ExoPlayerSettings"
+    },
+    {
+      "kotlinName": "MpvSettings",
+      "store": "appPreferences",
+      "protoPath": null,
+      "type": "destination",
+      "valueType": "none",
+      "titleKey": "mpv_options",
+      "titleEn": "MPV Options",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": null,
+      "uiDefault": null,
+      "classification": "android-only",
+      "classificationNote": "Link to MPV screen, shown when backend == PREFER_MPV.",
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "player_backend",
+          "groupTitleEn": "Playback Backend",
+          "order": 2,
+          "visibleWhen": "playerBackend == PREFER_MPV"
+        }
+      ],
+      "destination": "Settings(MPV)",
+      "id": "MpvSettings"
+    },
+    {
+      "kotlinName": "AutoCheckForUpdates",
+      "store": "appPreferences",
+      "protoPath": "auto_check_for_updates",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "auto_check_for_updates",
+      "titleEn": "Automatically check for updates",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "enabled",
+      "summaryOnEn": "Enabled",
+      "summaryOffKey": "disabled",
+      "summaryOffEn": "Disabled",
+      "default": true,
+      "uiDefault": true,
+      "classification": "android-only",
+      "classificationNote": "In-app APK updater.",
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "updates",
+          "groupTitleEn": "Updates",
+          "order": 0,
+          "visibleWhen": "UpdateChecker.ACTIVE (BuildConfig.UPDATING_ENABLED, true only in default flavor); whole 'updates' group is omitted otherwise"
+        }
+      ],
+      "id": "AutoCheckForUpdates"
+    },
+    {
+      "kotlinName": "UpdateUrl",
+      "store": "appPreferences",
+      "protoPath": "update_url",
+      "type": "string",
+      "valueType": "string(url)",
+      "titleKey": "update_url",
+      "titleEn": "Update URL",
+      "summaryKey": "update_url_summary",
+      "summaryEn": "URL used to check for app updates",
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "https://api.github.com/repos/damontecres/Wholphin/releases/latest",
+      "uiDefault": "https://api.github.com/repos/damontecres/Wholphin/releases/latest",
+      "classification": "android-only",
+      "classificationNote": "GitHub releases API URL for the APK updater.",
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "updates",
+          "groupTitleEn": "Updates",
+          "order": 1,
+          "visibleWhen": "UpdateChecker.ACTIVE (BuildConfig.UPDATING_ENABLED, true only in default flavor); whole 'updates' group is omitted otherwise"
+        }
+      ],
+      "id": "UpdateUrl"
+    },
+    {
+      "kotlinName": "QuickConnect",
+      "store": "appPreferences",
+      "protoPath": null,
+      "type": "click",
+      "valueType": "none",
+      "titleKey": "quick_connect",
+      "titleEn": "Quick Connect",
+      "summaryKey": "quick_connect_summary",
+      "summaryEn": "Authorize another device to log in to your account",
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": null,
+      "uiDefault": null,
+      "classification": "web",
+      "classificationNote": "Authorize ANOTHER device: dialog asks for a 6-digit code and calls POST /QuickConnect/Authorize?code=&userId=. Not the login flow (see setup section).",
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "more",
+          "groupTitleEn": "More",
+          "order": 0,
+          "visibleWhen": null
+        }
+      ],
+      "id": "QuickConnect"
+    },
+    {
+      "kotlinName": "SendAppLogs",
+      "store": "appPreferences",
+      "protoPath": null,
+      "type": "click",
+      "valueType": "none",
+      "titleKey": "send_app_logs",
+      "titleEn": "Send app logs to current server",
+      "summaryKey": "send_app_logs_summary",
+      "summaryEn": "Useful for debugging",
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": null,
+      "uiDefault": null,
+      "classification": "web-adapted",
+      "classificationNote": "Android uploads logcat to server via POST /System/Logs/Log. Web: could upload an in-memory console ring buffer; optional.",
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "more",
+          "groupTitleEn": "More",
+          "order": 1,
+          "visibleWhen": null
+        }
+      ],
+      "id": "SendAppLogs"
+    },
+    {
+      "kotlinName": "SendCrashReports",
+      "store": "appPreferences",
+      "protoPath": "send_crash_reports",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "send_crash_reports",
+      "titleEn": "Send Crash Reports",
+      "summaryKey": "send_crash_reports_summary",
+      "summaryEn": "Will try to send to last connected server",
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": true,
+      "uiDefault": true,
+      "classification": "android-only",
+      "classificationNote": "ACRA crash reporter (also mirrored into SharedPreferences key 'acra.enable'); report sender posts to the server log endpoint. Web: window.onerror -> optional.",
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "more",
+          "groupTitleEn": "More",
+          "order": 2,
+          "visibleWhen": null
+        }
+      ],
+      "id": "SendCrashReports"
+    },
+    {
+      "kotlinName": "DebugLogging",
+      "store": "appPreferences",
+      "protoPath": "debug_logging",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "verbose_logging",
+      "titleEn": "Verbose logging",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "enabled",
+      "summaryOnEn": "Enabled",
+      "summaryOffKey": "disabled",
+      "summaryOffEn": "Disabled",
+      "default": false,
+      "uiDefault": false,
+      "classification": "web",
+      "classificationNote": "Toggles verbose logger (Timber DebugLogTree).",
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "more",
+          "groupTitleEn": "More",
+          "order": 3,
+          "visibleWhen": null
+        }
+      ],
+      "id": "DebugLogging"
+    },
+    {
+      "kotlinName": "ImageDiskCacheSize",
+      "store": "appPreferences",
+      "protoPath": "advanced_preferences.image_disk_cache_size_bytes",
+      "type": "slider",
+      "valueType": "int(MB; stored as bytes, 1MB = 1048576)",
+      "titleKey": "image_cache_size",
+      "titleEn": "Image disk cache size (MB)",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": 200,
+      "uiDefault": 200,
+      "classification": "android-only",
+      "classificationNote": "Coil disk cache size. Browser HTTP cache is not configurable. Min 25, max 1000, step 25, default 200.",
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "more",
+          "groupTitleEn": "More",
+          "order": 4,
+          "visibleWhen": null
+        }
+      ],
+      "min": 25,
+      "max": 1000,
+      "step": 25,
+      "summaryFormat": "'{n} MB'",
+      "id": "ImageDiskCacheSize"
+    },
+    {
+      "kotlinName": "ClearImageCache",
+      "store": "appPreferences",
+      "protoPath": null,
+      "type": "click",
+      "valueType": "none",
+      "titleKey": "clear_image_cache",
+      "titleEn": "Clear image cache",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": null,
+      "uiDefault": null,
+      "classification": "web-adapted",
+      "classificationNote": "Android clears Coil memory+disk caches; summary 'Disk: Xmb, Memory: Ymb/Zmb'. Web: could clear Cache Storage entries used for images.",
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "more",
+          "groupTitleEn": "More",
+          "order": 5,
+          "visibleWhen": null
+        }
+      ],
+      "id": "ClearImageCache"
+    },
+    {
+      "kotlinName": "ExperimentalEnable",
+      "store": "appPreferences",
+      "protoPath": "experimental_preferences.enabled",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "experimental_settings",
+      "titleEn": "Experimental settings",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "enabled",
+      "summaryOnEn": "Enabled",
+      "summaryOffKey": "disabled",
+      "summaryOffEn": "Disabled",
+      "default": false,
+      "uiDefault": false,
+      "classification": "web-adapted",
+      "classificationNote": "Turning ON shows ConfirmDialog (confirm_enable_experimental_title / _body); turning OFF is immediate. Gates ExperimentalSettings link and gating helper ExperimentalPreferences.get{}/enabled{}. Web: only PreferAc3ForSurround is meaningful (all other experimental prefs are Android decoder/tunneling features), so the gate/confirm dialog is kept but the screen shows a single item.",
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "more",
+          "groupTitleEn": "More",
+          "order": 6,
+          "visibleWhen": null
+        }
+      ],
+      "id": "ExperimentalEnable"
+    },
+    {
+      "kotlinName": "OssLicenseInfo",
+      "store": "appPreferences",
+      "protoPath": null,
+      "type": "destination",
+      "valueType": "none",
+      "titleKey": "license_info",
+      "titleEn": "License information",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": null,
+      "uiDefault": null,
+      "classification": "web-adapted",
+      "classificationNote": "Android uses AboutLibraries LibrariesContainer. Web: generate third-party license list at build time.",
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "more",
+          "groupTitleEn": "More",
+          "order": 7,
+          "visibleWhen": null
+        }
+      ],
+      "destination": "License",
+      "id": "OssLicenseInfo"
+    },
+    {
+      "kotlinName": "ExperimentalSettings",
+      "store": "appPreferences",
+      "protoPath": null,
+      "type": "destination",
+      "valueType": "none",
+      "titleKey": "experimental_settings",
+      "titleEn": "Experimental settings",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": null,
+      "uiDefault": null,
+      "classification": "web-adapted",
+      "classificationNote": "Link shown only when experimental is enabled.",
+      "screens": [
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "more",
+          "groupTitleEn": "More",
+          "order": 8,
+          "visibleWhen": "experimentalPreferences.enabled"
+        }
+      ],
+      "destination": "Settings(EXPERIMENTAL)",
+      "id": "ExperimentalSettings"
+    },
+    {
+      "kotlinName": "FfmpegPreference",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.overrides.media_extensions_enabled",
+      "type": "choice",
+      "valueType": "enum:MediaExtensionStatus",
+      "titleKey": "ffmpeg_extension_pref",
+      "titleEn": "Use FFmpeg decoder module",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "MES_FALLBACK",
+      "uiDefault": "MES_FALLBACK",
+      "classification": "android-only",
+      "classificationNote": "Media3 FFmpeg decoder module. Also rendered inline on ADVANCED > player_backend (after the backend chooser) when playerBackend == EXO_PLAYER; web has a single backend so surface it unconditionally (ADVANCED playback-backend area or the EXO_PLAYER screen).",
+      "screens": [
+        {
+          "screen": "EXO_PLAYER",
+          "groupTitleKey": "exoplayer_options",
+          "groupTitleEn": "ExoPlayer Options",
+          "order": 0,
+          "visibleWhen": null
+        },
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "player_backend",
+          "groupTitleEn": "Playback Backend",
+          "order": 1,
+          "visibleWhen": "playerBackend == EXO_PLAYER"
+        }
+      ],
+      "options": [
+        {
+          "value": "MES_FALLBACK",
+          "index": 0,
+          "labelKey": "ffmpeg_fallback",
+          "labelEn": "Only use FFmpeg if no built-in decoder exists"
+        },
+        {
+          "value": "MES_PREFERRED",
+          "index": 1,
+          "labelKey": "ffmpeg_prefer",
+          "labelEn": "Prefer to use FFmpeg over built-in decoders"
+        },
+        {
+          "value": "MES_DISABLED",
+          "index": 2,
+          "labelKey": "ffmpeg_never",
+          "labelEn": "Never use FFmpeg decoders"
+        }
+      ],
+      "id": "FfmpegPreference"
+    },
+    {
+      "kotlinName": "DownMixStereo",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.overrides.downmix_stereo",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "downmix_stereo",
+      "titleEn": "Always downmix to stereo",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "enabled",
+      "summaryOnEn": "Enabled",
+      "summaryOffKey": "disabled",
+      "summaryOffEn": "Disabled",
+      "default": false,
+      "uiDefault": false,
+      "classification": "web-adapted",
+      "classificationNote": "Web: feeds device profile (maxAudioChannels=2 / transcode to stereo). Setting true forces experimental preferAc3Surround=false. Also rendered inline on ADVANCED > player_backend (after the backend chooser) when playerBackend == EXO_PLAYER; web has a single backend so surface it unconditionally (ADVANCED playback-backend area or the EXO_PLAYER screen).",
+      "screens": [
+        {
+          "screen": "EXO_PLAYER",
+          "groupTitleKey": "exoplayer_options",
+          "groupTitleEn": "ExoPlayer Options",
+          "order": 1,
+          "visibleWhen": null
+        },
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "player_backend",
+          "groupTitleEn": "Playback Backend",
+          "order": 2,
+          "visibleWhen": "playerBackend == EXO_PLAYER"
+        }
+      ],
+      "id": "DownMixStereo"
+    },
+    {
+      "kotlinName": "Ac3Supported",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.overrides.ac3_supported",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "ac3_supported",
+      "titleEn": "Device supports AC3/Dolby Digital",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "enabled",
+      "summaryOnEn": "Enabled",
+      "summaryOffKey": "disabled",
+      "summaryOffEn": "Disabled",
+      "default": true,
+      "uiDefault": true,
+      "classification": "web-adapted",
+      "classificationNote": "Web: derive from MediaSource.isTypeSupported / canPlayType; keep as override. Setting false forces preferAc3Surround=false. Also rendered inline on ADVANCED > player_backend (after the backend chooser) when playerBackend == EXO_PLAYER; web has a single backend so surface it unconditionally (ADVANCED playback-backend area or the EXO_PLAYER screen).",
+      "screens": [
+        {
+          "screen": "EXO_PLAYER",
+          "groupTitleKey": "exoplayer_options",
+          "groupTitleEn": "ExoPlayer Options",
+          "order": 2,
+          "visibleWhen": null
+        },
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "player_backend",
+          "groupTitleEn": "Playback Backend",
+          "order": 3,
+          "visibleWhen": "playerBackend == EXO_PLAYER"
+        }
+      ],
+      "id": "Ac3Supported"
+    },
+    {
+      "kotlinName": "AssSubtitleMode",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.overrides.ass_playback_mode",
+      "type": "choice",
+      "valueType": "enum:AssPlaybackMode",
+      "titleKey": "ass_subtitle_playback",
+      "titleEn": "SSA/ASS subtitle playback",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "ASS_LIBASS",
+      "uiDefault": "ASS_LIBASS",
+      "classification": "web-adapted",
+      "classificationNote": "Web: ASS rendering via JASSUB/libass-wasm (LIBASS) vs. server burn-in (TRANSCODE). ASS_EXO_PLAYER has no web equivalent. Also rendered inline on ADVANCED > player_backend (after the backend chooser) when playerBackend == EXO_PLAYER; web has a single backend so surface it unconditionally (ADVANCED playback-backend area or the EXO_PLAYER screen).",
+      "screens": [
+        {
+          "screen": "EXO_PLAYER",
+          "groupTitleKey": "exoplayer_options",
+          "groupTitleEn": "ExoPlayer Options",
+          "order": 3,
+          "visibleWhen": null
+        },
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "player_backend",
+          "groupTitleEn": "Playback Backend",
+          "order": 4,
+          "visibleWhen": "playerBackend == EXO_PLAYER"
+        }
+      ],
+      "options": [
+        {
+          "value": "ASS_LIBASS",
+          "index": 0,
+          "labelKey": "ass_subtitle_mode_libass",
+          "labelEn": "Direct play with libass",
+          "subtitleKey": "default_track",
+          "subtitleEn": "Default"
+        },
+        {
+          "value": "ASS_EXO_PLAYER",
+          "index": 1,
+          "labelKey": "ass_subtitle_mode_exoplayer",
+          "labelEn": "Direct play with ExoPlayer built-in"
+        },
+        {
+          "value": "ASS_TRANSCODE",
+          "index": 2,
+          "labelKey": "ass_subtitle_mode_transcode",
+          "labelEn": "Burn in/transcode on server"
+        }
+      ],
+      "id": "AssSubtitleMode"
+    },
+    {
+      "kotlinName": "DirectPlayPgs",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.overrides.direct_play_pgs",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "direct_play_pgs",
+      "titleEn": "Direct play PGS subtitles",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "enabled",
+      "summaryOnEn": "Enabled",
+      "summaryOffKey": "disabled",
+      "summaryOffEn": "Disabled",
+      "default": true,
+      "uiDefault": true,
+      "classification": "web-adapted",
+      "classificationNote": "Browsers cannot decode PGS natively; web needs a PGS renderer or burn-in. Keep as device-profile flag. Also rendered inline on ADVANCED > player_backend (after the backend chooser) when playerBackend == EXO_PLAYER; web has a single backend so surface it unconditionally (ADVANCED playback-backend area or the EXO_PLAYER screen).",
+      "screens": [
+        {
+          "screen": "EXO_PLAYER",
+          "groupTitleKey": "exoplayer_options",
+          "groupTitleEn": "ExoPlayer Options",
+          "order": 4,
+          "visibleWhen": null
+        },
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "player_backend",
+          "groupTitleEn": "Playback Backend",
+          "order": 5,
+          "visibleWhen": "playerBackend == EXO_PLAYER"
+        }
+      ],
+      "id": "DirectPlayPgs"
+    },
+    {
+      "kotlinName": "DecodeAv1",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.overrides.decode_av1",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "software_decoding_av1",
+      "titleEn": "AV1 software decoding",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "enabled",
+      "summaryOnEn": "Enabled",
+      "summaryOffKey": "disabled",
+      "summaryOffEn": "Disabled",
+      "default": false,
+      "uiDefault": true,
+      "classification": "web-adapted",
+      "classificationNote": "UI default is true but AppPreferencesSerializer.defaultValue does NOT set decodeAv1 and no AppUpgradeHandler step sets it, so a fresh install stores and behaves with false (the toggle shows Disabled until the user flips it). Meaning: true = 'software decoding available' so the device profile declares AV1 (and its HDR/DOVI range types) as supported without the hardware-capability limits; false = AV1 limited by detected hardware support. Web: no software/hardware choice exists; drive the AV1 CodecProfile from MediaCapabilities/canPlayType and keep this only as a force-allow override. Also rendered inline on ADVANCED > player_backend (after the backend chooser) when playerBackend == EXO_PLAYER; web has a single backend so surface it unconditionally (ADVANCED playback-backend area or the EXO_PLAYER screen).",
+      "screens": [
+        {
+          "screen": "EXO_PLAYER",
+          "groupTitleKey": "exoplayer_options",
+          "groupTitleEn": "ExoPlayer Options",
+          "order": 5,
+          "visibleWhen": null
+        },
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "player_backend",
+          "groupTitleEn": "Playback Backend",
+          "order": 6,
+          "visibleWhen": "playerBackend == EXO_PLAYER"
+        }
+      ],
+      "id": "DecodeAv1"
+    },
+    {
+      "kotlinName": "HdrFormatSettings",
+      "store": "appPreferences",
+      "protoPath": null,
+      "type": "destination",
+      "valueType": "none",
+      "titleKey": "hdr_formats",
+      "titleEn": "HDR formats",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": null,
+      "uiDefault": null,
+      "classification": "web-adapted",
+      "classificationNote": "Link to HDR_FORMATS screen. Also rendered inline on ADVANCED > player_backend (after the backend chooser) when playerBackend == EXO_PLAYER; web has a single backend so surface it unconditionally (ADVANCED playback-backend area or the EXO_PLAYER screen).",
+      "screens": [
+        {
+          "screen": "EXO_PLAYER",
+          "groupTitleKey": "exoplayer_options",
+          "groupTitleEn": "ExoPlayer Options",
+          "order": 6,
+          "visibleWhen": null
+        },
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "player_backend",
+          "groupTitleEn": "Playback Backend",
+          "order": 7,
+          "visibleWhen": "playerBackend == EXO_PLAYER"
+        }
+      ],
+      "destination": "Settings(HDR_FORMATS)",
+      "id": "HdrFormatSettings"
+    },
+    {
+      "kotlinName": "Hdr10Override",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.overrides.hdr10_override",
+      "type": "choice",
+      "valueType": "enum:HdrOverrideMode",
+      "titleKey": "hdr10_override",
+      "titleEn": "HDR10",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "HDR_OVERRIDE_AUTO",
+      "uiDefault": "HDR_OVERRIDE_AUTO",
+      "classification": "web-adapted",
+      "classificationNote": "HdrFormat.kt/DeviceProfileService: ENABLE adds the range type names to forceEnabledHdr (profile declares them supported), DISABLE adds them to forceDisabledHdr (unsupported/transcode), AUTO leaves detection to the device. HDR10 -> VideoRangeType 'HDR10'. Web: detect via matchMedia('(dynamic-range: high)') / MediaCapabilities; keep override for the profile. Stored field is the HdrOverrideMode enum (0 AUTO, 1 ENABLE, 2 DISABLE); not set by the serializer so default is 0 = AUTO.",
+      "screens": [
+        {
+          "screen": "HDR_FORMATS",
+          "groupTitleKey": "hdr_formats",
+          "groupTitleEn": "HDR formats",
+          "order": 0,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": "HDR_OVERRIDE_AUTO",
+          "index": 0,
+          "labelKey": "automatic",
+          "labelEn": "Automatic"
+        },
+        {
+          "value": "HDR_OVERRIDE_ENABLE",
+          "index": 1,
+          "labelKey": "force_enable",
+          "labelEn": "Force enable"
+        },
+        {
+          "value": "HDR_OVERRIDE_DISABLE",
+          "index": 2,
+          "labelKey": "force_disable",
+          "labelEn": "Force disable"
+        }
+      ],
+      "id": "Hdr10Override"
+    },
+    {
+      "kotlinName": "Hdr10PlusOverride",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.overrides.hdr10_plus_override",
+      "type": "choice",
+      "valueType": "enum:HdrOverrideMode",
+      "titleKey": "hdr10_plus_override",
+      "titleEn": "HDR10+",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "HDR_OVERRIDE_AUTO",
+      "uiDefault": "HDR_OVERRIDE_AUTO",
+      "classification": "web-adapted",
+      "classificationNote": "HdrFormat.kt/DeviceProfileService: ENABLE adds the range type names to forceEnabledHdr (profile declares them supported), DISABLE adds them to forceDisabledHdr (unsupported/transcode), AUTO leaves detection to the device. HDR10+ -> 'HDR10Plus'. Web: detect via matchMedia('(dynamic-range: high)') / MediaCapabilities; keep override for the profile. Stored field is the HdrOverrideMode enum (0 AUTO, 1 ENABLE, 2 DISABLE); not set by the serializer so default is 0 = AUTO.",
+      "screens": [
+        {
+          "screen": "HDR_FORMATS",
+          "groupTitleKey": "hdr_formats",
+          "groupTitleEn": "HDR formats",
+          "order": 1,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": "HDR_OVERRIDE_AUTO",
+          "index": 0,
+          "labelKey": "automatic",
+          "labelEn": "Automatic"
+        },
+        {
+          "value": "HDR_OVERRIDE_ENABLE",
+          "index": 1,
+          "labelKey": "force_enable",
+          "labelEn": "Force enable"
+        },
+        {
+          "value": "HDR_OVERRIDE_DISABLE",
+          "index": 2,
+          "labelKey": "force_disable",
+          "labelEn": "Force disable"
+        }
+      ],
+      "id": "Hdr10PlusOverride"
+    },
+    {
+      "kotlinName": "DoviProfile5Override",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.overrides.dovi_profile_5_override",
+      "type": "choice",
+      "valueType": "enum:HdrOverrideMode",
+      "titleKey": "dovi_profile_5",
+      "titleEn": "Dolby Vision Profile 5",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "HDR_OVERRIDE_AUTO",
+      "uiDefault": "HDR_OVERRIDE_AUTO",
+      "classification": "web-adapted",
+      "classificationNote": "HdrFormat.kt/DeviceProfileService: ENABLE adds the range type names to forceEnabledHdr (profile declares them supported), DISABLE adds them to forceDisabledHdr (unsupported/transcode), AUTO leaves detection to the device. DOVI profile 5 -> 'DOVI'. Web: detect via matchMedia('(dynamic-range: high)') / MediaCapabilities; keep override for the profile. Stored field is the HdrOverrideMode enum (0 AUTO, 1 ENABLE, 2 DISABLE); not set by the serializer so default is 0 = AUTO.",
+      "screens": [
+        {
+          "screen": "HDR_FORMATS",
+          "groupTitleKey": "hdr_formats",
+          "groupTitleEn": "HDR formats",
+          "order": 2,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": "HDR_OVERRIDE_AUTO",
+          "index": 0,
+          "labelKey": "automatic",
+          "labelEn": "Automatic"
+        },
+        {
+          "value": "HDR_OVERRIDE_ENABLE",
+          "index": 1,
+          "labelKey": "force_enable",
+          "labelEn": "Force enable"
+        },
+        {
+          "value": "HDR_OVERRIDE_DISABLE",
+          "index": 2,
+          "labelKey": "force_disable",
+          "labelEn": "Force disable"
+        }
+      ],
+      "id": "DoviProfile5Override"
+    },
+    {
+      "kotlinName": "DoviProfile7Override",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.overrides.dovi_profile_7_override",
+      "type": "choice",
+      "valueType": "enum:HdrOverrideMode",
+      "titleKey": "dovi_profile_7",
+      "titleEn": "Dolby Vision Profile 7",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "HDR_OVERRIDE_AUTO",
+      "uiDefault": "HDR_OVERRIDE_AUTO",
+      "classification": "web-adapted",
+      "classificationNote": "HdrFormat.kt/DeviceProfileService: ENABLE adds the range type names to forceEnabledHdr (profile declares them supported), DISABLE adds them to forceDisabledHdr (unsupported/transcode), AUTO leaves detection to the device. DOVI profile 7 -> 'DOVIWithEL','DOVIWithELHDR10Plus' (only when server >= 10.11; empty set otherwise). Upgrade 1.0.10 migrates the removed direct_play_dolby_vision_e_l=true to HDR_OVERRIDE_ENABLE. Web: detect via matchMedia('(dynamic-range: high)') / MediaCapabilities; keep override for the profile. Stored field is the HdrOverrideMode enum (0 AUTO, 1 ENABLE, 2 DISABLE); not set by the serializer so default is 0 = AUTO.",
+      "screens": [
+        {
+          "screen": "HDR_FORMATS",
+          "groupTitleKey": "hdr_formats",
+          "groupTitleEn": "HDR formats",
+          "order": 3,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": "HDR_OVERRIDE_AUTO",
+          "index": 0,
+          "labelKey": "automatic",
+          "labelEn": "Automatic"
+        },
+        {
+          "value": "HDR_OVERRIDE_ENABLE",
+          "index": 1,
+          "labelKey": "force_enable",
+          "labelEn": "Force enable"
+        },
+        {
+          "value": "HDR_OVERRIDE_DISABLE",
+          "index": 2,
+          "labelKey": "force_disable",
+          "labelEn": "Force disable"
+        }
+      ],
+      "id": "DoviProfile7Override"
+    },
+    {
+      "kotlinName": "DoviProfile8Override",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.overrides.dovi_profile_8_override",
+      "type": "choice",
+      "valueType": "enum:HdrOverrideMode",
+      "titleKey": "dovi_profile_8",
+      "titleEn": "Dolby Vision Profile 8",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "HDR_OVERRIDE_AUTO",
+      "uiDefault": "HDR_OVERRIDE_AUTO",
+      "classification": "web-adapted",
+      "classificationNote": "HdrFormat.kt/DeviceProfileService: ENABLE adds the range type names to forceEnabledHdr (profile declares them supported), DISABLE adds them to forceDisabledHdr (unsupported/transcode), AUTO leaves detection to the device. DOVI profile 8 -> 'DOVIWithHDR10' (+ 'DOVIWithHDR10Plus' when server >= 10.11). Web: detect via matchMedia('(dynamic-range: high)') / MediaCapabilities; keep override for the profile. Stored field is the HdrOverrideMode enum (0 AUTO, 1 ENABLE, 2 DISABLE); not set by the serializer so default is 0 = AUTO.",
+      "screens": [
+        {
+          "screen": "HDR_FORMATS",
+          "groupTitleKey": "hdr_formats",
+          "groupTitleEn": "HDR formats",
+          "order": 4,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": "HDR_OVERRIDE_AUTO",
+          "index": 0,
+          "labelKey": "automatic",
+          "labelEn": "Automatic"
+        },
+        {
+          "value": "HDR_OVERRIDE_ENABLE",
+          "index": 1,
+          "labelKey": "force_enable",
+          "labelEn": "Force enable"
+        },
+        {
+          "value": "HDR_OVERRIDE_DISABLE",
+          "index": 2,
+          "labelKey": "force_disable",
+          "labelEn": "Force disable"
+        }
+      ],
+      "id": "DoviProfile8Override"
+    },
+    {
+      "kotlinName": "MpvHardwareDecoding",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.mpv_options.enable_hardware_decoding",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "mpv_hardware_decoding",
+      "titleEn": "MPV: Use hardware decoding",
+      "summaryKey": "disable_if_crash",
+      "summaryEn": "Disable if you experience crashes",
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": true,
+      "uiDefault": true,
+      "classification": "android-only",
+      "classificationNote": "libmpv. Also rendered inline on ADVANCED > player_backend when playerBackend == MPV; PREFER_MPV shows the MpvSettings link instead.",
+      "screens": [
+        {
+          "screen": "MPV",
+          "groupTitleKey": "mpv_options",
+          "groupTitleEn": "MPV Options",
+          "order": 0,
+          "visibleWhen": null
+        },
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "player_backend",
+          "groupTitleEn": "Playback Backend",
+          "order": 1,
+          "visibleWhen": "playerBackend == MPV"
+        }
+      ],
+      "id": "MpvHardwareDecoding"
+    },
+    {
+      "kotlinName": "MpvGpuNext",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.mpv_options.use_gpu_next",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "mpv_use_gpu_next",
+      "titleEn": "MPV: Use gpu-next",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "enabled",
+      "summaryOnEn": "Enabled",
+      "summaryOffKey": "disabled",
+      "summaryOffEn": "Disabled",
+      "default": false,
+      "uiDefault": false,
+      "classification": "android-only",
+      "classificationNote": "libmpv. Also rendered inline on ADVANCED > player_backend when playerBackend == MPV; PREFER_MPV shows the MpvSettings link instead. Default false everywhere (serializer false; upgrade 0.3.4-2 and 0.4.0-2 force false).",
+      "screens": [
+        {
+          "screen": "MPV",
+          "groupTitleKey": "mpv_options",
+          "groupTitleEn": "MPV Options",
+          "order": 1,
+          "visibleWhen": null
+        },
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "player_backend",
+          "groupTitleEn": "Playback Backend",
+          "order": 2,
+          "visibleWhen": "playerBackend == MPV"
+        }
+      ],
+      "id": "MpvGpuNext"
+    },
+    {
+      "kotlinName": "MpvConfFile",
+      "store": "appPreferences",
+      "protoPath": null,
+      "type": "click",
+      "valueType": "string(file contents)",
+      "titleKey": "mpv_conf",
+      "titleEn": "Edit mpv.conf",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": null,
+      "uiDefault": null,
+      "classification": "android-only",
+      "classificationNote": "Edits <filesDir>/mpv.conf (max 10 lines input dialog). Also rendered inline on ADVANCED > player_backend when playerBackend == MPV; PREFER_MPV shows the MpvSettings link instead.",
+      "screens": [
+        {
+          "screen": "MPV",
+          "groupTitleKey": "mpv_options",
+          "groupTitleEn": "MPV Options",
+          "order": 2,
+          "visibleWhen": null
+        },
+        {
+          "screen": "ADVANCED",
+          "groupTitleKey": "player_backend",
+          "groupTitleEn": "Playback Backend",
+          "order": 3,
+          "visibleWhen": "playerBackend == MPV"
+        }
+      ],
+      "id": "MpvConfFile"
+    },
+    {
+      "kotlinName": "SkipIntros",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.skip_intros",
+      "type": "choice",
+      "valueType": "enum:SkipSegmentBehavior",
+      "titleKey": "skip_intro_behavior",
+      "titleEn": "Skip intro behavior",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "ASK_TO_SKIP",
+      "uiDefault": "ASK_TO_SKIP",
+      "classification": "web",
+      "classificationNote": "Applied to MediaSegments (GET MediaSegments/{itemId}) polled every 500 ms during playback.",
+      "screens": [
+        {
+          "screen": "SKIP_SEGMENTS",
+          "groupTitleKey": "skip",
+          "groupTitleEn": "Skip",
+          "order": 0,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": "IGNORE",
+          "index": 0,
+          "labelKey": "skip_ignore",
+          "labelEn": "Ignore"
+        },
+        {
+          "value": "AUTO_SKIP",
+          "index": 1,
+          "labelKey": "skip_automatically",
+          "labelEn": "Skip automatically"
+        },
+        {
+          "value": "ASK_TO_SKIP",
+          "index": 2,
+          "labelKey": "skip_ask",
+          "labelEn": "Ask to skip"
+        }
+      ],
+      "id": "SkipIntros"
+    },
+    {
+      "kotlinName": "SkipOutros",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.skip_outros",
+      "type": "choice",
+      "valueType": "enum:SkipSegmentBehavior",
+      "titleKey": "skip_outro_behavior",
+      "titleEn": "Skip outro behavior",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "ASK_TO_SKIP",
+      "uiDefault": "ASK_TO_SKIP",
+      "classification": "web",
+      "classificationNote": "Applied to MediaSegments (GET MediaSegments/{itemId}) polled every 500 ms during playback.",
+      "screens": [
+        {
+          "screen": "SKIP_SEGMENTS",
+          "groupTitleKey": "skip",
+          "groupTitleEn": "Skip",
+          "order": 1,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": "IGNORE",
+          "index": 0,
+          "labelKey": "skip_ignore",
+          "labelEn": "Ignore"
+        },
+        {
+          "value": "AUTO_SKIP",
+          "index": 1,
+          "labelKey": "skip_automatically",
+          "labelEn": "Skip automatically"
+        },
+        {
+          "value": "ASK_TO_SKIP",
+          "index": 2,
+          "labelKey": "skip_ask",
+          "labelEn": "Ask to skip"
+        }
+      ],
+      "id": "SkipOutros"
+    },
+    {
+      "kotlinName": "SkipCommercials",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.skip_commercials",
+      "type": "choice",
+      "valueType": "enum:SkipSegmentBehavior",
+      "titleKey": "skip_commercials_behavior",
+      "titleEn": "Skip commercials behavior",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "ASK_TO_SKIP",
+      "uiDefault": "ASK_TO_SKIP",
+      "classification": "web",
+      "classificationNote": "Applied to MediaSegments (GET MediaSegments/{itemId}) polled every 500 ms during playback.",
+      "screens": [
+        {
+          "screen": "SKIP_SEGMENTS",
+          "groupTitleKey": "skip",
+          "groupTitleEn": "Skip",
+          "order": 2,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": "IGNORE",
+          "index": 0,
+          "labelKey": "skip_ignore",
+          "labelEn": "Ignore"
+        },
+        {
+          "value": "AUTO_SKIP",
+          "index": 1,
+          "labelKey": "skip_automatically",
+          "labelEn": "Skip automatically"
+        },
+        {
+          "value": "ASK_TO_SKIP",
+          "index": 2,
+          "labelKey": "skip_ask",
+          "labelEn": "Ask to skip"
+        }
+      ],
+      "id": "SkipCommercials"
+    },
+    {
+      "kotlinName": "SkipPreviews",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.skip_previews",
+      "type": "choice",
+      "valueType": "enum:SkipSegmentBehavior",
+      "titleKey": "skip_previews_behavior",
+      "titleEn": "Skip previews behavior",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "IGNORE",
+      "uiDefault": "IGNORE",
+      "classification": "web",
+      "classificationNote": "Applied to MediaSegments (GET MediaSegments/{itemId}) polled every 500 ms during playback.",
+      "screens": [
+        {
+          "screen": "SKIP_SEGMENTS",
+          "groupTitleKey": "skip",
+          "groupTitleEn": "Skip",
+          "order": 3,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": "IGNORE",
+          "index": 0,
+          "labelKey": "skip_ignore",
+          "labelEn": "Ignore"
+        },
+        {
+          "value": "AUTO_SKIP",
+          "index": 1,
+          "labelKey": "skip_automatically",
+          "labelEn": "Skip automatically"
+        },
+        {
+          "value": "ASK_TO_SKIP",
+          "index": 2,
+          "labelKey": "skip_ask",
+          "labelEn": "Ask to skip"
+        }
+      ],
+      "id": "SkipPreviews"
+    },
+    {
+      "kotlinName": "SkipRecaps",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.skip_recaps",
+      "type": "choice",
+      "valueType": "enum:SkipSegmentBehavior",
+      "titleKey": "skip_recap_behavior",
+      "titleEn": "Skip recap behavior",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "IGNORE",
+      "uiDefault": "IGNORE",
+      "classification": "web",
+      "classificationNote": "Applied to MediaSegments (GET MediaSegments/{itemId}) polled every 500 ms during playback.",
+      "screens": [
+        {
+          "screen": "SKIP_SEGMENTS",
+          "groupTitleKey": "skip",
+          "groupTitleEn": "Skip",
+          "order": 4,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": "IGNORE",
+          "index": 0,
+          "labelKey": "skip_ignore",
+          "labelEn": "Ignore"
+        },
+        {
+          "value": "AUTO_SKIP",
+          "index": 1,
+          "labelKey": "skip_automatically",
+          "labelEn": "Skip automatically"
+        },
+        {
+          "value": "ASK_TO_SKIP",
+          "index": 2,
+          "labelKey": "skip_ask",
+          "labelEn": "Ask to skip"
+        }
+      ],
+      "id": "SkipRecaps"
+    },
+    {
+      "kotlinName": "VideoTunneling",
+      "store": "appPreferences",
+      "protoPath": "experimental_preferences.video_tunneling_enabled",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "video_tunneling",
+      "titleEn": "Video tunneling",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "enabled",
+      "summaryOnEn": "Enabled",
+      "summaryOffKey": "disabled",
+      "summaryOffEn": "Disabled",
+      "default": false,
+      "uiDefault": false,
+      "classification": "android-only",
+      "classificationNote": "MediaCodec tunneling.",
+      "screens": [
+        {
+          "screen": "EXPERIMENTAL",
+          "groupTitleKey": "experimental_settings",
+          "groupTitleEn": "Experimental settings",
+          "order": 0,
+          "visibleWhen": null
+        }
+      ],
+      "id": "VideoTunneling"
+    },
+    {
+      "kotlinName": "PreferDolbyVisionOverHdr10Plus",
+      "store": "appPreferences",
+      "protoPath": "experimental_preferences.prefer_dolby_vision_over_hdr10_plus",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "prefer_dovi_over_hdr10_plus",
+      "titleEn": "Prefer Dolby Vision over HDR10+",
+      "summaryKey": "prefer_dovi_over_hdr10_plus_summary",
+      "summaryEn": "Removes HDR10+ metadata from Dolby Vision videos, for TVs that otherwise play them as HDR10+",
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": false,
+      "uiDefault": false,
+      "classification": "android-only",
+      "classificationNote": "Strips HDR10+ SEI (Hdr10PlusSeiFilter) on device decoder.",
+      "screens": [
+        {
+          "screen": "EXPERIMENTAL",
+          "groupTitleKey": "experimental_settings",
+          "groupTitleEn": "Experimental settings",
+          "order": 1,
+          "visibleWhen": null
+        }
+      ],
+      "id": "PreferDolbyVisionOverHdr10Plus"
+    },
+    {
+      "kotlinName": "ConvertDolbyVisionProfile7",
+      "store": "appPreferences",
+      "protoPath": "experimental_preferences.convert_dolby_vision_profile_7",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "convert_dovi_profile_7",
+      "titleEn": "Convert Dolby Vision Profile 7 to 8.1",
+      "summaryKey": "convert_dovi_profile_7_summary",
+      "summaryEn": "Rewrites dual-layer Profile 7 into single-layer Profile 8.1 before the decoder and direct plays it, for devices whose decoder lists Profile 8 but not Profile 7",
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": false,
+      "uiDefault": false,
+      "classification": "android-only",
+      "classificationNote": "On-device bitstream rewrite P7->P8.1 (DolbyVisionProfile7*).",
+      "screens": [
+        {
+          "screen": "EXPERIMENTAL",
+          "groupTitleKey": "experimental_settings",
+          "groupTitleEn": "Experimental settings",
+          "order": 2,
+          "visibleWhen": null
+        }
+      ],
+      "id": "ConvertDolbyVisionProfile7"
+    },
+    {
+      "kotlinName": "PreferAc3ForSurround",
+      "store": "appPreferences",
+      "protoPath": "experimental_preferences.prefer_ac3_surround",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "prefer_ac3_for_surround",
+      "titleEn": "Use AC3 for surround sound audio",
+      "summaryKey": "prefer_ac3_for_surround_summary",
+      "summaryEn": "Transcode non-stereo audio to AC3/Dolby Digital",
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": false,
+      "uiDefault": false,
+      "classification": "web-adapted",
+      "classificationNote": "Validator: cannot enable when ac3Supported=false (toast 'AC3 support is not enabled') or downmixStereo=true (toast 'Always downmixing to stereo'). Web: transcode non-stereo audio to AC3 (profile TranscodingProfile AudioCodec).",
+      "screens": [
+        {
+          "screen": "EXPERIMENTAL",
+          "groupTitleKey": "experimental_settings",
+          "groupTitleEn": "Experimental settings",
+          "order": 3,
+          "visibleWhen": null
+        }
+      ],
+      "id": "PreferAc3ForSurround"
+    },
+    {
+      "kotlinName": "DisableAudioOffload",
+      "store": "appPreferences",
+      "protoPath": "experimental_preferences.disable_audio_offload",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "disable_audio_offload",
+      "titleEn": "Disable audio hardware offload",
+      "summaryKey": "disable_audio_offload_summary",
+      "summaryEn": "Disabling offloading audio decoding may fix playback freezes on some devices",
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": false,
+      "uiDefault": false,
+      "classification": "android-only",
+      "classificationNote": "Media3 audio offload.",
+      "screens": [
+        {
+          "screen": "EXPERIMENTAL",
+          "groupTitleKey": "experimental_settings",
+          "groupTitleEn": "Experimental settings",
+          "order": 4,
+          "visibleWhen": null
+        }
+      ],
+      "id": "DisableAudioOffload"
+    },
+    {
+      "kotlinName": "ScreensaverEnabled",
+      "store": "appPreferences",
+      "protoPath": "interface_preferences.screensaver_preference.enabled",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "in_app_screensaver",
+      "titleEn": "Use in-app screensaver",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "yes",
+      "summaryOnEn": "Yes",
+      "summaryOffKey": "no",
+      "summaryOffEn": "No",
+      "default": false,
+      "uiDefault": false,
+      "classification": "web",
+      "classificationNote": null,
+      "screens": [
+        {
+          "screen": "SCREENSAVER",
+          "groupTitleKey": "screensaver",
+          "groupTitleEn": "Screensaver",
+          "order": 0,
+          "visibleWhen": null
+        }
+      ],
+      "id": "ScreensaverEnabled"
+    },
+    {
+      "kotlinName": "ScreensaverStartDelay",
+      "store": "appPreferences",
+      "protoPath": "interface_preferences.screensaver_preference.start_delay",
+      "type": "slider",
+      "valueType": "index into list -> ms",
+      "titleKey": "start_after",
+      "titleEn": "Start after",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": 900000,
+      "uiDefault": 5,
+      "classification": "web",
+      "classificationNote": "Slider index over [30s,1m,2m,5m,10m,15m,30m,60m]; summary uses Kotlin Duration.toString() (e.g. '15m', '30s', '1h'). Default 15 min (900000 ms), index 5.",
+      "screens": [
+        {
+          "screen": "SCREENSAVER",
+          "groupTitleKey": "screensaver",
+          "groupTitleEn": "Screensaver",
+          "order": 1,
+          "visibleWhen": null
+        }
+      ],
+      "min": 0,
+      "max": 7,
+      "step": 1,
+      "valueList": [
+        30000,
+        60000,
+        120000,
+        300000,
+        600000,
+        900000,
+        1800000,
+        3600000
+      ],
+      "id": "ScreensaverStartDelay"
+    },
+    {
+      "kotlinName": "ScreensaverDuration",
+      "store": "appPreferences",
+      "protoPath": "interface_preferences.screensaver_preference.duration",
+      "type": "slider",
+      "valueType": "index into list -> ms",
+      "titleKey": "duration",
+      "titleEn": "Duration",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": 30000,
+      "uiDefault": 1,
+      "classification": "web",
+      "classificationNote": "Slider index over [15s,30s,1m,2m]; per-image display time. Default 30000 ms, index 1.",
+      "screens": [
+        {
+          "screen": "SCREENSAVER",
+          "groupTitleKey": "screensaver",
+          "groupTitleEn": "Screensaver",
+          "order": 2,
+          "visibleWhen": null
+        }
+      ],
+      "min": 0,
+      "max": 3,
+      "step": 1,
+      "valueList": [
+        15000,
+        30000,
+        60000,
+        120000
+      ],
+      "id": "ScreensaverDuration"
+    },
+    {
+      "kotlinName": "ScreensaverShowClock",
+      "store": "appPreferences",
+      "protoPath": "interface_preferences.screensaver_preference.show_clock",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "show_clock",
+      "titleEn": "Show Clock",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "yes",
+      "summaryOnEn": "Yes",
+      "summaryOffKey": "no",
+      "summaryOffEn": "No",
+      "default": true,
+      "uiDefault": true,
+      "classification": "web",
+      "classificationNote": "Default taken from AppPreference.ShowClock.defaultValue (true).",
+      "screens": [
+        {
+          "screen": "SCREENSAVER",
+          "groupTitleKey": "screensaver",
+          "groupTitleEn": "Screensaver",
+          "order": 3,
+          "visibleWhen": null
+        }
+      ],
+      "id": "ScreensaverShowClock"
+    },
+    {
+      "kotlinName": "ScreensaverAnimate",
+      "store": "appPreferences",
+      "protoPath": "interface_preferences.screensaver_preference.animate",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "animate",
+      "titleEn": "Animate",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "enabled",
+      "summaryOnEn": "Enabled",
+      "summaryOffKey": "disabled",
+      "summaryOffEn": "Disabled",
+      "default": true,
+      "uiDefault": true,
+      "classification": "web",
+      "classificationNote": "Ken-Burns style slow zoom 1.0 -> 1.1 over `duration`, reverse repeat.",
+      "screens": [
+        {
+          "screen": "SCREENSAVER",
+          "groupTitleKey": "screensaver",
+          "groupTitleEn": "Screensaver",
+          "order": 4,
+          "visibleWhen": null
+        }
+      ],
+      "id": "ScreensaverAnimate"
+    },
+    {
+      "kotlinName": "ScreensaverMaxAge",
+      "store": "appPreferences",
+      "protoPath": "interface_preferences.screensaver_preference.max_age_filter",
+      "type": "slider",
+      "valueType": "index into list -> int age",
+      "titleKey": "max_age_rating",
+      "titleEn": "Max age rating",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": 16,
+      "uiDefault": 5,
+      "classification": "web",
+      "classificationNote": "Slider index over ages [0,5,10,13,14,16,18,21,-1]; -1 (last index) = no max. Summary: index0 'For all ages' (for_all_ages), last 'No max' (no_max), else 'Up to age N' (up_to_age). Becomes GetItems maxOfficialRating=N & hasParentalRating=true. Default 16 (index 5).",
+      "screens": [
+        {
+          "screen": "SCREENSAVER",
+          "groupTitleKey": "screensaver",
+          "groupTitleEn": "Screensaver",
+          "order": 5,
+          "visibleWhen": null
+        }
+      ],
+      "min": 0,
+      "max": 8,
+      "step": 1,
+      "valueList": [
+        0,
+        5,
+        10,
+        13,
+        14,
+        16,
+        18,
+        21,
+        -1
+      ],
+      "id": "ScreensaverMaxAge"
+    },
+    {
+      "kotlinName": "ScreensaverItemTypes",
+      "store": "appPreferences",
+      "protoPath": "interface_preferences.screensaver_preference.item_types",
+      "type": "multichoice",
+      "valueType": "enum[]:BaseItemKind(serialName strings)",
+      "titleKey": "include_types",
+      "titleEn": "Include types",
+      "summaryKey": "include_types_summary",
+      "summaryEn": "What types of items to show images for",
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": [
+        "Movie",
+        "Series"
+      ],
+      "uiDefault": [
+        "Movie",
+        "Series"
+      ],
+      "classification": "web",
+      "classificationNote": "Stored as serial names 'Movie','Series','Photo'. Options from array screensaver_item_types.",
+      "screens": [
+        {
+          "screen": "SCREENSAVER",
+          "groupTitleKey": "screensaver",
+          "groupTitleEn": "Screensaver",
+          "order": 6,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": "Movie",
+          "index": 0,
+          "labelKey": "movies_title",
+          "labelEn": "Movies"
+        },
+        {
+          "value": "Series",
+          "index": 1,
+          "labelKey": "tv_shows_title",
+          "labelEn": "TV Shows"
+        },
+        {
+          "value": "Photo",
+          "index": 2,
+          "labelKey": "photos",
+          "labelEn": "Photos"
+        }
+      ],
+      "id": "ScreensaverItemTypes"
+    },
+    {
+      "kotlinName": "ScreensaverStart",
+      "store": "appPreferences",
+      "protoPath": null,
+      "type": "click",
+      "valueType": "none",
+      "titleKey": "start_screensaver",
+      "titleEn": "Start screensaver",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": null,
+      "uiDefault": null,
+      "classification": "web",
+      "classificationNote": "Immediately starts the screensaver (ScreensaverService.start()).",
+      "screens": [
+        {
+          "screen": "SCREENSAVER",
+          "groupTitleKey": "screensaver",
+          "groupTitleEn": "Screensaver",
+          "order": 7,
+          "visibleWhen": null
+        }
+      ],
+      "id": "ScreensaverStart"
+    },
+    {
+      "kotlinName": "ScreensaverDimToggle",
+      "store": "appPreferences",
+      "protoPath": "interface_preferences.screensaver_preference.dim_enabled",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "dim_after_delay",
+      "titleEn": "Dim screen after delay",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "yes",
+      "summaryOnEn": "Yes",
+      "summaryOffKey": "no",
+      "summaryOffEn": "No",
+      "default": false,
+      "uiDefault": true,
+      "classification": "web",
+      "classificationNote": "Source bug: defaultValue is taken from AppPreference.ShowClock.defaultValue (=true) for UI, but stored default is false.",
+      "screens": [
+        {
+          "screen": "SCREENSAVER",
+          "groupTitleKey": "dim_screen",
+          "groupTitleEn": "Dim screen",
+          "order": 0,
+          "visibleWhen": null
+        }
+      ],
+      "id": "ScreensaverDimToggle"
+    },
+    {
+      "kotlinName": "ScreensaverDimPercent",
+      "store": "appPreferences",
+      "protoPath": "interface_preferences.screensaver_preference.dim_percent",
+      "type": "slider",
+      "valueType": "int(percent)",
+      "titleKey": "dim_percentage",
+      "titleEn": "Dim percentage",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": 75,
+      "uiDefault": 75,
+      "classification": "web",
+      "classificationNote": "Black overlay with alpha=percent/100. Serializer default does not set it (0) but the upgrade handler run on first start sets 75; effective 75.",
+      "screens": [
+        {
+          "screen": "SCREENSAVER",
+          "groupTitleKey": "dim_screen",
+          "groupTitleEn": "Dim screen",
+          "order": 1,
+          "visibleWhen": null
+        }
+      ],
+      "min": 0,
+      "max": 95,
+      "step": 5,
+      "summaryFormat": "'{n}%'",
+      "id": "ScreensaverDimPercent"
+    },
+    {
+      "kotlinName": "HomePageItems",
+      "store": "appPreferences",
+      "protoPath": "home_page_preferences.max_items_per_row",
+      "type": "slider",
+      "valueType": "int",
+      "titleKey": "max_homepage_items",
+      "titleEn": "Max items on home page rows",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": 25,
+      "uiDefault": 25,
+      "classification": "web",
+      "classificationNote": "Shown in Home settings > global section (first item), not in Settings screens. Also page size for suggestions/tv-provider.",
+      "screens": [
+        {
+          "screen": "HOME_SETTINGS_GLOBAL",
+          "groupTitleKey": null,
+          "groupTitleEn": null,
+          "order": 0,
+          "visibleWhen": null
+        }
+      ],
+      "min": 5,
+      "max": 50,
+      "step": 1,
+      "id": "HomePageItems"
+    },
+    {
+      "kotlinName": "RewatchNextUp",
+      "store": "appPreferences",
+      "protoPath": "home_page_preferences.enable_rewatching_next_up",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "rewatch_next_up",
+      "titleEn": "Enable rewatching in next up",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "enabled",
+      "summaryOnEn": "Enabled",
+      "summaryOffKey": "disabled",
+      "summaryOffEn": "Disabled",
+      "default": false,
+      "uiDefault": false,
+      "classification": "web",
+      "classificationNote": "Passed as enableRewatching to GET Shows/NextUp.",
+      "screens": [
+        {
+          "screen": "HOME_SETTINGS_GLOBAL",
+          "groupTitleKey": null,
+          "groupTitleEn": null,
+          "order": 1,
+          "visibleWhen": null
+        }
+      ],
+      "id": "RewatchNextUp"
+    },
+    {
+      "kotlinName": "MaxDaysNextUp",
+      "store": "appPreferences",
+      "protoPath": "home_page_preferences.max_days_next_up",
+      "type": "slider",
+      "valueType": "index into list -> int days (-1 = no limit)",
+      "titleKey": "max_days_next_up",
+      "titleEn": "Max days in Next Up",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": -1,
+      "uiDefault": -1,
+      "classification": "web",
+      "classificationNote": "UI defaultValue is the literal -1 (raw days, = no limit), NOT a slider index; the serializer/upgrade handler store -1 and the slider getter maps -1 (or any value not in the list) to index 7. Slider index 0..7 over [7,14,30,60,90,180,365] + index 7 = 'No limit' (stored -1). Summary: plural 'days' (%s days) or no_limit. Becomes nextUpDateCutoff = now - N days.",
+      "screens": [
+        {
+          "screen": "HOME_SETTINGS_GLOBAL",
+          "groupTitleKey": null,
+          "groupTitleEn": null,
+          "order": 2,
+          "visibleWhen": null
+        }
+      ],
+      "min": 0,
+      "max": 7,
+      "step": 1,
+      "valueList": [
+        7,
+        14,
+        30,
+        60,
+        90,
+        180,
+        365
+      ],
+      "id": "MaxDaysNextUp"
+    },
+    {
+      "kotlinName": "HomeClickToPlay",
+      "store": "appPreferences",
+      "protoPath": "home_page_preferences.click_to_play",
+      "type": "choice",
+      "valueType": "boolean",
+      "titleKey": "continue_watching_click_behavior",
+      "titleEn": "Continue watching/Next up click behavior",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": false,
+      "uiDefault": false,
+      "classification": "web",
+      "classificationNote": null,
+      "screens": [
+        {
+          "screen": "HOME_SETTINGS_GLOBAL",
+          "groupTitleKey": null,
+          "groupTitleEn": null,
+          "order": 3,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": false,
+          "index": 0,
+          "labelKey": "continue_watching_click_summary_off",
+          "labelEn": "Show details on click"
+        },
+        {
+          "value": true,
+          "index": 1,
+          "labelKey": "continue_watching_click_summary_on",
+          "labelEn": "Play on click"
+        }
+      ],
+      "id": "HomeClickToPlay"
+    },
+    {
+      "kotlinName": "SeekBarSteps",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.seek_bar_steps",
+      "type": "slider",
+      "valueType": "int",
+      "titleKey": "seek_bar_steps",
+      "titleEn": "Seek bar steps",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": 16,
+      "uiDefault": 16,
+      "classification": "web",
+      "classificationNote": "Defined and defaulted (16) but not exposed on any settings screen in this version.",
+      "screens": [],
+      "min": 4,
+      "max": 64,
+      "step": 1,
+      "id": "SeekBarSteps"
+    },
+    {
+      "kotlinName": "LiveTvShowHeader",
+      "store": "appPreferences",
+      "protoPath": "interface_preferences.live_tv_preferences.show_header",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "show_details",
+      "titleEn": "Show details",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "enabled",
+      "summaryOnEn": "Enabled",
+      "summaryOffKey": "disabled",
+      "summaryOffEn": "Disabled",
+      "default": true,
+      "uiDefault": true,
+      "classification": "web",
+      "classificationNote": "Shown in the Live TV guide 'view options' dialog (LiveTvViewOptionsDialog), not Settings.",
+      "screens": [
+        {
+          "screen": "LIVE_TV_VIEW_OPTIONS",
+          "groupTitleKey": null,
+          "groupTitleEn": null,
+          "order": 0,
+          "visibleWhen": null
+        }
+      ],
+      "id": "LiveTvShowHeader"
+    },
+    {
+      "kotlinName": "LiveTvFavoriteChannelsBeginning",
+      "store": "appPreferences",
+      "protoPath": "interface_preferences.live_tv_preferences.favorite_channels_at_beginning",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "favorite_channels_at_beginning",
+      "titleEn": "Show favorite channels first",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "enabled",
+      "summaryOnEn": "Enabled",
+      "summaryOffKey": "disabled",
+      "summaryOffEn": "Disabled",
+      "default": true,
+      "uiDefault": true,
+      "classification": "web",
+      "classificationNote": "-> GetLiveTvChannels enableFavoriteSorting.",
+      "screens": [
+        {
+          "screen": "LIVE_TV_VIEW_OPTIONS",
+          "groupTitleKey": null,
+          "groupTitleEn": null,
+          "order": 1,
+          "visibleWhen": null
+        }
+      ],
+      "id": "LiveTvFavoriteChannelsBeginning"
+    },
+    {
+      "kotlinName": "LiveTvChannelSortByWatched",
+      "store": "appPreferences",
+      "protoPath": "interface_preferences.live_tv_preferences.sort_by_recently_watched",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "sort_channels_recently_watched",
+      "titleEn": "Sort channels by recently watched",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "enabled",
+      "summaryOnEn": "Enabled",
+      "summaryOffKey": "disabled",
+      "summaryOffEn": "Disabled",
+      "default": false,
+      "uiDefault": false,
+      "classification": "web",
+      "classificationNote": "-> GetLiveTvChannels sortBy=[DatePlayed].",
+      "screens": [
+        {
+          "screen": "LIVE_TV_VIEW_OPTIONS",
+          "groupTitleKey": null,
+          "groupTitleEn": null,
+          "order": 2,
+          "visibleWhen": null
+        }
+      ],
+      "id": "LiveTvChannelSortByWatched"
+    },
+    {
+      "kotlinName": "LiveTvColorCodePrograms",
+      "store": "appPreferences",
+      "protoPath": "interface_preferences.live_tv_preferences.color_code_programs",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "color_code_programs",
+      "titleEn": "Color-code programs",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "enabled",
+      "summaryOnEn": "Enabled",
+      "summaryOffKey": "disabled",
+      "summaryOffEn": "Disabled",
+      "default": true,
+      "uiDefault": true,
+      "classification": "web",
+      "classificationNote": null,
+      "screens": [
+        {
+          "screen": "LIVE_TV_VIEW_OPTIONS",
+          "groupTitleKey": null,
+          "groupTitleEn": null,
+          "order": 3,
+          "visibleWhen": null
+        }
+      ],
+      "id": "LiveTvColorCodePrograms"
+    },
+    {
+      "kotlinName": "SearchCombinedResults",
+      "store": "appPreferences",
+      "protoPath": "interface_preferences.search_preferences.combined_search_results",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "combined_search_results",
+      "titleEn": "Combined search results",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "combined_search_results_on",
+      "summaryOnEn": "Show all results in a single list",
+      "summaryOffKey": "combined_search_results_off",
+      "summaryOffEn": "Show results by category",
+      "default": false,
+      "uiDefault": false,
+      "classification": "web",
+      "classificationNote": "Hand-written ListItem+Switch (not an AppPreference). Toggles merged vs per-type result rows; switching re-runs the current query. Serializer stores false.",
+      "screens": [
+        {
+          "screen": "SEARCH_VIEW_OPTIONS",
+          "groupTitleKey": null,
+          "groupTitleEn": null,
+          "order": 0,
+          "visibleWhen": null
+        }
+      ],
+      "noAppPreferenceWrapper": true,
+      "whereShown": "Search page view-options dialog",
+      "id": "SearchCombinedResults"
+    },
+    {
+      "kotlinName": "SearchShowVoiceButton",
+      "store": "appPreferences",
+      "protoPath": "interface_preferences.search_preferences.show_voice_search_button",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "show_voice_search_button",
+      "titleEn": "Show voice search button",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": "visible_ui",
+      "summaryOnEn": "Visible",
+      "summaryOffKey": "hidden_ui",
+      "summaryOffEn": "Hidden",
+      "default": true,
+      "uiDefault": true,
+      "classification": "web-adapted",
+      "classificationNote": "Hand-written ListItem+Switch. Also read by DiscoverSearchPage. Stored true by serializer and by upgrade 0.6.4-8. Android SpeechRecognizer button. Web: Web Speech API (SpeechRecognition) if present, else always hide (and hide the toggle).",
+      "screens": [
+        {
+          "screen": "SEARCH_VIEW_OPTIONS",
+          "groupTitleKey": null,
+          "groupTitleEn": null,
+          "order": 1,
+          "visibleWhen": null
+        }
+      ],
+      "noAppPreferenceWrapper": true,
+      "whereShown": "Search page view-options dialog",
+      "id": "SearchShowVoiceButton"
+    },
+    {
+      "kotlinName": "SearchExcludedTypes",
+      "store": "keyValue",
+      "protoPath": "(keyValue \"{userId}_excludedSearchableTypes\")",
+      "type": "multichoice",
+      "valueType": "enum[]:BaseItemKind (JSON list of serial names; stored as the EXCLUDED set)",
+      "titleKey": "include_types",
+      "titleEn": "Include types",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": [],
+      "uiDefault": [],
+      "classification": "web",
+      "classificationNote": "Per-user (KeyValueService, key '{userId}_excludedSearchableTypes'), NOT in the proto. Toggled from SearchTypeOptionsDialog (title include_types) reached via the 'Include types' row of the search view-options dialog (third row, after combined results and voice button). Stored value is the list of EXCLUDED BaseItemKind; empty = nothing excluded. Candidate list = possibleSearchableTypes in fixed order MOVIE, SERIES, EPISODE, BOX_SET, PERSON, TV_CHANNEL, LIVE_TV_PROGRAM, MUSIC_ALBUM, MUSIC_ARTIST, AUDIO, MUSIC_VIDEO, PLAYLIST, VIDEO, PHOTO, PHOTO_ALBUM, filtered by the user's libraries / Live TV access. Un-excluding always re-runs the search; excluding re-runs only in combined mode.",
+      "screens": [
+        {
+          "screen": "SEARCH_VIEW_OPTIONS",
+          "groupTitleKey": null,
+          "groupTitleEn": null,
+          "order": 2,
+          "visibleWhen": null
+        }
+      ],
+      "noAppPreferenceWrapper": true,
+      "whereShown": "Search page view-options dialog > Include types",
+      "id": "SearchExcludedTypes"
+    },
+    {
+      "kotlinName": "SearchIncludeDiscover",
+      "store": "keyValue",
+      "protoPath": "(keyValue \"{userId}_searchIncludeDiscover\")",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "discover",
+      "titleEn": "Discover",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": true,
+      "uiDefault": true,
+      "classification": "web",
+      "classificationNote": "Per-user KeyValue key '{userId}_searchIncludeDiscover' (default true when absent). Row inside SearchTypeOptionsDialog, only shown when a Seerr connection is active (discoverAvailable). Turning on re-runs the Seerr search for the current query.",
+      "screens": [
+        {
+          "screen": "SEARCH_VIEW_OPTIONS",
+          "groupTitleKey": null,
+          "groupTitleEn": null,
+          "order": 2,
+          "visibleWhen": "seerr connection active (row inside the Include types dialog)"
+        }
+      ],
+      "noAppPreferenceWrapper": true,
+      "whereShown": "Search page view-options dialog > Include types",
+      "id": "SearchIncludeDiscover"
+    },
+    {
+      "kotlinName": "MusicShowAlbumArt",
+      "store": "appPreferences",
+      "protoPath": "music_preferences.show_album_Art",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "show_album_cover",
+      "titleEn": "Show album cover",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": true,
+      "uiDefault": false,
+      "classification": "web",
+      "classificationNote": "First row in the dialog. Proto field name is show_album_Art (capital A). UI defaultValue in getMusicPreferences() is false for all four, but the serializer stores true for album art, backdrop and lyrics (false for visualizer; upgrade 0.5.4-6 also sets those three true), so the stored default is what a fresh install uses. No summaryOn/Off.",
+      "screens": [
+        {
+          "screen": "MUSIC_VIEW_OPTIONS",
+          "groupTitleKey": null,
+          "groupTitleEn": null,
+          "order": 0,
+          "visibleWhen": null
+        }
+      ],
+      "noAppPreferenceWrapper": false,
+      "whereShown": "Now Playing view options (getMusicPreferences)",
+      "id": "MusicShowAlbumArt"
+    },
+    {
+      "kotlinName": "MusicShowVisualizer",
+      "store": "appPreferences",
+      "protoPath": "music_preferences.show_visualizer",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "show_visualizer",
+      "titleEn": "Show visualizer",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": false,
+      "uiDefault": false,
+      "classification": "web-adapted",
+      "classificationNote": "Turning ON does not set the pref directly: it triggers the visualizer permission flow (onEnableVisualizer -> RECORD_AUDIO) and the VM writes show_visualizer=permissionGranted; OFF writes false immediately. Android Visualizer needs RECORD_AUDIO; Web: AnalyserNode (no permission) - web-adapted. UI defaultValue in getMusicPreferences() is false for all four, but the serializer stores true for album art, backdrop and lyrics (false for visualizer; upgrade 0.5.4-6 also sets those three true), so the stored default is what a fresh install uses. No summaryOn/Off.",
+      "screens": [
+        {
+          "screen": "MUSIC_VIEW_OPTIONS",
+          "groupTitleKey": null,
+          "groupTitleEn": null,
+          "order": 1,
+          "visibleWhen": null
+        }
+      ],
+      "noAppPreferenceWrapper": false,
+      "whereShown": "Now Playing view options",
+      "id": "MusicShowVisualizer"
+    },
+    {
+      "kotlinName": "MusicShowBackdrop",
+      "store": "appPreferences",
+      "protoPath": "music_preferences.show_backdrop",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "show_backdrop",
+      "titleEn": "Show backdrop",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": true,
+      "uiDefault": false,
+      "classification": "web",
+      "classificationNote": "Third row. UI defaultValue in getMusicPreferences() is false for all four, but the serializer stores true for album art, backdrop and lyrics (false for visualizer; upgrade 0.5.4-6 also sets those three true), so the stored default is what a fresh install uses. No summaryOn/Off.",
+      "screens": [
+        {
+          "screen": "MUSIC_VIEW_OPTIONS",
+          "groupTitleKey": null,
+          "groupTitleEn": null,
+          "order": 2,
+          "visibleWhen": null
+        }
+      ],
+      "noAppPreferenceWrapper": false,
+      "whereShown": "Now Playing view options",
+      "id": "MusicShowBackdrop"
+    },
+    {
+      "kotlinName": "MusicShowLyrics",
+      "store": "appPreferences",
+      "protoPath": "music_preferences.show_lyrics",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "show_lyrics",
+      "titleEn": "Show lyrics",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": true,
+      "uiDefault": false,
+      "classification": "web",
+      "classificationNote": "Effective only when the current song has lyrics (GET Audio/{id}/Lyrics). UI defaultValue in getMusicPreferences() is false for all four, but the serializer stores true for album art, backdrop and lyrics (false for visualizer; upgrade 0.5.4-6 also sets those three true), so the stored default is what a fresh install uses. No summaryOn/Off.",
+      "screens": [
+        {
+          "screen": "MUSIC_VIEW_OPTIONS",
+          "groupTitleKey": null,
+          "groupTitleEn": null,
+          "order": 3,
+          "visibleWhen": null
+        }
+      ],
+      "noAppPreferenceWrapper": false,
+      "whereShown": "Now Playing view options",
+      "id": "MusicShowLyrics"
+    },
+    {
+      "kotlinName": "HomeCombineContinueNext",
+      "store": "appPreferences",
+      "protoPath": "home_page_preferences.combine_continue_next",
+      "type": "none",
+      "valueType": "boolean",
+      "titleKey": null,
+      "titleEn": null,
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": false,
+      "uiDefault": false,
+      "classification": "android-only",
+      "classificationNote": "Deprecated proto field; superseded by HomeRowConfig.ContinueWatchingCombined.",
+      "screens": [],
+      "noAppPreferenceWrapper": true,
+      "whereShown": "(deprecated)",
+      "id": "HomeCombineContinueNext"
+    },
+    {
+      "kotlinName": "RememberedTabsLegacy",
+      "store": "appPreferences",
+      "protoPath": "interface_preferences.remembered_tabs",
+      "type": "none",
+      "valueType": "map<string,int32>",
+      "titleKey": null,
+      "titleEn": null,
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": {},
+      "uiDefault": {},
+      "classification": "android-only",
+      "classificationNote": "Deprecated; migrated into RememberedTab table in upgrade 1.0.1-2.",
+      "screens": [],
+      "noAppPreferenceWrapper": true,
+      "whereShown": "(deprecated)",
+      "id": "RememberedTabsLegacy"
+    },
+    {
+      "kotlinName": "CurrentServerIdLegacy",
+      "store": "appPreferences",
+      "protoPath": "current_server_id",
+      "type": "none",
+      "valueType": "string",
+      "titleKey": null,
+      "titleEn": null,
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "",
+      "uiDefault": "",
+      "classification": "android-only",
+      "classificationNote": "Replaced by MostRecentServer SharedPreferences (migration 1.0.8).",
+      "screens": [],
+      "noAppPreferenceWrapper": true,
+      "whereShown": "(deprecated)",
+      "id": "CurrentServerIdLegacy"
+    },
+    {
+      "kotlinName": "CurrentUserIdLegacy",
+      "store": "appPreferences",
+      "protoPath": "current_user_id",
+      "type": "none",
+      "valueType": "string",
+      "titleKey": null,
+      "titleEn": null,
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "",
+      "uiDefault": "",
+      "classification": "android-only",
+      "classificationNote": "Same.",
+      "screens": [],
+      "noAppPreferenceWrapper": true,
+      "whereShown": "(deprecated)",
+      "id": "CurrentUserIdLegacy"
+    },
+    {
+      "kotlinName": "DirectPlayAssLegacy",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.overrides.direct_play_ass",
+      "type": "none",
+      "valueType": "boolean",
+      "titleKey": null,
+      "titleEn": null,
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": false,
+      "uiDefault": false,
+      "classification": "android-only",
+      "classificationNote": "Replaced by ass_playback_mode.",
+      "screens": [],
+      "noAppPreferenceWrapper": true,
+      "whereShown": "(deprecated)",
+      "id": "DirectPlayAssLegacy"
+    },
+    {
+      "kotlinName": "DirectPlayDoviELLegacy",
+      "store": "appPreferences",
+      "protoPath": "playback_preferences.overrides.direct_play_dolby_vision_e_l",
+      "type": "none",
+      "valueType": "boolean",
+      "titleKey": null,
+      "titleEn": null,
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": false,
+      "uiDefault": false,
+      "classification": "android-only",
+      "classificationNote": "Replaced by dovi_profile_7_override.",
+      "screens": [],
+      "noAppPreferenceWrapper": true,
+      "whereShown": "(deprecated)",
+      "id": "DirectPlayDoviELLegacy"
+    },
+    {
+      "kotlinName": "SubFontSize",
+      "store": "appPreferences.subtitlePreferences",
+      "protoPath": "interface_preferences.subtitles_preferences.font_size",
+      "type": "slider",
+      "valueType": "int(sp)",
+      "titleKey": "font_size",
+      "titleEn": "Font size",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": 24,
+      "uiDefault": 24,
+      "classification": "web-adapted",
+      "classificationNote": "Stored twice: subtitles_preferences (SDR) and hdr_subtitles_preferences (HDR). Web: apply to a custom cue renderer / ::cue CSS.",
+      "screens": [
+        {
+          "screen": "SUBTITLE_STYLE",
+          "groupTitleKey": "font",
+          "groupTitleEn": "Font",
+          "order": 0,
+          "visibleWhen": null
+        }
+      ],
+      "min": 8,
+      "max": 70,
+      "step": 2,
+      "id": "SubFontSize"
+    },
+    {
+      "kotlinName": "SubFontColor",
+      "store": "appPreferences.subtitlePreferences",
+      "protoPath": "interface_preferences.subtitles_preferences.font_color",
+      "type": "choice",
+      "valueType": "int(RGB 0xRRGGBB, alpha stripped)",
+      "titleKey": "font_color",
+      "titleEn": "Font color",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "#FFFFFF",
+      "uiDefault": "#FFFFFF",
+      "classification": "web-adapted",
+      "classificationNote": "Serializer (resetSubtitles) writes Color.White.toArgb() = 0xFFFFFFFF = -1 (alpha NOT stripped); every user-driven set masks with 0x00FFFFFF. Effective colour = white; alpha is ignored because the renderer recombines colour with font_opacity (combine()). List index lookup masks to RGB and falls back to index 0 (white).",
+      "screens": [
+        {
+          "screen": "SUBTITLE_STYLE",
+          "groupTitleKey": "font",
+          "groupTitleEn": "Font",
+          "order": 1,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": "#FFFFFF",
+          "index": 0,
+          "labelKey": "white",
+          "labelEn": "White"
+        },
+        {
+          "value": "#000000",
+          "index": 1,
+          "labelKey": "black",
+          "labelEn": "Black"
+        },
+        {
+          "value": "#CCCCCC",
+          "index": 2,
+          "labelKey": "light_gray",
+          "labelEn": "Light gray"
+        },
+        {
+          "value": "#444444",
+          "index": 3,
+          "labelKey": "dark_gray",
+          "labelEn": "Dark gray"
+        },
+        {
+          "value": "#FF0000",
+          "index": 4,
+          "labelKey": "red",
+          "labelEn": "Red"
+        },
+        {
+          "value": "#FFFF00",
+          "index": 5,
+          "labelKey": "yellow",
+          "labelEn": "Yellow"
+        },
+        {
+          "value": "#00FF00",
+          "index": 6,
+          "labelKey": "green",
+          "labelEn": "Green"
+        },
+        {
+          "value": "#00FFFF",
+          "index": 7,
+          "labelKey": "cyan",
+          "labelEn": "Cyan"
+        },
+        {
+          "value": "#0000FF",
+          "index": 8,
+          "labelKey": "blue",
+          "labelEn": "Blue"
+        },
+        {
+          "value": "#FF00FF",
+          "index": 9,
+          "labelKey": "magenta",
+          "labelEn": "Magenta"
+        }
+      ],
+      "id": "SubFontColor",
+      "defaultRaw": -1
+    },
+    {
+      "kotlinName": "SubFontBold",
+      "store": "appPreferences.subtitlePreferences",
+      "protoPath": "interface_preferences.subtitles_preferences.font_bold",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "bold_font",
+      "titleEn": "Bold font",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": false,
+      "uiDefault": false,
+      "classification": "web-adapted",
+      "classificationNote": "Stored twice: subtitles_preferences (SDR) and hdr_subtitles_preferences (HDR). Web: apply to a custom cue renderer / ::cue CSS.",
+      "screens": [
+        {
+          "screen": "SUBTITLE_STYLE",
+          "groupTitleKey": "font",
+          "groupTitleEn": "Font",
+          "order": 2,
+          "visibleWhen": null
+        }
+      ],
+      "id": "SubFontBold"
+    },
+    {
+      "kotlinName": "SubFontItalic",
+      "store": "appPreferences.subtitlePreferences",
+      "protoPath": "interface_preferences.subtitles_preferences.font_italic",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "italic_font",
+      "titleEn": "Italicize font",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": false,
+      "uiDefault": false,
+      "classification": "web-adapted",
+      "classificationNote": "Stored twice: subtitles_preferences (SDR) and hdr_subtitles_preferences (HDR). Web: apply to a custom cue renderer / ::cue CSS.",
+      "screens": [
+        {
+          "screen": "SUBTITLE_STYLE",
+          "groupTitleKey": "font",
+          "groupTitleEn": "Font",
+          "order": 3,
+          "visibleWhen": null
+        }
+      ],
+      "id": "SubFontItalic"
+    },
+    {
+      "kotlinName": "SubFontOpacity",
+      "store": "appPreferences.subtitlePreferences",
+      "protoPath": "interface_preferences.subtitles_preferences.font_opacity",
+      "type": "slider",
+      "valueType": "int(percent)",
+      "titleKey": "font_opacity",
+      "titleEn": "Font opacity",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": 100,
+      "uiDefault": 100,
+      "classification": "web-adapted",
+      "classificationNote": "Stored twice: subtitles_preferences (SDR) and hdr_subtitles_preferences (HDR). Web: apply to a custom cue renderer / ::cue CSS.",
+      "screens": [
+        {
+          "screen": "SUBTITLE_STYLE",
+          "groupTitleKey": "font",
+          "groupTitleEn": "Font",
+          "order": 4,
+          "visibleWhen": null
+        }
+      ],
+      "min": 10,
+      "max": 100,
+      "step": 10,
+      "summaryFormat": "'{n}%'",
+      "id": "SubFontOpacity"
+    },
+    {
+      "kotlinName": "SubEdgeStyle",
+      "store": "appPreferences.subtitlePreferences",
+      "protoPath": "interface_preferences.subtitles_preferences.edge_style",
+      "type": "choice",
+      "valueType": "enum:EdgeStyle",
+      "titleKey": "edge_style",
+      "titleEn": "Edge style",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "EDGE_SOLID",
+      "uiDefault": "EDGE_SOLID",
+      "classification": "web-adapted",
+      "classificationNote": "Stored twice: subtitles_preferences (SDR) and hdr_subtitles_preferences (HDR). Web: apply to a custom cue renderer / ::cue CSS.",
+      "screens": [
+        {
+          "screen": "SUBTITLE_STYLE",
+          "groupTitleKey": "edge_style",
+          "groupTitleEn": "Edge style",
+          "order": 0,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": "EDGE_NONE",
+          "index": 0,
+          "labelKey": "none",
+          "labelEn": "None"
+        },
+        {
+          "value": "EDGE_SOLID",
+          "index": 1,
+          "labelKey": "subtitle_edge_outline",
+          "labelEn": "Outline"
+        },
+        {
+          "value": "EDGE_SHADOW",
+          "index": 2,
+          "labelKey": "subtitle_edge_shadow",
+          "labelEn": "Shadow"
+        }
+      ],
+      "id": "SubEdgeStyle"
+    },
+    {
+      "kotlinName": "SubEdgeColor",
+      "store": "appPreferences.subtitlePreferences",
+      "protoPath": "interface_preferences.subtitles_preferences.edge_color",
+      "type": "choice",
+      "valueType": "int(RGB)",
+      "titleKey": "edge_color",
+      "titleEn": "Edge color",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "#000000",
+      "uiDefault": "#000000",
+      "classification": "web-adapted",
+      "classificationNote": "Serializer writes Color.Black.toArgb() = 0xFF000000 = -16777216 (alpha not stripped); user sets are masked to 0x00FFFFFF. NOTE the edge/outline alpha used when rendering is font_opacity, not a separate opacity (combine(edgeColor, fontOpacity)). Stored twice: SDR and HDR subtitle prefs.",
+      "screens": [
+        {
+          "screen": "SUBTITLE_STYLE",
+          "groupTitleKey": "edge_style",
+          "groupTitleEn": "Edge style",
+          "order": 1,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": "#FFFFFF",
+          "index": 0,
+          "labelKey": "white",
+          "labelEn": "White"
+        },
+        {
+          "value": "#000000",
+          "index": 1,
+          "labelKey": "black",
+          "labelEn": "Black"
+        },
+        {
+          "value": "#CCCCCC",
+          "index": 2,
+          "labelKey": "light_gray",
+          "labelEn": "Light gray"
+        },
+        {
+          "value": "#444444",
+          "index": 3,
+          "labelKey": "dark_gray",
+          "labelEn": "Dark gray"
+        },
+        {
+          "value": "#FF0000",
+          "index": 4,
+          "labelKey": "red",
+          "labelEn": "Red"
+        },
+        {
+          "value": "#FFFF00",
+          "index": 5,
+          "labelKey": "yellow",
+          "labelEn": "Yellow"
+        },
+        {
+          "value": "#00FF00",
+          "index": 6,
+          "labelKey": "green",
+          "labelEn": "Green"
+        },
+        {
+          "value": "#00FFFF",
+          "index": 7,
+          "labelKey": "cyan",
+          "labelEn": "Cyan"
+        },
+        {
+          "value": "#0000FF",
+          "index": 8,
+          "labelKey": "blue",
+          "labelEn": "Blue"
+        },
+        {
+          "value": "#FF00FF",
+          "index": 9,
+          "labelKey": "magenta",
+          "labelEn": "Magenta"
+        }
+      ],
+      "id": "SubEdgeColor",
+      "defaultRaw": -16777216
+    },
+    {
+      "kotlinName": "SubEdgeThickness",
+      "store": "appPreferences.subtitlePreferences",
+      "protoPath": "interface_preferences.subtitles_preferences.edge_thickness",
+      "type": "slider",
+      "valueType": "int(half-dp units)",
+      "titleKey": "edge_size",
+      "titleEn": "Edge size",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": 4,
+      "uiDefault": 4,
+      "classification": "web-adapted",
+      "classificationNote": "Rendered edge size = thickness/2 dp. Upgrade 0.3.5 coerces <1 to default 4.",
+      "screens": [
+        {
+          "screen": "SUBTITLE_STYLE",
+          "groupTitleKey": "edge_style",
+          "groupTitleEn": "Edge style",
+          "order": 2,
+          "visibleWhen": null
+        }
+      ],
+      "min": 1,
+      "max": 32,
+      "step": 1,
+      "summaryFormat": "'{n/2.0}' (e.g. 2.0)",
+      "id": "SubEdgeThickness"
+    },
+    {
+      "kotlinName": "SubBackgroundStyle",
+      "store": "appPreferences.subtitlePreferences",
+      "protoPath": "interface_preferences.subtitles_preferences.background_style",
+      "type": "choice",
+      "valueType": "enum:BackgroundStyle",
+      "titleKey": "background_style",
+      "titleEn": "Background style",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "BG_NONE",
+      "uiDefault": "BG_NONE",
+      "classification": "web-adapted",
+      "classificationNote": "Stored twice: subtitles_preferences (SDR) and hdr_subtitles_preferences (HDR). Web: apply to a custom cue renderer / ::cue CSS.",
+      "screens": [
+        {
+          "screen": "SUBTITLE_STYLE",
+          "groupTitleKey": "background",
+          "groupTitleEn": "Background",
+          "order": 0,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": "BG_NONE",
+          "index": 0,
+          "labelKey": "none",
+          "labelEn": "None"
+        },
+        {
+          "value": "BG_WRAP",
+          "index": 1,
+          "labelKey": "background_style_wrap",
+          "labelEn": "Wrap"
+        },
+        {
+          "value": "BG_BOXED",
+          "index": 2,
+          "labelKey": "background_style_boxed",
+          "labelEn": "Boxed"
+        }
+      ],
+      "id": "SubBackgroundStyle"
+    },
+    {
+      "kotlinName": "SubBackgroundColor",
+      "store": "appPreferences.subtitlePreferences",
+      "protoPath": "interface_preferences.subtitles_preferences.background_color",
+      "type": "choice",
+      "valueType": "int(RGB)",
+      "titleKey": "background_color",
+      "titleEn": "Background color",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "transparent(0x000000 w/ alpha 0)",
+      "uiDefault": "transparent(0x000000 w/ alpha 0)",
+      "classification": "web-adapted",
+      "classificationNote": "Default Color.Transparent -> toArgb() = 0 stored raw; after masking it equals Black (#000000) so the list shows index 1 'Black'. Background alpha comes from background_opacity (default 50) and only matters when background_style != BG_NONE (default BG_NONE). Stored twice: SDR and HDR subtitle prefs.",
+      "screens": [
+        {
+          "screen": "SUBTITLE_STYLE",
+          "groupTitleKey": "background",
+          "groupTitleEn": "Background",
+          "order": 1,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": "#FFFFFF",
+          "index": 0,
+          "labelKey": "white",
+          "labelEn": "White"
+        },
+        {
+          "value": "#000000",
+          "index": 1,
+          "labelKey": "black",
+          "labelEn": "Black"
+        },
+        {
+          "value": "#CCCCCC",
+          "index": 2,
+          "labelKey": "light_gray",
+          "labelEn": "Light gray"
+        },
+        {
+          "value": "#444444",
+          "index": 3,
+          "labelKey": "dark_gray",
+          "labelEn": "Dark gray"
+        },
+        {
+          "value": "#FF0000",
+          "index": 4,
+          "labelKey": "red",
+          "labelEn": "Red"
+        },
+        {
+          "value": "#FFFF00",
+          "index": 5,
+          "labelKey": "yellow",
+          "labelEn": "Yellow"
+        },
+        {
+          "value": "#00FF00",
+          "index": 6,
+          "labelKey": "green",
+          "labelEn": "Green"
+        },
+        {
+          "value": "#00FFFF",
+          "index": 7,
+          "labelKey": "cyan",
+          "labelEn": "Cyan"
+        },
+        {
+          "value": "#0000FF",
+          "index": 8,
+          "labelKey": "blue",
+          "labelEn": "Blue"
+        },
+        {
+          "value": "#FF00FF",
+          "index": 9,
+          "labelKey": "magenta",
+          "labelEn": "Magenta"
+        }
+      ],
+      "id": "SubBackgroundColor",
+      "defaultRaw": 0
+    },
+    {
+      "kotlinName": "SubBackgroundOpacity",
+      "store": "appPreferences.subtitlePreferences",
+      "protoPath": "interface_preferences.subtitles_preferences.background_opacity",
+      "type": "slider",
+      "valueType": "int(percent)",
+      "titleKey": "background_opacity",
+      "titleEn": "Background opacity",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": 50,
+      "uiDefault": 50,
+      "classification": "web-adapted",
+      "classificationNote": "Stored twice: subtitles_preferences (SDR) and hdr_subtitles_preferences (HDR). Web: apply to a custom cue renderer / ::cue CSS.",
+      "screens": [
+        {
+          "screen": "SUBTITLE_STYLE",
+          "groupTitleKey": "background",
+          "groupTitleEn": "Background",
+          "order": 2,
+          "visibleWhen": null
+        }
+      ],
+      "min": 10,
+      "max": 100,
+      "step": 10,
+      "summaryFormat": "'{n}%'",
+      "id": "SubBackgroundOpacity"
+    },
+    {
+      "kotlinName": "SubMargin",
+      "store": "appPreferences.subtitlePreferences",
+      "protoPath": "interface_preferences.subtitles_preferences.margin",
+      "type": "slider",
+      "valueType": "int(percent of height)",
+      "titleKey": "subtitle_margin",
+      "titleEn": "Margin",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": 8,
+      "uiDefault": 8,
+      "classification": "web-adapted",
+      "classificationNote": "Bottom padding fraction = margin/100. While this row is focused the preview switches to a 'Subtitles margin below here' cue.",
+      "screens": [
+        {
+          "screen": "SUBTITLE_STYLE",
+          "groupTitleKey": "more",
+          "groupTitleEn": "More",
+          "order": 0,
+          "visibleWhen": null
+        }
+      ],
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "summaryFormat": "'{n}%'",
+      "id": "SubMargin"
+    },
+    {
+      "kotlinName": "SubImageOpacity",
+      "store": "appPreferences.subtitlePreferences",
+      "protoPath": "interface_preferences.subtitles_preferences.image_subtitle_opacity",
+      "type": "slider",
+      "valueType": "int(percent)",
+      "titleKey": "image_subtitle_opacity",
+      "titleEn": "Image subtitle opacity",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": 100,
+      "uiDefault": 100,
+      "classification": "web-adapted",
+      "classificationNote": "Opacity of bitmap subtitles (PGS/VobSub); ExoPlayer only on Android. While focused the preview shows a dimmed sample cue.",
+      "screens": [
+        {
+          "screen": "SUBTITLE_STYLE",
+          "groupTitleKey": "more",
+          "groupTitleEn": "More",
+          "order": 1,
+          "visibleWhen": null
+        }
+      ],
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "summaryFormat": "'{n}%'",
+      "id": "SubImageOpacity"
+    },
+    {
+      "kotlinName": "SubReset",
+      "store": "appPreferences.subtitlePreferences",
+      "protoPath": null,
+      "type": "click",
+      "valueType": "none",
+      "titleKey": "reset",
+      "titleEn": "Reset",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": null,
+      "uiDefault": null,
+      "classification": "web",
+      "classificationNote": "Builds a brand-new SubtitlePreferences with resetSubtitles() and replaces the page's message (SDR page replaces subtitles_preferences, HDR page replaces hdr_subtitles_preferences). Because the whole message is replaced, use_separate_hdr is also reset to false on the SDR page (resetSubtitles itself does not touch it). Defaults restored: font_size 24, font_color white, bold/italic false, font_opacity 100, edge_color black, edge_style EDGE_SOLID, background_color transparent(0), background_opacity 50, background_style BG_NONE, margin 8, edge_thickness 4, image_subtitle_opacity 100.",
+      "screens": [
+        {
+          "screen": "SUBTITLE_STYLE",
+          "groupTitleKey": "more",
+          "groupTitleEn": "More",
+          "order": 2,
+          "visibleWhen": null
+        }
+      ],
+      "id": "SubReset"
+    },
+    {
+      "kotlinName": "SubSeparateHdr",
+      "store": "appPreferences.subtitlePreferences",
+      "protoPath": "interface_preferences.subtitles_preferences.use_separate_hdr",
+      "type": "switch",
+      "valueType": "boolean",
+      "titleKey": "different_for_hdr",
+      "titleEn": "Use different style for HDR",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": false,
+      "uiDefault": false,
+      "classification": "android-only",
+      "classificationNote": "Shown only on the SDR page when the display is HDR capable (Display.isHdr, API>=26) in group 'hdr'. Web has no reliable HDR display/playback mode switch; keep single style or use matchMedia('(dynamic-range: high)'). The group 'hdr' is only appended to the SDR page's list when SubtitleSettings.shouldShowHdr(display) (API >= 26 and display.isHdr). Upgrade 1.0.2-8 sets it via shouldEnableSeparateHdrToggle() (fresh install -> false).",
+      "screens": [
+        {
+          "screen": "SUBTITLE_STYLE",
+          "groupTitleKey": "hdr",
+          "groupTitleEn": "HDR",
+          "order": 0,
+          "visibleWhen": "!isPageForHdr && display.isHdr"
+        }
+      ],
+      "id": "SubSeparateHdr"
+    },
+    {
+      "kotlinName": "SubHdrSettings",
+      "store": "appPreferences.subtitlePreferences",
+      "protoPath": null,
+      "type": "destination",
+      "valueType": "none",
+      "titleKey": "hdr_subtitle_style",
+      "titleEn": "HDR subtitle style",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": null,
+      "uiDefault": null,
+      "classification": "android-only",
+      "classificationNote": "Link to a second copy of the editor for hdr_subtitles_preferences; shown when use_separate_hdr is true. Page sets Window colorMode=HDR while open.",
+      "screens": [
+        {
+          "screen": "SUBTITLE_STYLE",
+          "groupTitleKey": "hdr",
+          "groupTitleEn": "HDR",
+          "order": 1,
+          "visibleWhen": "useSeparateHdr == true"
+        }
+      ],
+      "destination": "SubtitleSettings(hdr=true)",
+      "id": "SubHdrSettings"
+    },
+    {
+      "kotlinName": "PreferredAudioLang",
+      "store": "localDb.users(embedded JellyfinUserPreferences)",
+      "protoPath": "(users.preferredAudioLanguage)",
+      "type": "click",
+      "valueType": "string(ISO 639-2 three-letter | '' | '_any-language')",
+      "titleKey": "preferred_audio_language",
+      "titleEn": "Preferred audio language",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "",
+      "uiDefault": "",
+      "classification": "web",
+      "classificationNote": "'' (USE_USER_PROFILE) = use server profile's AudioLanguagePreference; '_any-language' (PREFER_ANY_LANGUAGE) = no preference. Dialog = filterable list (debounce 500 ms) of cultures from GET Localization/Cultures.",
+      "screens": [
+        {
+          "screen": "USER_PROFILE",
+          "groupTitleKey": "profile_specific_settings_from_server",
+          "groupTitleEn": "User profile settings from server",
+          "order": 0,
+          "visibleWhen": null
+        }
+      ],
+      "id": "PreferredAudioLang"
+    },
+    {
+      "kotlinName": "PreferredSubtitleLang",
+      "store": "localDb.users(embedded JellyfinUserPreferences)",
+      "protoPath": "(users.preferredSubtitleLanguage)",
+      "type": "click",
+      "valueType": "string(same as above)",
+      "titleKey": "preferred_subtitle_language",
+      "titleEn": "Preferred subtitle language",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "",
+      "uiDefault": "",
+      "classification": "web",
+      "classificationNote": "Same as audio.",
+      "screens": [
+        {
+          "screen": "USER_PROFILE",
+          "groupTitleKey": "profile_specific_settings_from_server",
+          "groupTitleEn": "User profile settings from server",
+          "order": 1,
+          "visibleWhen": null
+        }
+      ],
+      "id": "PreferredSubtitleLang"
+    },
+    {
+      "kotlinName": "SubtitleModePref",
+      "store": "localDb.users(embedded JellyfinUserPreferences)",
+      "protoPath": "(users.subtitleMode)",
+      "type": "choice",
+      "valueType": "enum:SubtitleModePreference",
+      "titleKey": "subtitle_mode",
+      "titleEn": "Subtitle mode",
+      "summaryKey": null,
+      "summaryEn": null,
+      "summaryOnKey": null,
+      "summaryOnEn": null,
+      "summaryOffKey": null,
+      "summaryOffEn": null,
+      "default": "USE_USER_PROFILE",
+      "uiDefault": "USE_USER_PROFILE",
+      "classification": "web",
+      "classificationNote": "USE_USER_PROFILE shows '<label> - <server mode label>'; DEFAULT/SMART/ONLY_FORCED/ALWAYS/NONE override the server's SubtitlePlaybackMode.",
+      "screens": [
+        {
+          "screen": "USER_PROFILE",
+          "groupTitleKey": "profile_specific_settings_from_server",
+          "groupTitleEn": "User profile settings from server",
+          "order": 2,
+          "visibleWhen": null
+        }
+      ],
+      "options": [
+        {
+          "value": "USE_USER_PROFILE",
+          "index": 0,
+          "labelKey": "use_user_profile",
+          "labelEn": "Use your profile setting"
+        },
+        {
+          "value": "DEFAULT",
+          "index": 1,
+          "labelKey": "subtitle_mode_default",
+          "labelEn": "Default"
+        },
+        {
+          "value": "SMART",
+          "index": 2,
+          "labelKey": "subtitle_mode_smart",
+          "labelEn": "Smart"
+        },
+        {
+          "value": "ONLY_FORCED",
+          "index": 3,
+          "labelKey": "subtitle_mode_only_forced",
+          "labelEn": "Only Forced"
+        },
+        {
+          "value": "ALWAYS",
+          "index": 4,
+          "labelKey": "subtitle_mode_always",
+          "labelEn": "Always"
+        },
+        {
+          "value": "NONE",
+          "index": 5,
+          "labelKey": "subtitle_mode_none",
+          "labelEn": "None"
+        }
+      ],
+      "id": "SubtitleModePref"
+    }
+  ]
+}

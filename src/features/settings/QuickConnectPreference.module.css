@@ -1,0 +1,27 @@
+/* QuickConnectDialog.kt: 360dp wide, 16dp padding, 8dp spacing. The width is a length, not min(360px, 100%): the
+   dialog panel is sized by its content, so a percentage there falls back to the content's own width (280dp). */
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 360px;
+  max-width: 100%;
+  padding: 16px;
+}
+
+/* A Compose Text drops the extra line height above the first and below the last line (Trim.Both), so the title
+   is 18.75dp tall, not 24dp: the kit's t-trim (global.css), exact in every engine. */
+.title {
+  composes: t-titleMedium t-trim from global;
+  color: var(--c-on-secondary-container);
+}
+
+.error {
+  composes: t-bodySmall from global;
+  color: var(--c-error);
+  padding-inline-start: 8px;
+}
+
+.submit {
+  align-self: center;
+}

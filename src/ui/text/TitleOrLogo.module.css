@@ -1,0 +1,46 @@
+.box {
+  max-height: 60px;
+}
+
+/* HeaderUtils.logoHeight 60dp, widthIn(max = 320dp), ContentScale.Fit. */
+.logo {
+  height: 60px;
+  max-width: min(320px, 100%);
+  width: auto;
+  object-fit: contain;
+  object-position: left center;
+}
+
+:global([dir='rtl']) .logo {
+  object-position: right center;
+}
+
+/*
+ * The text title sits in the same 60dp-high box as the logo (TitleOrLogo.kt: Box(heightIn(max = logoHeight))).
+ * It asks for two lines, but two headlineMedium lines are 68.8dp, and a Compose Text with
+ * TextOverflow.Ellipsis keeps only the lines that fit its height: on the TV the title is one line ending in an
+ * ellipsis, 32.8dp tall (the font height, not the 36dp line height).
+ */
+.title {
+  composes: t-headlineMedium from global;
+  composes: t-line from global;
+  font-weight: 600;
+  color: var(--c-on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Web: on a phone one line would cut most titles short, so the two lines upstream asks for are kept there. */
+@media (max-width: 599px) {
+  .title {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    white-space: normal;
+    line-height: 36px;
+    /* the t-trim rule (global.css): exact in every engine and in a line-clamp box, where text-box is not */
+    margin-block: calc((var(--t-font-height) * 1em - 1lh) / 2);
+  }
+}

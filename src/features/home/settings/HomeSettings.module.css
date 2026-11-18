@@ -1,0 +1,430 @@
+/* Home customization (W/ui/main/settings/HomeSettingsPage.kt): a 360dp settings panel, 8dp gap, live preview. */
+.page {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  height: 100dvh;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Box(surface) + NavDisplay(surfaceColorAtElevation(1dp)), 8dp padded entries. */
+.panel {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  width: 360px;
+  height: 100%;
+  min-height: 0;
+  padding: 8px;
+  background: var(--c-surface-1);
+  overflow: hidden;
+}
+
+.preview {
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Phones: the panel on top, the preview below it. */
+@media (max-width: 599.98px) {
+  .page {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .panel {
+    width: 100%;
+    height: 58%;
+  }
+}
+
+/*
+ * Compose trims the leading above the first and below the last line of a Text (LineHeightStyle.Trim.Both),
+ * so a one-line title is ascent + descent tall (Roboto: 1.172em), not its line height. --trim-22 / --trim-16
+ * are that (negative) half difference for titleLarge (22/28) and titleMedium (16/24).
+ */
+.panel {
+  --trim-22: calc((var(--t-font-height) * 22px - 28px) / 2);
+  --trim-16: calc((var(--t-font-height) * 16px - 24px) / 2);
+}
+
+/* TitleText: titleLarge, onSurface, start, padding top 8 bottom 4 (HomeSettingsRowList.kt). The floating Back
+   button sits at the top-start of a full-screen page, so the title starts after it. */
+.title {
+  composes: t-titleLarge from global;
+  flex: none;
+  color: var(--c-on-surface);
+  margin-block: var(--trim-22);
+  padding: 8px 0 4px;
+  padding-inline-start: var(--shell-back-reserve, 0px);
+}
+
+/* Settings / Source pages: a plain centered titleLarge Text, no padding (with a divider on Settings). */
+.titleCentered {
+  composes: t-titleLarge from global;
+  flex: none;
+  color: var(--c-on-surface);
+  margin-block: var(--trim-22);
+  padding-inline: var(--shell-back-reserve, 0px);
+  text-align: center;
+}
+
+/* Source page: its list starts 8dp under the title (41.8dp), under the web's Back button (ends at 48dp).
+   Web: the title box is as tall as the button needs, the text stays where the TV has it. */
+.titleSource {
+  composes: titleCentered;
+  min-height: calc(min(32px, var(--shell-back-reserve, 0px)) - 2 * var(--trim-22));
+}
+
+/* HorizontalDivider: 1dp, Material outlineVariant. No theme passes one to the Material scheme (ui/theme/colors),
+   so it is the Material 3 dark default in every theme. */
+.divider {
+  flex: none;
+  height: 1px;
+  border: 0;
+  margin: 0;
+  background: var(--fx-m3-outline-variant);
+}
+
+/*
+ * HomeSettingsLazyColumn: contentPadding 8dp. The scroll box spans the whole panel (the panel's own 8dp is
+ * taken back and added to the padding) because a Compose list only clips along its scroll axis: the 1.05
+ * focus scale of an item must not be cut at the sides.
+ */
+.list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-inline: -8px;
+  padding: 8px 16px;
+  scrollbar-width: thin;
+}
+
+/* Pages that hand the 8dp padded entry modifier to the list as well as to their Column (row list, add row,
+   row types, favorites, presets, settings): the list is inset another 8dp on every side. */
+.listInset {
+  composes: list;
+  margin-block: 8px;
+  padding-inline: 24px;
+}
+
+/* Source page: LazyColumn(modifier = entry modifier), no content padding, items 8dp apart. */
+.listGap {
+  composes: list;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-block: 8px;
+  padding-block: 0;
+}
+
+/* TitleText inside a list (section headers: Home rows (N), Library, More), followed by a divider. */
+.sectionTitle {
+  composes: t-titleLarge from global;
+  color: var(--c-on-surface);
+  margin-block: var(--trim-22);
+  padding: 8px 0 4px;
+}
+
+/* SubTitleText: titleMedium (preference group titles). */
+.subTitle {
+  composes: t-titleMedium from global;
+  color: var(--c-on-surface);
+  margin-block: var(--trim-16);
+  padding: 8px 0 4px;
+}
+
+/* PreferenceTitle: titleSmall; PreferenceSummary: bodySmall. */
+/* trimmed exactly (t-trim): a slot whose child trims itself is left alone by ListItem, and `text-box` would round
+   a wrapped two-line entry 2dp taller than the TV's 60.4dp (refshots 32-settings-home-customize-top) */
+.prefTitle {
+  composes: t-titleSmall t-trim from global;
+  display: block;
+}
+
+.prefSummary {
+  composes: t-bodySmall t-trim from global;
+  display: block;
+}
+
+/* ---- row entries: title + up / down / delete (Row spacedBy 16, min 40 / max 88dp; buttons spacedBy 4) ---- */
+.rowEntry {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 40px;
+  max-height: 88px;
+  border-radius: 8px;
+}
+
+.rowEntry .rowTitle {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.rowTitleText {
+  composes: t-titleSmall t-trim from global;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.rowButtons {
+  flex: none;
+  display: flex;
+  gap: 4px;
+}
+
+/* The app's Button: 4dp padding around its content, 40dp content height. The carets are 14sp Font Awesome
+   glyphs (labelLarge), so those two buttons are only as wide as the glyph plus 8dp; delete holds a 24dp icon. */
+.rowButton {
+  min-width: 0;
+  padding-inline: 4px;
+}
+
+/* web: touch needs more than a 17dp wide target */
+@media (pointer: coarse) {
+  .rowButton {
+    min-width: 32px;
+  }
+}
+
+/* web: drag handle for mouse and touch reordering. It lies over the 16dp start padding of the row's list
+   item, so the title and the buttons stay where the TV has them. */
+.handle {
+  position: absolute;
+  /* above the focused list item (z-index 1 in the kit) */
+  z-index: 2;
+  inset-block: 0;
+  inset-inline-start: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  color: var(--c-on-surface-variant);
+  cursor: grab;
+  /* a finger that starts on the handle scrolls the list; resting on it picks the row up (RowListPage) */
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* The list item under the handle turns light and grows 1.05x (5.5dp to each side) when focused or hovered:
+   the handle takes the item's colour and moves out with its edge. */
+:where(:root:not([data-pointer])) .rowEntry:has(.rowTitle:focus-visible) .handle {
+  color: var(--c-inverse-on-surface);
+  translate: -6px 0;
+}
+
+/* the document's dir attribute, not the :dir() pseudo-class, which Chrome before 120 does not know */
+:where(:root:not([data-pointer]))[dir='rtl'] .rowEntry:has(.rowTitle:focus-visible) .handle {
+  translate: 6px 0;
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .rowEntry:has(.rowTitle:hover) .handle {
+    color: var(--c-inverse-on-surface);
+    translate: -6px 0;
+  }
+
+  :where(:root[data-pointer])[dir='rtl'] .rowEntry:has(.rowTitle:hover) .handle {
+    translate: 6px 0;
+  }
+}
+
+@media (pointer: coarse) {
+  .handle {
+    inset-inline-start: -10px;
+    width: 28px;
+  }
+}
+
+.dragging {
+  background: var(--c-surface-3);
+  box-shadow: 0 4px 12px rgb(from var(--fx-black) r g b / 0.4);
+  position: relative;
+  z-index: 2;
+}
+
+.dragging .handle {
+  cursor: grabbing;
+}
+
+/* ---- slider preference: min height 72, 8dp shape, 16/12 padding, inverseSurface when focused ---- */
+.sliderPref {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  min-height: 72px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  color: var(--c-on-surface);
+}
+
+:where(:root:not([data-pointer])) .sliderPref:has(:focus-visible) {
+  background: var(--c-inverse-surface);
+  color: var(--c-inverse-on-surface);
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .sliderPref:hover {
+    background: var(--c-inverse-surface);
+    color: var(--c-inverse-on-surface);
+  }
+}
+
+.sliderTitle {
+  composes: t-titleSmall from global;
+  padding-bottom: 8px;
+}
+
+.sliderRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.sliderRow > :first-child {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.sliderValue {
+  composes: t-bodySmall from global;
+  flex: none;
+  min-width: 48px;
+  text-align: end;
+}
+
+/* ---- preview ---- */
+.previewRows {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-bottom: 172px;
+  scrollbar-width: none;
+  container-type: size;
+}
+
+.previewRows::-webkit-scrollbar {
+  display: none;
+}
+
+.previewRow {
+  padding-bottom: 8px;
+}
+
+/* Opening a row's settings scrolls the preview to that row (animateScrollToItem). The TV's 172dp bottom
+   padding lets the last row reach the top of its 280dp list; a taller list needs the last row to fill it
+   (100cqh is the list without the padding). */
+.previewRow:last-child {
+  min-height: 100cqh;
+}
+
+/* 40dp spinner top-end, 20dp padding (the clock is hidden here). */
+.previewSpinner {
+  position: absolute;
+  top: 20px;
+  inset-inline-end: 20px;
+  width: 40px;
+  height: 40px;
+  pointer-events: none;
+}
+
+/* ---- removed from next up dialog ---- */
+.removed {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  box-sizing: border-box;
+  /* fills the platform-default-width BasicDialog (the kit's 560dp cap); wider content scrolled sideways */
+  width: 560px;
+  max-width: 100%;
+  max-height: 80dvh;
+}
+
+.removedTitle {
+  composes: t-displaySmall from global;
+  color: var(--c-on-surface);
+}
+
+.removedList {
+  overflow-y: auto;
+  padding-inline: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.removedItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.removedItem > :first-child {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.removedPoster {
+  height: 80px;
+  width: auto;
+  max-width: 80px;
+  border-radius: 4px;
+  object-fit: contain;
+}
+
+/* ---- search-for dialog (80% x 66%, 8dp padding) ---- */
+.searchFor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  box-sizing: border-box;
+  width: 80vw;
+  max-width: 100%;
+  height: 66dvh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.searchForTitle {
+  composes: t-titleLarge from global;
+  color: var(--c-on-surface);
+  padding: 8px 8px 0;
+  text-align: center;
+}
+
+/* ItemRowTitle shown alone for "Searching..." / "No results": titleLarge, onBackground, 8dp start */
+.searchForRowTitle {
+  composes: t-titleLarge from global;
+  color: var(--c-on-background);
+  padding-inline-start: 8px;
+}
+
+/* ---- sort dialog: 320dp wide list ---- */
+.sortList {
+  width: 320px;
+  max-width: 90vw;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.caret {
+  display: inline-block;
+  width: 16px;
+}

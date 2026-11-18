@@ -1,0 +1,27 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Collapsed until the group is hovered. */
+.slider {
+  width: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    width 200ms ease,
+    opacity 200ms ease;
+}
+
+.root[data-open] .slider {
+  width: 112px;
+  overflow: visible;
+  opacity: 1;
+  padding-inline: 10px;
+}
+
+@media (pointer: coarse) {
+  .slider {
+    display: none;
+  }
+}

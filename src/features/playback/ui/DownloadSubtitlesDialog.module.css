@@ -1,0 +1,39 @@
+/* BasicDialog with 24dp padding around content of at most 640 x 400dp */
+.panel {
+  width: min(640px, 100%) !important;
+  max-height: min(448px, 100%);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.title,
+.status {
+  composes: t-titleLarge from global;
+  color: var(--c-on-surface);
+}
+
+.langRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.langLabel {
+  composes: t-titleSmall from global;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}

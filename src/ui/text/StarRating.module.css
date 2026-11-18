@@ -1,0 +1,62 @@
+.pill {
+  display: inline-flex;
+  padding: 4px;
+  border-radius: 16px;
+  background: var(--fx-black-75);
+}
+
+/* ratingBarHeight = 32dp; stars fill the height. */
+.row {
+  display: flex;
+  justify-content: space-evenly;
+  height: 32px;
+}
+
+.star {
+  position: relative;
+  display: block;
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.star:disabled {
+  cursor: default;
+}
+
+:where(:root:not([data-pointer])) .star:focus-visible,
+:global([data-demo-focus]) .star {
+  background: var(--c-border);
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .star:not(:disabled):hover {
+    background: var(--c-border);
+  }
+}
+
+.empty,
+.full {
+  position: absolute;
+  inset: 0;
+  display: flex;
+}
+
+/* Upstream paints the unrated part with the pill color (SrcAtop, alpha .75): stars show at 25%. */
+.empty {
+  color: color-mix(in srgb, var(--fx-star-filled) 25%, var(--fx-black));
+}
+
+.full {
+  color: var(--fx-star-filled);
+}
+
+:global([dir='rtl']) .full {
+  transform: scaleX(-1);
+}
+
+.icon {
+  width: 100% !important;
+  height: 100% !important;
+}

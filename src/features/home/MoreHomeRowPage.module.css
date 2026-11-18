@@ -1,0 +1,50 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding-top: 16px;
+  /* The shell's content area starts 72dp from the window edge (rail 64 + 8) but ends only 16dp from it;
+     pad the end so the grid's end inset matches its start inset (72dp). Phones: the shell uses 16/16. */
+  --page-end-pad: 56px;
+  padding-inline-end: var(--page-end-pad);
+}
+
+@media (max-width: 599.98px) {
+  .page {
+    --page-end-pad: 0rem;
+  }
+}
+
+/* GridTitle: displaySmall, onBackground, centered, one line. */
+.title {
+  composes: t-displaySmall from global;
+  color: var(--c-on-background);
+  text-align: center;
+  /* Centred over the whole width like GridTitle, but a long title may take the room beside the Back button and
+     the clock that it does not cover: the side columns shrink to the reserves, the text gets the rest. The
+     clock's reserve counts from the shell's content edge, which this page's end padding already keeps free. */
+  display: grid;
+  grid-template-columns:
+    minmax(var(--shell-back-reserve, 0px), 1fr) minmax(0, max-content)
+    minmax(max(0rem, var(--shell-clock-reserve, 0rem) - var(--page-end-pad)), 1fr);
+}
+
+.title::before,
+.title::after {
+  content: '';
+}
+
+.titleText {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 599px) {
+  .title {
+    font-size: 24px;
+    line-height: 32px;
+  }
+}

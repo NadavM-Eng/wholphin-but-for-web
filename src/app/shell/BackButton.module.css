@@ -1,0 +1,8 @@
+.button {
+  flex: none;
+}
+
+/* the arrow points to the start edge */
+:global([dir='rtl']) .icon {
+  transform: scaleX(-1);
+}

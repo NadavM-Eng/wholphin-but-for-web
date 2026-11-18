@@ -1,0 +1,182 @@
+/* fadeIn(1000 ms) / fadeOut(500 ms) */
+.root,
+.dim {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity var(--exit, 500ms) linear;
+  pointer-events: none;
+}
+
+.root[data-shown],
+.dim[data-shown] {
+  opacity: 1;
+  transition-duration: var(--enter, 1000ms);
+  pointer-events: auto;
+  cursor: none;
+}
+
+.root {
+  background: var(--fx-black);
+}
+
+/* black at dimPercent / 100 over everything, the screensaver included */
+.dim {
+  z-index: 1001;
+  background: rgb(from var(--fx-black) r g b / var(--dim, 0.75));
+}
+
+.content {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--fx-black);
+}
+
+/* infiniteRepeatable(tween(duration, delay 500, Linear), Reverse): scale 1 -> 1.1 when "Animate" is on */
+.scale {
+  position: absolute;
+  inset: 0;
+}
+
+.scale[data-animate] {
+  animation: ken-burns var(--duration, 30000ms) linear 500ms infinite alternate;
+}
+
+@keyframes ken-burns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.1);
+  }
+}
+
+/* AsyncImage default ContentScale.Fit; CrossFadeFactory(2000 ms) */
+.image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.fadeIn {
+  animation: fade-in 2000ms linear both;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* logo: BottomStart, 240 x 120 dp with 16 dp padding */
+.logo {
+  position: absolute;
+  bottom: 0;
+  inset-inline-start: 0;
+  width: 240px;
+  height: 120px;
+  padding: 16px;
+  box-sizing: border-box;
+  object-fit: contain;
+  object-position: left bottom;
+  animation: fade-in 750ms linear both;
+}
+
+:global([dir='rtl']) .logo {
+  object-position: right bottom;
+}
+
+/* title: BottomStart, 16 dp padding, 50% wide, 30% high, displaySmall, 2 lines */
+.titleBox {
+  position: absolute;
+  bottom: 0;
+  inset-inline-start: 0;
+  width: 50%;
+  height: 30%;
+  padding: 16px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-end;
+}
+
+.title {
+  composes: t-displaySmall from global;
+  margin: 0;
+  color: var(--c-on-surface);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-shadow: 0 0 8px rgb(from var(--fx-black) r g b / 0.6);
+}
+
+/* RadialGradientShader(Transparent -> TransparentBlack25 at 0.85, radius max(w, h) / 1.5), Multiply */
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle calc(max(100vw, 100dvh) / 1.5) at 50% 50%, transparent 0%, rgb(from var(--fx-black) r g b / 0.25) 85%);
+  mix-blend-mode: multiply;
+}
+
+/* clock scrim: black @ TOP_SCRIM_ALPHA (0.55) -> transparent at 25% of the height, Multiply */
+.scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(rgb(from var(--fx-black) r g b / 0.55) 0%, transparent 25%);
+  mix-blend-mode: multiply;
+}
+
+.placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+.placeholder[data-align^='t'] {
+  align-items: flex-start;
+}
+.placeholder[data-align^='c'] {
+  align-items: center;
+}
+.placeholder[data-align^='b'] {
+  align-items: flex-end;
+}
+.placeholder[data-align$='s'] {
+  justify-content: flex-start;
+}
+.placeholder[data-align$='c'] {
+  justify-content: center;
+}
+.placeholder[data-align$='e'] {
+  justify-content: flex-end;
+}
+
+.placeholderText {
+  composes: t-displaySmall from global;
+  margin: 0;
+  color: var(--c-error);
+  opacity: 0;
+  transition: opacity 500ms linear 100ms;
+}
+
+.placeholderText[data-visible] {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scale[data-animate] {
+    animation: none;
+  }
+}

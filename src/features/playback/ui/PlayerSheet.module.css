@@ -1,0 +1,113 @@
+/* Transparent: playback dialogs never dim the video (setDimAmount(0f)). */
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  padding: 8px;
+  cursor: default;
+}
+
+.bottomStart {
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+
+.bottomEnd {
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+/*
+ * Web layout: the bottom sheets stand on the control strip (8dp above it), not on the screen's bottom edge as on
+ * the TV, where the dialog window covers the controller. The strip's height is the player's --player-strip-h.
+ */
+.bottomStart,
+.bottomEnd {
+  padding-bottom: calc(var(--player-strip-h, 0px) + 8px + env(safe-area-inset-bottom, 0px));
+}
+
+.center {
+  align-items: center;
+  justify-content: center;
+}
+
+/* Centered dialogs (subtitle delay, search, shortcuts): sized by their content. */
+.panel {
+  box-sizing: border-box;
+  width: min(440px, 100%);
+  max-height: min(80%, 100%);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-radius: 8px;
+  padding-block: 4px;
+  color: var(--c-on-surface);
+  outline: none;
+  scrollbar-width: thin;
+  animation: sheet-in 150ms ease-out;
+}
+
+/*
+ * BottomDialog: Box(padding 8dp, surface, 8dp corners) around a LazyColumn, in a dialog window of the platform
+ * default width (440dp on the 960dp TV screen), so the list is 424dp wide. No padding inside the box.
+ */
+.list {
+  display: flex;
+  flex-direction: column;
+  width: min(424px, 100%);
+  max-height: 100%;
+  padding: 0;
+  overflow: visible;
+}
+
+/*
+ * A LazyColumn clips along its scroll axis only: the focused row (scale 1.05, 10.6dp wider on each side) shows
+ * past the panel's sides and is cut at its top and bottom. The scroller is that much wider than the panel; the
+ * screen edge cuts the rest, as on TV. No scroll bar: it would sit outside the panel.
+ */
+.listScroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-inline: -12px;
+  padding-inline: 12px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+.listScroll::-webkit-scrollbar {
+  display: none;
+}
+
+.center .panel {
+  width: auto;
+  max-width: 100%;
+}
+
+.surface1 {
+  background: var(--c-surface-1);
+}
+
+.surface3 {
+  background: var(--c-surface-3);
+}
+
+/* Subtitle delay: TransparentBlack50, 16dp corners, 8dp padding */
+.scrim {
+  background: var(--fx-black-50);
+  border-radius: 16px;
+  padding: 8px;
+}
+
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

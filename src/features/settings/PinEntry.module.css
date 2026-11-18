@@ -1,0 +1,128 @@
+.column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  max-width: 100%;
+}
+
+.title {
+  composes: t-headlineLarge from global;
+  color: var(--c-on-surface);
+  text-align: center;
+}
+
+/* PinArrowRow: four FontAwesome arrows + "[0-9]" in headlineSmall, 8dp apart. */
+.hint {
+  composes: t-headlineSmall from global;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--c-on-surface);
+  direction: ltr;
+}
+
+.hintArrow {
+  font-size: 24px;
+}
+
+.hintDigits {
+  font-weight: 600;
+}
+
+/* PinEntryDots: min 180x40dp pill, surfaceVariant@.8, 16dp vertical padding, 8dp onSurface dots. */
+.dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2px;
+  min-width: 180px;
+  min-height: 40px;
+  max-width: 100%;
+  padding-block: 16px;
+  border-radius: 9999px;
+  background: rgb(from var(--c-surface-variant) r g b / 0.8);
+  cursor: text;
+  transition: box-shadow 120ms linear;
+}
+
+.dots:focus-visible,
+.dots:focus {
+  box-shadow: 0 0 0 2px var(--c-border);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  margin-inline: 8px;
+  border-radius: 50%;
+  background: var(--c-on-surface);
+}
+
+.confirmHint {
+  composes: t-headlineSmall from global;
+  color: var(--c-on-surface);
+  text-align: center;
+}
+
+.pad {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px 24px;
+  padding-top: 8px;
+}
+
+.arrows {
+  display: grid;
+  grid-template-columns: repeat(3, 40px);
+  grid-template-rows: repeat(3, 40px);
+  gap: 4px;
+}
+
+.arrowU {
+  grid-area: 1 / 2;
+}
+
+.arrowL {
+  grid-area: 2 / 1;
+}
+
+.arrowR {
+  grid-area: 2 / 3;
+}
+
+.arrowD {
+  grid-area: 3 / 2;
+}
+
+.digits {
+  display: grid;
+  grid-template-columns: repeat(3, 40px);
+  gap: 4px;
+}
+
+/* Touch: the pad shows the keys, so the remote-key hint row goes; buttons grow to a 44px target. */
+@media (hover: none) and (pointer: coarse) {
+  .hint {
+    display: none;
+  }
+
+  .arrows {
+    grid-template-columns: repeat(3, 44px);
+    grid-template-rows: repeat(3, 44px);
+  }
+
+  .digits {
+    grid-template-columns: repeat(3, 44px);
+  }
+
+  .arrows > button,
+  .digits > button {
+    width: 44px;
+    height: 44px;
+  }
+}

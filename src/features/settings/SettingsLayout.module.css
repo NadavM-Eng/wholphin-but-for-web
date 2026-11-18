@@ -1,0 +1,109 @@
+.page {
+  --slide: 1;
+  position: fixed;
+  inset: 0;
+  display: flex;
+  background: var(--c-background);
+  color: var(--c-on-surface);
+}
+
+:global([dir='rtl']) .page {
+  --slide: -1;
+}
+
+.empty {
+  flex: 1;
+  min-width: 0;
+}
+
+.aside {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* fillMaxWidth(.4f): the floor is the TV's own 384dp (40% of the 960dp canvas), the whole width on phones. */
+.panel {
+  display: flex;
+  flex-direction: column;
+  flex: none;
+  width: clamp(min(100%, 384px), 40%, 100%);
+  height: 100%;
+  background: var(--c-surface-1);
+  animation: enter 300ms cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+/* SubtitleStylePage.kt:240 fillMaxWidth(.25f): the floor is the TV's own 240dp (25% of the 960dp canvas). */
+.narrow .panel {
+  width: clamp(min(100%, 240px), 25%, 100%);
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateX(calc(50% * var(--slide)));
+  }
+}
+
+/* PreferencesContent.kt:224-232: headlineSmall, fillMaxWidth, centered, 8dp above and below. The Text is trimmed
+   like every Compose Text (see Preference.module.css), so the header is 8 + 28.1 + 8dp tall. */
+.header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  padding: 8px 0;
+}
+
+.title {
+  composes: t-headlineSmall t-trim from global;
+  flex: 1;
+  min-width: 0;
+  color: var(--c-on-surface);
+  text-align: center;
+}
+
+.list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px;
+  overscroll-behavior: contain;
+}
+
+/* Subtitle page on phones: preview on top, list below. */
+@media (max-width: 719px) {
+  .withAside {
+    flex-direction: column;
+  }
+
+  .withAside .aside {
+    flex: none;
+    height: 45dvh;
+  }
+
+  .withAside .panel {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    height: auto;
+  }
+}
+
+@media (max-width: 719px) {
+  /* the panel is the whole width here: keep the title clear of the shell's floating Back button */
+  .header {
+    padding-inline: 56px;
+  }
+
+  .page:not(.withAside) .empty {
+    display: none;
+  }
+
+  .page:not(.withAside) .panel {
+    width: 100%;
+  }
+}

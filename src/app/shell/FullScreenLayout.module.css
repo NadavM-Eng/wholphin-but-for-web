@@ -1,0 +1,29 @@
+.root {
+  --shell-clock-reserve: 0px;
+  --shell-back-reserve: 0px;
+  position: relative;
+  min-height: 100dvh;
+}
+
+.root[data-back] {
+  --shell-back-reserve: 56px;
+}
+
+.backSlot {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  height: 0;
+}
+
+.back {
+  position: absolute;
+  top: 8px;
+  inset-inline-start: 8px;
+}
+
+/* above the fixed Backdrop layer (z-index 0) */
+.page {
+  position: relative;
+  z-index: 1;
+}

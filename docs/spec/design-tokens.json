@@ -1,0 +1,1952 @@
+{
+  "_meta": {
+    "source": "Wholphin (Jetpack Compose TV). Paths relative to repo root reference/wholphin/. W = app/src/main/java/com/github/damontecres/wholphin/, R = app/src/main/res/",
+    "colorFormat": "CSS hex: #RRGGBB or #RRGGBBAA (converted from Kotlin 0xAARRGGBB)",
+    "defaultTheme": "PURPLE",
+    "lightModeReachable": false,
+    "lightModeNote": "WholphinTheme(darkTheme=true) default; every call site passes true (W/MainActivity.kt:266, W/ui/theme/Theme.kt:34). Light values are included only for completeness.",
+    "accentRole": "border (TV scheme only) is the focus/accent color",
+    "libDefaultNote": "Values flagged libDefault come from androidx.tv:tv-material 1.1.0-alpha01 / compose material3, not the repo; unverified recollection.",
+    "themeOrder": [
+      "PURPLE",
+      "BLUE",
+      "GREEN",
+      "ORANGE",
+      "BOLD_BLUE",
+      "OLED_BLACK",
+      "RED",
+      "BROWN"
+    ],
+    "themeLabels": {
+      "PURPLE": "Purple",
+      "BLUE": "Blue",
+      "GREEN": "Green",
+      "ORANGE": "Orange",
+      "BOLD_BLUE": "Bold Blue",
+      "OLED_BLACK": "Black",
+      "RED": "Red",
+      "BROWN": "Brown"
+    },
+    "enumCitation": "app/src/main/proto/WholphinDataStore.proto:122-131; default W/preferences/AppPreference.kt:558-568"
+  },
+  "themes": {
+    "PURPLE": {
+      "sourceFile": "app/src/main/java/com/github/damontecres/wholphin/ui/theme/colors/PurpleThemeColors.kt",
+      "schemeStartLines": {
+        "lightSchemeMaterial": 64,
+        "lightScheme": 94,
+        "darkSchemeMaterial": 125,
+        "darkScheme": 155
+      },
+      "tv": {
+        "dark": {
+          "primary": "#D2BCFF",
+          "onPrimary": "#3D008F",
+          "primaryContainer": "#7A28FE",
+          "onPrimaryContainer": "#EADCFF",
+          "secondary": "#D2BCFF",
+          "onSecondary": "#3B167D",
+          "secondaryContainer": "#48415B",
+          "onSecondaryContainer": "#DFD3F8",
+          "tertiary": "#A071F8",
+          "onTertiary": "#5E0052",
+          "tertiaryContainer": "#B800A3",
+          "onTertiaryContainer": "#FFD7F0",
+          "error": "#FFB4AB",
+          "onError": "#690005",
+          "errorContainer": "#93000A",
+          "onErrorContainer": "#FFDAD6",
+          "background": "#15121C",
+          "onBackground": "#E8DFF0",
+          "surface": "#15121C",
+          "onSurface": "#E8DFF0",
+          "surfaceVariant": "#4A4456",
+          "onSurfaceVariant": "#CCC3D9",
+          "scrim": "#000000",
+          "inverseSurface": "#E8DFF0",
+          "inverseOnSurface": "#332E3A",
+          "inversePrimary": "#741BF8",
+          "border": "#741BF8BF"
+        },
+        "light": {
+          "primary": "#5F00D6",
+          "onPrimary": "#FFFFFF",
+          "primaryContainer": "#7A28FE",
+          "onPrimaryContainer": "#EADCFF",
+          "secondary": "#6B4BAE",
+          "onSecondary": "#FFFFFF",
+          "secondaryContainer": "#B594FD",
+          "onSecondaryContainer": "#472489",
+          "tertiary": "#8F007E",
+          "onTertiary": "#FFFFFF",
+          "tertiaryContainer": "#B800A3",
+          "onTertiaryContainer": "#FFD7F0",
+          "error": "#BA1A1A",
+          "onError": "#FFFFFF",
+          "errorContainer": "#FFDAD6",
+          "onErrorContainer": "#93000A",
+          "background": "#FEF7FF",
+          "onBackground": "#1D1A25",
+          "surface": "#FEF7FF",
+          "onSurface": "#1D1A25",
+          "surfaceVariant": "#E9DEF6",
+          "onSurfaceVariant": "#4A4456",
+          "scrim": "#000000",
+          "inverseSurface": "#332E3A",
+          "inverseOnSurface": "#F6EDFE",
+          "inversePrimary": "#D2BCFF",
+          "border": "#D2BCFF"
+        }
+      },
+      "material": {
+        "dark": {
+          "primary": "#D2BCFF",
+          "onPrimary": "#3D008F",
+          "primaryContainer": "#7A28FE",
+          "onPrimaryContainer": "#EADCFF",
+          "secondary": "#D2BCFF",
+          "onSecondary": "#3B167D",
+          "secondaryContainer": "#48415B",
+          "onSecondaryContainer": "#DFD3F8",
+          "tertiary": "#A071F8",
+          "onTertiary": "#5E0052",
+          "tertiaryContainer": "#B800A3",
+          "onTertiaryContainer": "#FFD7F0",
+          "error": "#FFB4AB",
+          "onError": "#690005",
+          "errorContainer": "#93000A",
+          "onErrorContainer": "#FFDAD6",
+          "background": "#15121C",
+          "onBackground": "#E8DFF0",
+          "surface": "#15121C",
+          "onSurface": "#E8DFF0",
+          "surfaceVariant": "#4A4456",
+          "onSurfaceVariant": "#CCC3D9",
+          "scrim": "#000000",
+          "inverseSurface": "#E8DFF0",
+          "inverseOnSurface": "#332E3A",
+          "inversePrimary": "#741BF8"
+        },
+        "light": {
+          "primary": "#5F00D6",
+          "onPrimary": "#FFFFFF",
+          "primaryContainer": "#7A28FE",
+          "onPrimaryContainer": "#EADCFF",
+          "secondary": "#6B4BAE",
+          "onSecondary": "#FFFFFF",
+          "secondaryContainer": "#B594FD",
+          "onSecondaryContainer": "#472489",
+          "tertiary": "#8F007E",
+          "onTertiary": "#FFFFFF",
+          "tertiaryContainer": "#B800A3",
+          "onTertiaryContainer": "#FFD7F0",
+          "error": "#BA1A1A",
+          "onError": "#FFFFFF",
+          "errorContainer": "#FFDAD6",
+          "onErrorContainer": "#93000A",
+          "background": "#FEF7FF",
+          "onBackground": "#1D1A25",
+          "surface": "#FEF7FF",
+          "onSurface": "#1D1A25",
+          "surfaceVariant": "#E9DEF6",
+          "onSurfaceVariant": "#4A4456",
+          "scrim": "#000000",
+          "inverseSurface": "#332E3A",
+          "inverseOnSurface": "#F6EDFE",
+          "inversePrimary": "#D2BCFF"
+        }
+      },
+      "declaredButNotAppliedToAnyScheme": {
+        "light": {},
+        "dark": {}
+      }
+    },
+    "BLUE": {
+      "sourceFile": "app/src/main/java/com/github/damontecres/wholphin/ui/theme/colors/BlueThemeColors.kt",
+      "schemeStartLines": {
+        "lightSchemeMaterial": 82,
+        "lightScheme": 112,
+        "darkSchemeMaterial": 143,
+        "darkScheme": 173
+      },
+      "tv": {
+        "dark": {
+          "primary": "#AAC7FF",
+          "onPrimary": "#09305F",
+          "primaryContainer": "#274777",
+          "onPrimaryContainer": "#D6E3FF",
+          "secondary": "#BEC7DC",
+          "onSecondary": "#283141",
+          "secondaryContainer": "#3E4759",
+          "onSecondaryContainer": "#DAE2F9",
+          "tertiary": "#BECEFF",
+          "onTertiary": "#31285F",
+          "tertiaryContainer": "#483F77",
+          "onTertiaryContainer": "#E6DEFF",
+          "error": "#FFB4AB",
+          "onError": "#690005",
+          "errorContainer": "#93000A",
+          "onErrorContainer": "#FFDAD6",
+          "background": "#111318",
+          "onBackground": "#E2E2E9",
+          "surface": "#121318",
+          "onSurface": "#E3E2E9",
+          "surfaceVariant": "#44474F",
+          "onSurfaceVariant": "#C4C6D0",
+          "scrim": "#000000",
+          "inverseSurface": "#E3E2E9",
+          "inverseOnSurface": "#2F3036",
+          "inversePrimary": "#405F90",
+          "border": "#405F90"
+        },
+        "light": {
+          "primary": "#405F90",
+          "onPrimary": "#FFFFFF",
+          "primaryContainer": "#D6E3FF",
+          "onPrimaryContainer": "#274777",
+          "secondary": "#565F71",
+          "onSecondary": "#FFFFFF",
+          "secondaryContainer": "#DAE2F9",
+          "onSecondaryContainer": "#3E4759",
+          "tertiary": "#605690",
+          "onTertiary": "#FFFFFF",
+          "tertiaryContainer": "#E6DEFF",
+          "onTertiaryContainer": "#483F77",
+          "error": "#BA1A1A",
+          "onError": "#FFFFFF",
+          "errorContainer": "#FFDAD6",
+          "onErrorContainer": "#93000A",
+          "background": "#F9F9FF",
+          "onBackground": "#191C20",
+          "surface": "#FAF8FF",
+          "onSurface": "#1A1B21",
+          "surfaceVariant": "#E1E2EC",
+          "onSurfaceVariant": "#44474F",
+          "scrim": "#000000",
+          "inverseSurface": "#2F3036",
+          "inverseOnSurface": "#F1F0F7",
+          "inversePrimary": "#AAC7FF",
+          "border": "#AAC7FF"
+        }
+      },
+      "material": {
+        "dark": {
+          "primary": "#AAC7FF",
+          "onPrimary": "#09305F",
+          "primaryContainer": "#274777",
+          "onPrimaryContainer": "#D6E3FF",
+          "secondary": "#BEC7DC",
+          "onSecondary": "#283141",
+          "secondaryContainer": "#3E4759",
+          "onSecondaryContainer": "#DAE2F9",
+          "tertiary": "#BECEFF",
+          "onTertiary": "#31285F",
+          "tertiaryContainer": "#483F77",
+          "onTertiaryContainer": "#E6DEFF",
+          "error": "#FFB4AB",
+          "onError": "#690005",
+          "errorContainer": "#93000A",
+          "onErrorContainer": "#FFDAD6",
+          "background": "#111318",
+          "onBackground": "#E2E2E9",
+          "surface": "#121318",
+          "onSurface": "#E3E2E9",
+          "surfaceVariant": "#44474F",
+          "onSurfaceVariant": "#C4C6D0",
+          "scrim": "#000000",
+          "inverseSurface": "#E3E2E9",
+          "inverseOnSurface": "#2F3036",
+          "inversePrimary": "#405F90"
+        },
+        "light": {
+          "primary": "#405F90",
+          "onPrimary": "#FFFFFF",
+          "primaryContainer": "#D6E3FF",
+          "onPrimaryContainer": "#274777",
+          "secondary": "#565F71",
+          "onSecondary": "#FFFFFF",
+          "secondaryContainer": "#DAE2F9",
+          "onSecondaryContainer": "#3E4759",
+          "tertiary": "#605690",
+          "onTertiary": "#FFFFFF",
+          "tertiaryContainer": "#E6DEFF",
+          "onTertiaryContainer": "#483F77",
+          "error": "#BA1A1A",
+          "onError": "#FFFFFF",
+          "errorContainer": "#FFDAD6",
+          "onErrorContainer": "#93000A",
+          "background": "#F9F9FF",
+          "onBackground": "#191C20",
+          "surface": "#FAF8FF",
+          "onSurface": "#1A1B21",
+          "surfaceVariant": "#E1E2EC",
+          "onSurfaceVariant": "#44474F",
+          "scrim": "#000000",
+          "inverseSurface": "#2F3036",
+          "inverseOnSurface": "#F1F0F7",
+          "inversePrimary": "#AAC7FF"
+        }
+      },
+      "declaredButNotAppliedToAnyScheme": {
+        "light": {
+          "outline": "#75777F",
+          "outlineVariant": "#C4C6D0",
+          "surfaceDim": "#DAD9E0",
+          "surfaceBright": "#FAF8FF",
+          "surfaceContainerLowest": "#FFFFFF",
+          "surfaceContainerLow": "#F4F3FA",
+          "surfaceContainer": "#EEEDF4",
+          "surfaceContainerHigh": "#E8E7EF",
+          "surfaceContainerHighest": "#E3E2E9"
+        },
+        "dark": {
+          "outline": "#8E9099",
+          "outlineVariant": "#44474F",
+          "surfaceDim": "#121318",
+          "surfaceBright": "#38393F",
+          "surfaceContainerLowest": "#0D0E13",
+          "surfaceContainerLow": "#1A1B21",
+          "surfaceContainer": "#1E1F25",
+          "surfaceContainerHigh": "#292A2F",
+          "surfaceContainerHighest": "#33343A"
+        }
+      }
+    },
+    "GREEN": {
+      "sourceFile": "app/src/main/java/com/github/damontecres/wholphin/ui/theme/colors/GreenThemeColors.kt",
+      "schemeStartLines": {
+        "lightSchemeMaterial": 82,
+        "lightScheme": 112,
+        "darkSchemeMaterial": 143,
+        "darkScheme": 173
+      },
+      "tv": {
+        "dark": {
+          "primary": "#98D5A4",
+          "onPrimary": "#00391A",
+          "primaryContainer": "#16512C",
+          "onPrimaryContainer": "#B3F1BF",
+          "secondary": "#B7CCB7",
+          "onSecondary": "#223526",
+          "secondaryContainer": "#394B3C",
+          "onSecondaryContainer": "#D2E8D3",
+          "tertiary": "#81D29C",
+          "onTertiary": "#01363F",
+          "tertiaryContainer": "#204D56",
+          "onTertiaryContainer": "#BDEAF5",
+          "error": "#FFB4AB",
+          "onError": "#690005",
+          "errorContainer": "#93000A",
+          "onErrorContainer": "#FFDAD6",
+          "background": "#101510",
+          "onBackground": "#DFE4DC",
+          "surface": "#101510",
+          "onSurface": "#DFE4DC",
+          "surfaceVariant": "#414941",
+          "onSurfaceVariant": "#C1C9BF",
+          "scrim": "#000000",
+          "inverseSurface": "#DFE4DC",
+          "inverseOnSurface": "#2D322D",
+          "inversePrimary": "#39912F",
+          "border": "#39912FBF"
+        },
+        "light": {
+          "primary": "#316A42",
+          "onPrimary": "#FFFFFF",
+          "primaryContainer": "#B3F1BF",
+          "onPrimaryContainer": "#16512C",
+          "secondary": "#506352",
+          "onSecondary": "#FFFFFF",
+          "secondaryContainer": "#D2E8D3",
+          "onSecondaryContainer": "#394B3C",
+          "tertiary": "#3A656E",
+          "onTertiary": "#FFFFFF",
+          "tertiaryContainer": "#BDEAF5",
+          "onTertiaryContainer": "#204D56",
+          "error": "#BA1A1A",
+          "onError": "#FFFFFF",
+          "errorContainer": "#FFDAD6",
+          "onErrorContainer": "#93000A",
+          "background": "#F6FBF3",
+          "onBackground": "#181D18",
+          "surface": "#F6FBF3",
+          "onSurface": "#181D18",
+          "surfaceVariant": "#DDE5DA",
+          "onSurfaceVariant": "#414941",
+          "scrim": "#000000",
+          "inverseSurface": "#2D322D",
+          "inverseOnSurface": "#EEF2EA",
+          "inversePrimary": "#98D5A4",
+          "border": "#98D5A4"
+        }
+      },
+      "material": {
+        "dark": {
+          "primary": "#98D5A4",
+          "onPrimary": "#00391A",
+          "primaryContainer": "#16512C",
+          "onPrimaryContainer": "#B3F1BF",
+          "secondary": "#B7CCB7",
+          "onSecondary": "#223526",
+          "secondaryContainer": "#394B3C",
+          "onSecondaryContainer": "#D2E8D3",
+          "tertiary": "#81D29C",
+          "onTertiary": "#01363F",
+          "tertiaryContainer": "#204D56",
+          "onTertiaryContainer": "#BDEAF5",
+          "error": "#FFB4AB",
+          "onError": "#690005",
+          "errorContainer": "#93000A",
+          "onErrorContainer": "#FFDAD6",
+          "background": "#101510",
+          "onBackground": "#DFE4DC",
+          "surface": "#101510",
+          "onSurface": "#DFE4DC",
+          "surfaceVariant": "#414941",
+          "onSurfaceVariant": "#C1C9BF",
+          "scrim": "#000000",
+          "inverseSurface": "#DFE4DC",
+          "inverseOnSurface": "#2D322D",
+          "inversePrimary": "#39912F"
+        },
+        "light": {
+          "primary": "#316A42",
+          "onPrimary": "#FFFFFF",
+          "primaryContainer": "#B3F1BF",
+          "onPrimaryContainer": "#16512C",
+          "secondary": "#506352",
+          "onSecondary": "#FFFFFF",
+          "secondaryContainer": "#D2E8D3",
+          "onSecondaryContainer": "#394B3C",
+          "tertiary": "#3A656E",
+          "onTertiary": "#FFFFFF",
+          "tertiaryContainer": "#BDEAF5",
+          "onTertiaryContainer": "#204D56",
+          "error": "#BA1A1A",
+          "onError": "#FFFFFF",
+          "errorContainer": "#FFDAD6",
+          "onErrorContainer": "#93000A",
+          "background": "#F6FBF3",
+          "onBackground": "#181D18",
+          "surface": "#F6FBF3",
+          "onSurface": "#181D18",
+          "surfaceVariant": "#DDE5DA",
+          "onSurfaceVariant": "#414941",
+          "scrim": "#000000",
+          "inverseSurface": "#2D322D",
+          "inverseOnSurface": "#EEF2EA",
+          "inversePrimary": "#98D5A4"
+        }
+      },
+      "declaredButNotAppliedToAnyScheme": {
+        "light": {
+          "outline": "#717971",
+          "outlineVariant": "#C1C9BF",
+          "surfaceDim": "#D7DBD4",
+          "surfaceBright": "#F6FBF3",
+          "surfaceContainerLowest": "#FFFFFF",
+          "surfaceContainerLow": "#F0F5ED",
+          "surfaceContainer": "#EBEFE7",
+          "surfaceContainerHigh": "#E5EAE2"
+        },
+        "dark": {
+          "outline": "#8B938A",
+          "outlineVariant": "#414941",
+          "surfaceDim": "#101510",
+          "surfaceBright": "#353A35",
+          "surfaceContainerLowest": "#0B0F0B",
+          "surfaceContainerLow": "#181D18",
+          "surfaceContainer": "#1C211C",
+          "surfaceContainerHigh": "#262B26",
+          "surfaceContainerHighest": "#313631"
+        }
+      }
+    },
+    "ORANGE": {
+      "sourceFile": "app/src/main/java/com/github/damontecres/wholphin/ui/theme/colors/OrangeThemeColors.kt",
+      "schemeStartLines": {
+        "lightSchemeMaterial": 83,
+        "lightScheme": 113,
+        "darkSchemeMaterial": 144,
+        "darkScheme": 174
+      },
+      "tv": {
+        "dark": {
+          "primary": "#B67F12",
+          "onPrimary": "#E0CB7F",
+          "primaryContainer": "#574500",
+          "onPrimaryContainer": "#FFE086",
+          "secondary": "#D4C5A1",
+          "onSecondary": "#383016",
+          "secondaryContainer": "#524127",
+          "onSecondaryContainer": "#F1E1BB",
+          "tertiary": "#FCE574",
+          "onTertiary": "#492900",
+          "tertiaryContainer": "#693C00",
+          "onTertiaryContainer": "#FFDCBD",
+          "error": "#FFB4AB",
+          "onError": "#690005",
+          "errorContainer": "#93000A",
+          "onErrorContainer": "#FFDAD6",
+          "background": "#1C1715",
+          "onBackground": "#EAE2D4",
+          "surface": "#1C1715",
+          "onSurface": "#EAE2D4",
+          "surfaceVariant": "#4C4639",
+          "onSurfaceVariant": "#CEC6B4",
+          "scrim": "#000000",
+          "inverseSurface": "#EAE2D4",
+          "inverseOnSurface": "#343027",
+          "inversePrimary": "#E39012",
+          "border": "#E39012"
+        },
+        "light": {
+          "primary": "#725C0C",
+          "onPrimary": "#FFFFFF",
+          "primaryContainer": "#FFE086",
+          "onPrimaryContainer": "#574500",
+          "secondary": "#685E3F",
+          "onSecondary": "#FFFFFF",
+          "secondaryContainer": "#F1E1BB",
+          "onSecondaryContainer": "#50462A",
+          "tertiary": "#855317",
+          "onTertiary": "#FFFFFF",
+          "tertiaryContainer": "#FFDCBD",
+          "onTertiaryContainer": "#693C00",
+          "error": "#BA1A1A",
+          "onError": "#FFFFFF",
+          "errorContainer": "#FFDAD6",
+          "onErrorContainer": "#93000A",
+          "background": "#FFF8F0",
+          "onBackground": "#1E1B13",
+          "surface": "#FFF8F0",
+          "onSurface": "#1E1B13",
+          "surfaceVariant": "#EBE2CF",
+          "onSurfaceVariant": "#4C4639",
+          "scrim": "#000000",
+          "inverseSurface": "#343027",
+          "inverseOnSurface": "#F8F0E2",
+          "inversePrimary": "#E1C46D",
+          "border": "#E1C46D"
+        }
+      },
+      "material": {
+        "dark": {
+          "primary": "#B67F12",
+          "onPrimary": "#E0CB7F",
+          "primaryContainer": "#574500",
+          "onPrimaryContainer": "#FFE086",
+          "secondary": "#D4C5A1",
+          "onSecondary": "#383016",
+          "secondaryContainer": "#524127",
+          "onSecondaryContainer": "#F1E1BB",
+          "tertiary": "#FCE574",
+          "onTertiary": "#492900",
+          "tertiaryContainer": "#693C00",
+          "onTertiaryContainer": "#FFDCBD",
+          "error": "#FFB4AB",
+          "onError": "#690005",
+          "errorContainer": "#93000A",
+          "onErrorContainer": "#FFDAD6",
+          "background": "#1C1715",
+          "onBackground": "#EAE2D4",
+          "surface": "#1C1715",
+          "onSurface": "#EAE2D4",
+          "surfaceVariant": "#4C4639",
+          "onSurfaceVariant": "#CEC6B4",
+          "scrim": "#000000",
+          "inverseSurface": "#EAE2D4",
+          "inverseOnSurface": "#343027",
+          "inversePrimary": "#E39012"
+        },
+        "light": {
+          "primary": "#725C0C",
+          "onPrimary": "#FFFFFF",
+          "primaryContainer": "#FFE086",
+          "onPrimaryContainer": "#574500",
+          "secondary": "#685E3F",
+          "onSecondary": "#FFFFFF",
+          "secondaryContainer": "#F1E1BB",
+          "onSecondaryContainer": "#50462A",
+          "tertiary": "#855317",
+          "onTertiary": "#FFFFFF",
+          "tertiaryContainer": "#FFDCBD",
+          "onTertiaryContainer": "#693C00",
+          "error": "#BA1A1A",
+          "onError": "#FFFFFF",
+          "errorContainer": "#FFDAD6",
+          "onErrorContainer": "#93000A",
+          "background": "#FFF8F0",
+          "onBackground": "#1E1B13",
+          "surface": "#FFF8F0",
+          "onSurface": "#1E1B13",
+          "surfaceVariant": "#EBE2CF",
+          "onSurfaceVariant": "#4C4639",
+          "scrim": "#000000",
+          "inverseSurface": "#343027",
+          "inverseOnSurface": "#F8F0E2",
+          "inversePrimary": "#E1C46D"
+        }
+      },
+      "declaredButNotAppliedToAnyScheme": {
+        "light": {
+          "outline": "#7D7667",
+          "outlineVariant": "#CEC6B4",
+          "surfaceDim": "#E1D9CC",
+          "surfaceBright": "#FFF8F0",
+          "surfaceContainerLowest": "#FFFFFF",
+          "surfaceContainerLow": "#FBF3E5",
+          "surfaceContainer": "#F5EDDF",
+          "surfaceContainerHigh": "#EFE7D9",
+          "surfaceContainerHighest": "#EAE2D4"
+        },
+        "dark": {
+          "outline": "#989080",
+          "outlineVariant": "#4C4639",
+          "surfaceDim": "#16130B",
+          "surfaceBright": "#3D392F",
+          "surfaceContainerLowest": "#110E07",
+          "surfaceContainerLow": "#1E1B13",
+          "surfaceContainer": "#231F17",
+          "surfaceContainerHigh": "#2D2A21",
+          "surfaceContainerHighest": "#38342B"
+        }
+      }
+    },
+    "BOLD_BLUE": {
+      "sourceFile": "app/src/main/java/com/github/damontecres/wholphin/ui/theme/colors/BoldBlueThemeColors.kt",
+      "schemeStartLines": {
+        "lightSchemeMaterial": 83,
+        "lightScheme": 113,
+        "darkSchemeMaterial": 144,
+        "darkScheme": 174
+      },
+      "tv": {
+        "dark": {
+          "primary": "#0C2A67",
+          "onPrimary": "#558DD0",
+          "primaryContainer": "#192E4F",
+          "onPrimaryContainer": "#B4C9F6",
+          "secondary": "#BEC7DC",
+          "onSecondary": "#283141",
+          "secondaryContainer": "#3E4759",
+          "onSecondaryContainer": "#DAE2F9",
+          "tertiary": "#BEC9FF",
+          "onTertiary": "#28345F",
+          "tertiaryContainer": "#8CDDE8",
+          "onTertiaryContainer": "#E6DEFF",
+          "error": "#FFB4AB",
+          "onError": "#690005",
+          "errorContainer": "#93000A",
+          "onErrorContainer": "#FFDAD6",
+          "background": "#111318",
+          "onBackground": "#E2E2E9",
+          "surface": "#0A1017",
+          "onSurface": "#DAE3FA",
+          "surfaceVariant": "#44474F",
+          "onSurfaceVariant": "#C4C6D0",
+          "scrim": "#000000",
+          "inverseSurface": "#E3E2E9",
+          "inverseOnSurface": "#2F3036",
+          "inversePrimary": "#152986",
+          "border": "#152986"
+        },
+        "light": {
+          "primary": "#405F90",
+          "onPrimary": "#FFFFFF",
+          "primaryContainer": "#D6E3FF",
+          "onPrimaryContainer": "#274777",
+          "secondary": "#565F71",
+          "onSecondary": "#FFFFFF",
+          "secondaryContainer": "#DAE2F9",
+          "onSecondaryContainer": "#3E4759",
+          "tertiary": "#605690",
+          "onTertiary": "#FFFFFF",
+          "tertiaryContainer": "#E6DEFF",
+          "onTertiaryContainer": "#483F77",
+          "error": "#BA1A1A",
+          "onError": "#FFFFFF",
+          "errorContainer": "#FFDAD6",
+          "onErrorContainer": "#93000A",
+          "background": "#F9F9FF",
+          "onBackground": "#191C20",
+          "surface": "#FAF8FF",
+          "onSurface": "#1A1B21",
+          "surfaceVariant": "#E1E2EC",
+          "onSurfaceVariant": "#44474F",
+          "scrim": "#000000",
+          "inverseSurface": "#2F3036",
+          "inverseOnSurface": "#F1F0F7",
+          "inversePrimary": "#AAC7FF",
+          "border": "#AAC7FF"
+        }
+      },
+      "material": {
+        "dark": {
+          "primary": "#0C2A67",
+          "onPrimary": "#558DD0",
+          "primaryContainer": "#192E4F",
+          "onPrimaryContainer": "#B4C9F6",
+          "secondary": "#BEC7DC",
+          "onSecondary": "#283141",
+          "secondaryContainer": "#3E4759",
+          "onSecondaryContainer": "#DAE2F9",
+          "tertiary": "#BEC9FF",
+          "onTertiary": "#28345F",
+          "tertiaryContainer": "#8CDDE8",
+          "onTertiaryContainer": "#E6DEFF",
+          "error": "#FFB4AB",
+          "onError": "#690005",
+          "errorContainer": "#93000A",
+          "onErrorContainer": "#FFDAD6",
+          "background": "#111318",
+          "onBackground": "#E2E2E9",
+          "surface": "#0A1017",
+          "onSurface": "#DAE3FA",
+          "surfaceVariant": "#44474F",
+          "onSurfaceVariant": "#C4C6D0",
+          "scrim": "#000000",
+          "inverseSurface": "#E3E2E9",
+          "inverseOnSurface": "#2F3036",
+          "inversePrimary": "#152986"
+        },
+        "light": {
+          "primary": "#405F90",
+          "onPrimary": "#FFFFFF",
+          "primaryContainer": "#D6E3FF",
+          "onPrimaryContainer": "#274777",
+          "secondary": "#565F71",
+          "onSecondary": "#FFFFFF",
+          "secondaryContainer": "#DAE2F9",
+          "onSecondaryContainer": "#3E4759",
+          "tertiary": "#605690",
+          "onTertiary": "#FFFFFF",
+          "tertiaryContainer": "#E6DEFF",
+          "onTertiaryContainer": "#483F77",
+          "error": "#BA1A1A",
+          "onError": "#FFFFFF",
+          "errorContainer": "#FFDAD6",
+          "onErrorContainer": "#93000A",
+          "background": "#F9F9FF",
+          "onBackground": "#191C20",
+          "surface": "#FAF8FF",
+          "onSurface": "#1A1B21",
+          "surfaceVariant": "#E1E2EC",
+          "onSurfaceVariant": "#44474F",
+          "scrim": "#000000",
+          "inverseSurface": "#2F3036",
+          "inverseOnSurface": "#F1F0F7",
+          "inversePrimary": "#AAC7FF"
+        }
+      },
+      "declaredButNotAppliedToAnyScheme": {
+        "light": {
+          "outline": "#75777F",
+          "outlineVariant": "#C4C6D0",
+          "surfaceDim": "#DAD9E0",
+          "surfaceBright": "#FAF8FF",
+          "surfaceContainerLowest": "#FFFFFF",
+          "surfaceContainerLow": "#F4F3FA",
+          "surfaceContainer": "#EEEDF4",
+          "surfaceContainerHigh": "#E8E7EF",
+          "surfaceContainerHighest": "#E3E2E9"
+        },
+        "dark": {
+          "outline": "#8E9099",
+          "outlineVariant": "#44474F",
+          "surfaceDim": "#121318",
+          "surfaceBright": "#38393F",
+          "surfaceContainerLowest": "#0D0E13",
+          "surfaceContainerLow": "#1A1B21",
+          "surfaceContainer": "#1E1F25",
+          "surfaceContainerHigh": "#292A2F",
+          "surfaceContainerHighest": "#33343A"
+        }
+      }
+    },
+    "OLED_BLACK": {
+      "sourceFile": "app/src/main/java/com/github/damontecres/wholphin/ui/theme/colors/OledThemeColors.kt",
+      "schemeStartLines": {
+        "lightSchemeMaterial": 85,
+        "lightScheme": 115,
+        "darkSchemeMaterial": 146,
+        "darkScheme": 176
+      },
+      "tv": {
+        "dark": {
+          "primary": "#4D4B4BC0",
+          "onPrimary": "#FFFFFF",
+          "primaryContainer": "#505050",
+          "onPrimaryContainer": "#FFFFFFC0",
+          "secondary": "#808080",
+          "onSecondary": "#FFFFFFC0",
+          "secondaryContainer": "#505050",
+          "onSecondaryContainer": "#FFFFFFC0",
+          "tertiary": "#DEDEDE",
+          "onTertiary": "#363535",
+          "tertiaryContainer": "#909090",
+          "onTertiaryContainer": "#FFFFFF",
+          "error": "#FFB4AB",
+          "onError": "#690005",
+          "errorContainer": "#93000A",
+          "onErrorContainer": "#FFFFFF",
+          "background": "#000000",
+          "onBackground": "#FFFFFFC0",
+          "surface": "#000000",
+          "onSurface": "#FFFFFFC0",
+          "surfaceVariant": "#303030",
+          "onSurfaceVariant": "#FFFFFFC0",
+          "scrim": "#000000",
+          "inverseSurface": "#E8E8E8",
+          "inverseOnSurface": "#000000",
+          "inversePrimary": "#F9F4FFC0",
+          "border": "#F9F4FFC0"
+        },
+        "light": {
+          "primary": "#405F90",
+          "onPrimary": "#FFFFFF",
+          "primaryContainer": "#D6E3FF",
+          "onPrimaryContainer": "#274777",
+          "secondary": "#565F71",
+          "onSecondary": "#FFFFFF",
+          "secondaryContainer": "#DAE2F9",
+          "onSecondaryContainer": "#3E4759",
+          "tertiary": "#605690",
+          "onTertiary": "#FFFFFF",
+          "tertiaryContainer": "#E6DEFF",
+          "onTertiaryContainer": "#483F77",
+          "error": "#BA1A1A",
+          "onError": "#FFFFFF",
+          "errorContainer": "#FFDAD6",
+          "onErrorContainer": "#93000A",
+          "background": "#F9F9FF",
+          "onBackground": "#191C20",
+          "surface": "#FAF8FF",
+          "onSurface": "#1A1B21",
+          "surfaceVariant": "#E1E2EC",
+          "onSurfaceVariant": "#44474F",
+          "scrim": "#000000",
+          "inverseSurface": "#2F3036",
+          "inverseOnSurface": "#F1F0F7",
+          "inversePrimary": "#AAC7FF",
+          "border": "#AAC7FF"
+        }
+      },
+      "material": {
+        "dark": {
+          "primary": "#4D4B4BC0",
+          "onPrimary": "#FFFFFF",
+          "primaryContainer": "#505050",
+          "onPrimaryContainer": "#FFFFFFC0",
+          "secondary": "#808080",
+          "onSecondary": "#FFFFFFC0",
+          "secondaryContainer": "#505050",
+          "onSecondaryContainer": "#FFFFFFC0",
+          "tertiary": "#DEDEDE",
+          "onTertiary": "#363535",
+          "tertiaryContainer": "#909090",
+          "onTertiaryContainer": "#FFFFFF",
+          "error": "#FFB4AB",
+          "onError": "#690005",
+          "errorContainer": "#93000A",
+          "onErrorContainer": "#FFFFFF",
+          "background": "#000000",
+          "onBackground": "#FFFFFFC0",
+          "surface": "#000000",
+          "onSurface": "#FFFFFFC0",
+          "surfaceVariant": "#303030",
+          "onSurfaceVariant": "#FFFFFFC0",
+          "scrim": "#000000",
+          "inverseSurface": "#E8E8E8",
+          "inverseOnSurface": "#000000",
+          "inversePrimary": "#F9F4FFC0"
+        },
+        "light": {
+          "primary": "#405F90",
+          "onPrimary": "#FFFFFF",
+          "primaryContainer": "#D6E3FF",
+          "onPrimaryContainer": "#274777",
+          "secondary": "#565F71",
+          "onSecondary": "#FFFFFF",
+          "secondaryContainer": "#DAE2F9",
+          "onSecondaryContainer": "#3E4759",
+          "tertiary": "#605690",
+          "onTertiary": "#FFFFFF",
+          "tertiaryContainer": "#E6DEFF",
+          "onTertiaryContainer": "#483F77",
+          "error": "#BA1A1A",
+          "onError": "#FFFFFF",
+          "errorContainer": "#FFDAD6",
+          "onErrorContainer": "#93000A",
+          "background": "#F9F9FF",
+          "onBackground": "#191C20",
+          "surface": "#FAF8FF",
+          "onSurface": "#1A1B21",
+          "surfaceVariant": "#E1E2EC",
+          "onSurfaceVariant": "#44474F",
+          "scrim": "#000000",
+          "inverseSurface": "#2F3036",
+          "inverseOnSurface": "#F1F0F7",
+          "inversePrimary": "#AAC7FF"
+        }
+      },
+      "declaredButNotAppliedToAnyScheme": {
+        "light": {
+          "outline": "#75777F",
+          "outlineVariant": "#C4C6D0",
+          "surfaceDim": "#DAD9E0",
+          "surfaceBright": "#FAF8FF",
+          "surfaceContainerLowest": "#FFFFFF",
+          "surfaceContainerLow": "#F4F3FA",
+          "surfaceContainer": "#EEEDF4",
+          "surfaceContainerHigh": "#E8E7EF",
+          "surfaceContainerHighest": "#E3E2E9"
+        },
+        "dark": {
+          "on": "#FFFFFFC0",
+          "outline": "#8E9099",
+          "outlineVariant": "#44474F",
+          "surfaceDim": "#121318",
+          "surfaceBright": "#38393F",
+          "surfaceContainerLowest": "#0D0E13",
+          "surfaceContainerLow": "#1A1B21",
+          "surfaceContainer": "#1E1F25",
+          "surfaceContainerHigh": "#292A2F",
+          "surfaceContainerHighest": "#33343A"
+        }
+      }
+    },
+    "RED": {
+      "sourceFile": "app/src/main/java/com/github/damontecres/wholphin/ui/theme/colors/RedThemeColors.kt",
+      "schemeStartLines": {
+        "lightSchemeMaterial": 83,
+        "lightScheme": 113,
+        "darkSchemeMaterial": 144,
+        "darkScheme": 174
+      },
+      "tv": {
+        "dark": {
+          "primary": "#FFB4AA",
+          "onPrimary": "#561E18",
+          "primaryContainer": "#73342C",
+          "onPrimaryContainer": "#FFDAD5",
+          "secondary": "#E7BDB7",
+          "onSecondary": "#442926",
+          "secondaryContainer": "#5D3F3B",
+          "onSecondaryContainer": "#FFDAD5",
+          "tertiary": "#DFC38C",
+          "onTertiary": "#3F2E04",
+          "tertiaryContainer": "#574419",
+          "onTertiaryContainer": "#FDDFA6",
+          "error": "#FFB4AB",
+          "onError": "#690005",
+          "errorContainer": "#93000A",
+          "onErrorContainer": "#FFDAD6",
+          "background": "#1A1110",
+          "onBackground": "#F1DEDC",
+          "surface": "#1A1110",
+          "onSurface": "#F1DEDC",
+          "surfaceVariant": "#534341",
+          "onSurfaceVariant": "#D8C2BE",
+          "scrim": "#000000",
+          "inverseSurface": "#F1DEDC",
+          "inverseOnSurface": "#392E2C",
+          "inversePrimary": "#C0000C",
+          "border": "#C0000C"
+        },
+        "light": {
+          "primary": "#904A42",
+          "onPrimary": "#FFFFFF",
+          "primaryContainer": "#FFDAD5",
+          "onPrimaryContainer": "#73342C",
+          "secondary": "#775652",
+          "onSecondary": "#FFFFFF",
+          "secondaryContainer": "#FFDAD5",
+          "onSecondaryContainer": "#5D3F3B",
+          "tertiary": "#715C2E",
+          "onTertiary": "#FFFFFF",
+          "tertiaryContainer": "#FDDFA6",
+          "onTertiaryContainer": "#574419",
+          "error": "#BA1A1A",
+          "onError": "#FFFFFF",
+          "errorContainer": "#FFDAD6",
+          "onErrorContainer": "#93000A",
+          "background": "#FFF8F7",
+          "onBackground": "#231918",
+          "surface": "#FFF8F7",
+          "onSurface": "#231918",
+          "surfaceVariant": "#F5DDDA",
+          "onSurfaceVariant": "#534341",
+          "scrim": "#000000",
+          "inverseSurface": "#392E2C",
+          "inverseOnSurface": "#FFEDEA",
+          "inversePrimary": "#FFB4AA",
+          "border": "#FFB4AA"
+        }
+      },
+      "material": {
+        "dark": {
+          "primary": "#FFB4AA",
+          "onPrimary": "#561E18",
+          "primaryContainer": "#73342C",
+          "onPrimaryContainer": "#FFDAD5",
+          "secondary": "#E7BDB7",
+          "onSecondary": "#442926",
+          "secondaryContainer": "#5D3F3B",
+          "onSecondaryContainer": "#FFDAD5",
+          "tertiary": "#DFC38C",
+          "onTertiary": "#3F2E04",
+          "tertiaryContainer": "#574419",
+          "onTertiaryContainer": "#FDDFA6",
+          "error": "#FFB4AB",
+          "onError": "#690005",
+          "errorContainer": "#93000A",
+          "onErrorContainer": "#FFDAD6",
+          "background": "#1A1110",
+          "onBackground": "#F1DEDC",
+          "surface": "#1A1110",
+          "onSurface": "#F1DEDC",
+          "surfaceVariant": "#534341",
+          "onSurfaceVariant": "#D8C2BE",
+          "scrim": "#000000",
+          "inverseSurface": "#F1DEDC",
+          "inverseOnSurface": "#392E2C",
+          "inversePrimary": "#C0000C"
+        },
+        "light": {
+          "primary": "#904A42",
+          "onPrimary": "#FFFFFF",
+          "primaryContainer": "#FFDAD5",
+          "onPrimaryContainer": "#73342C",
+          "secondary": "#775652",
+          "onSecondary": "#FFFFFF",
+          "secondaryContainer": "#FFDAD5",
+          "onSecondaryContainer": "#5D3F3B",
+          "tertiary": "#715C2E",
+          "onTertiary": "#FFFFFF",
+          "tertiaryContainer": "#FDDFA6",
+          "onTertiaryContainer": "#574419",
+          "error": "#BA1A1A",
+          "onError": "#FFFFFF",
+          "errorContainer": "#FFDAD6",
+          "onErrorContainer": "#93000A",
+          "background": "#FFF8F7",
+          "onBackground": "#231918",
+          "surface": "#FFF8F7",
+          "onSurface": "#231918",
+          "surfaceVariant": "#F5DDDA",
+          "onSurfaceVariant": "#534341",
+          "scrim": "#000000",
+          "inverseSurface": "#392E2C",
+          "inverseOnSurface": "#FFEDEA",
+          "inversePrimary": "#FFB4AA"
+        }
+      },
+      "declaredButNotAppliedToAnyScheme": {
+        "light": {
+          "outline": "#857370",
+          "outlineVariant": "#D8C2BE",
+          "surfaceDim": "#E8D6D4",
+          "surfaceBright": "#FFF8F7",
+          "surfaceContainerLowest": "#FFFFFF",
+          "surfaceContainerLow": "#FFF0EE",
+          "surfaceContainer": "#FCEAE7",
+          "surfaceContainerHigh": "#F7E4E2",
+          "surfaceContainerHighest": "#F1DEDC"
+        },
+        "dark": {
+          "outline": "#A08C8A",
+          "outlineVariant": "#534341",
+          "surfaceDim": "#1A1110",
+          "surfaceBright": "#423735",
+          "surfaceContainerLowest": "#140C0B",
+          "surfaceContainerLow": "#231918",
+          "surfaceContainer": "#271D1C",
+          "surfaceContainerHigh": "#322826",
+          "surfaceContainerHighest": "#3D3231"
+        }
+      }
+    },
+    "BROWN": {
+      "sourceFile": "app/src/main/java/com/github/damontecres/wholphin/ui/theme/colors/BrownThemeColors.kt",
+      "schemeStartLines": {
+        "lightSchemeMaterial": 83,
+        "lightScheme": 113,
+        "darkSchemeMaterial": 144,
+        "darkScheme": 174
+      },
+      "tv": {
+        "dark": {
+          "primary": "#FFB784",
+          "onPrimary": "#4F2500",
+          "primaryContainer": "#6D390C",
+          "onPrimaryContainer": "#FFDCC6",
+          "secondary": "#E4BFA8",
+          "onSecondary": "#422B1B",
+          "secondaryContainer": "#5B412F",
+          "onSecondaryContainer": "#FFDCC6",
+          "tertiary": "#C8CA94",
+          "onTertiary": "#30330B",
+          "tertiaryContainer": "#47491F",
+          "onTertiaryContainer": "#E5E6AE",
+          "error": "#FFB4AB",
+          "onError": "#690005",
+          "errorContainer": "#93000A",
+          "onErrorContainer": "#FFDAD6",
+          "background": "#19120D",
+          "onBackground": "#F0DFD6",
+          "surface": "#19120D",
+          "onSurface": "#F0DFD6",
+          "surfaceVariant": "#52443B",
+          "onSurfaceVariant": "#D7C3B7",
+          "scrim": "#000000",
+          "inverseSurface": "#F0DFD6",
+          "inverseOnSurface": "#382F29",
+          "inversePrimary": "#6D3B07",
+          "border": "#6D3B07"
+        },
+        "light": {
+          "primary": "#8A5022",
+          "onPrimary": "#FFFFFF",
+          "primaryContainer": "#FFDCC6",
+          "onPrimaryContainer": "#6D390C",
+          "secondary": "#755845",
+          "onSecondary": "#FFFFFF",
+          "secondaryContainer": "#FFDCC6",
+          "onSecondaryContainer": "#5B412F",
+          "tertiary": "#5F6135",
+          "onTertiary": "#FFFFFF",
+          "tertiaryContainer": "#E5E6AE",
+          "onTertiaryContainer": "#47491F",
+          "error": "#BA1A1A",
+          "onError": "#FFFFFF",
+          "errorContainer": "#FFDAD6",
+          "onErrorContainer": "#93000A",
+          "background": "#FFF8F5",
+          "onBackground": "#221A15",
+          "surface": "#FFF8F5",
+          "onSurface": "#221A15",
+          "surfaceVariant": "#F3DED3",
+          "onSurfaceVariant": "#52443B",
+          "scrim": "#000000",
+          "inverseSurface": "#382F29",
+          "inverseOnSurface": "#FEEDE4",
+          "inversePrimary": "#FFB784",
+          "border": "#FFB784"
+        }
+      },
+      "material": {
+        "dark": {
+          "primary": "#FFB784",
+          "onPrimary": "#4F2500",
+          "primaryContainer": "#6D390C",
+          "onPrimaryContainer": "#FFDCC6",
+          "secondary": "#E4BFA8",
+          "onSecondary": "#422B1B",
+          "secondaryContainer": "#5B412F",
+          "onSecondaryContainer": "#FFDCC6",
+          "tertiary": "#C8CA94",
+          "onTertiary": "#30330B",
+          "tertiaryContainer": "#47491F",
+          "onTertiaryContainer": "#E5E6AE",
+          "error": "#FFB4AB",
+          "onError": "#690005",
+          "errorContainer": "#93000A",
+          "onErrorContainer": "#FFDAD6",
+          "background": "#19120D",
+          "onBackground": "#F0DFD6",
+          "surface": "#19120D",
+          "onSurface": "#F0DFD6",
+          "surfaceVariant": "#52443B",
+          "onSurfaceVariant": "#D7C3B7",
+          "scrim": "#000000",
+          "inverseSurface": "#F0DFD6",
+          "inverseOnSurface": "#382F29",
+          "inversePrimary": "#6D3B07"
+        },
+        "light": {
+          "primary": "#8A5022",
+          "onPrimary": "#FFFFFF",
+          "primaryContainer": "#FFDCC6",
+          "onPrimaryContainer": "#6D390C",
+          "secondary": "#755845",
+          "onSecondary": "#FFFFFF",
+          "secondaryContainer": "#FFDCC6",
+          "onSecondaryContainer": "#5B412F",
+          "tertiary": "#5F6135",
+          "onTertiary": "#FFFFFF",
+          "tertiaryContainer": "#E5E6AE",
+          "onTertiaryContainer": "#47491F",
+          "error": "#BA1A1A",
+          "onError": "#FFFFFF",
+          "errorContainer": "#FFDAD6",
+          "onErrorContainer": "#93000A",
+          "background": "#FFF8F5",
+          "onBackground": "#221A15",
+          "surface": "#FFF8F5",
+          "onSurface": "#221A15",
+          "surfaceVariant": "#F3DED3",
+          "onSurfaceVariant": "#52443B",
+          "scrim": "#000000",
+          "inverseSurface": "#382F29",
+          "inverseOnSurface": "#FEEDE4",
+          "inversePrimary": "#FFB784"
+        }
+      },
+      "declaredButNotAppliedToAnyScheme": {
+        "light": {
+          "outline": "#84746A",
+          "outlineVariant": "#D7C3B7",
+          "surfaceDim": "#E7D7CE",
+          "surfaceBright": "#FFF8F5",
+          "surfaceContainerLowest": "#FFFFFF",
+          "surfaceContainerLow": "#FFF1EA",
+          "surfaceContainer": "#FBEBE2",
+          "surfaceContainerHigh": "#F6E5DC",
+          "surfaceContainerHighest": "#F0DFD6"
+        },
+        "dark": {
+          "outline": "#9F8D83",
+          "outlineVariant": "#52443B",
+          "surfaceDim": "#19120D",
+          "surfaceBright": "#413731",
+          "surfaceContainerLowest": "#140D08",
+          "surfaceContainerLow": "#221A15",
+          "surfaceContainer": "#261E18",
+          "surfaceContainerHigh": "#312822",
+          "surfaceContainerHighest": "#3C332D"
+        }
+      }
+    }
+  },
+  "fixedColors": {
+    "citation": "W/ui/UiConstants.kt:24-43",
+    "TransparentBlack25": "#00000040",
+    "TransparentBlack50": "#00000080",
+    "TransparentBlack75": "#000000BF",
+    "DarkGreen": "#114000",
+    "DarkRed": "#400000",
+    "DarkCyan": "#21556E",
+    "DarkPurple": "#261370",
+    "GoldenYellow": "#DAB440",
+    "discover": {
+      "blue": "#2563EB",
+      "purple": "#9333EA",
+      "green": "#4ADE80",
+      "yellow": "#EAB308",
+      "red": "#CC2626",
+      "typeChipAlpha": 0.8,
+      "badgeAlpha": 0.85
+    },
+    "favoriteHeart": {
+      "value": "#FF4444",
+      "note": "android.R.color.holo_red_light (system color)",
+      "citation": "W/ui/cards/ItemCardImage.kt:288"
+    },
+    "favoriteButtonActive": "#FF0000",
+    "deleteRedAlpha80": "#FF0000CC",
+    "starFilled": "#FFC700",
+    "starEmpty": "#5D4A0A",
+    "citationStars": "W/ui/components/Rating.kt:75-76",
+    "tomatoFresh": "#F93208",
+    "tomatoFreshThreshold": 60,
+    "m3OutlineVariant": {
+      "value": "#49454F",
+      "note": "compose-material3 darkColorScheme() default outlineVariant: the color of every material3 HorizontalDivider. No theme's darkSchemeMaterial passes outlineVariant, so it is the same in all eight themes.",
+      "citation": "W/ui/theme/Theme.kt:47-50; W/ui/theme/colors/*ThemeColors.kt (darkSchemeMaterial)"
+    },
+    "launcherBackground": "#101010",
+    "bannerBackground": "#000B25",
+    "preThemeBackground": "#000000"
+  },
+  "themeConditionalColors": {
+    "navItem": {
+      "citation": "W/ui/nav/NavDrawer.kt:747-799",
+      "oled": {
+        "selectedFocused": "#000000",
+        "selectedDrawerClosed": "#FFFFFF80",
+        "selectedDrawerOpen": "#FFFFFFD9",
+        "focused": "#00000080",
+        "drawerOpen": "#707070",
+        "default": "#505050A8"
+      },
+      "others": {
+        "alphaDrawerOpen": 0.85,
+        "alphaSelectedClosed": 0.5,
+        "alphaDefault": 0.2,
+        "selectedFocusedRole": {
+          "PURPLE": "border",
+          "BLUE": "border",
+          "GREEN": "border",
+          "ORANGE": "border",
+          "RED": "border",
+          "BROWN": "border",
+          "BOLD_BLUE": "primary",
+          "OLED_BLACK": "primary"
+        },
+        "selectedRole": "border",
+        "focusedRole": "LocalContentColor",
+        "defaultRole": "onSurface"
+      }
+    },
+    "watchedBadgeBackgroundRole": {
+      "default": "border (alpha 1)",
+      "OLED_BLACK": "secondaryContainer",
+      "citation": "W/ui/cards/WatchedIcon.kt:39-53"
+    },
+    "sliderActive": {
+      "default": "border",
+      "OLED_BLACK": {
+        "focused": "primaryContainer",
+        "unfocused": "border"
+      }
+    },
+    "sliderInactive": {
+      "PURPLE": "border@.25 over surfaceVariant, then alpha .66",
+      "BLUE|GREEN|ORANGE|BOLD_BLUE|RED|BROWN": "secondaryContainer@.66",
+      "OLED_BLACK": {
+        "focused": "tertiaryContainer",
+        "unfocused": "primaryContainer"
+      },
+      "citation": "W/ui/components/SliderBar.kt:141-205"
+    },
+    "switchThumb": {
+      "PURPLE|BLUE": "libDefault SwitchDefaults.colors()",
+      "others": "onPrimary (checked and unchecked)",
+      "citation": "W/ui/preferences/SwitchPreference.kt:67-93"
+    }
+  },
+  "typography": {
+    "source": "W/ui/theme/Type.kt:5 = androidx.tv.material3 Typography() (library default, no overrides)",
+    "fontFamily": {
+      "text": "system default (Roboto on Android TV); no text font bundled",
+      "icons": "R/font/fa_solid_900.ttf (Font Awesome Solid) declared at W/ui/UiConstants.kt:16"
+    },
+    "valuesAreLibDefaultUnverified": false,
+    "styles": {
+      "displayLarge": {
+        "sp": 57,
+        "lineHeight": 64,
+        "weight": 400,
+        "letterSpacing": -0.2
+      },
+      "displayMedium": {
+        "sp": 45,
+        "lineHeight": 52,
+        "weight": 400,
+        "letterSpacing": 0
+      },
+      "displaySmall": {
+        "sp": 36,
+        "lineHeight": 44,
+        "weight": 400,
+        "letterSpacing": 0
+      },
+      "headlineLarge": {
+        "sp": 32,
+        "lineHeight": 40,
+        "weight": 400,
+        "letterSpacing": 0
+      },
+      "headlineMedium": {
+        "sp": 28,
+        "lineHeight": 36,
+        "weight": 400,
+        "letterSpacing": 0
+      },
+      "headlineSmall": {
+        "sp": 24,
+        "lineHeight": 32,
+        "weight": 400,
+        "letterSpacing": 0
+      },
+      "titleLarge": {
+        "sp": 22,
+        "lineHeight": 28,
+        "weight": 400,
+        "letterSpacing": 0
+      },
+      "titleMedium": {
+        "sp": 16,
+        "lineHeight": 24,
+        "weight": 500,
+        "letterSpacing": 0.2
+      },
+      "titleSmall": {
+        "sp": 14,
+        "lineHeight": 20,
+        "weight": 500,
+        "letterSpacing": 0.1
+      },
+      "bodyLarge": {
+        "sp": 16,
+        "lineHeight": 24,
+        "weight": 400,
+        "letterSpacing": 0.5
+      },
+      "bodyMedium": {
+        "sp": 14,
+        "lineHeight": 20,
+        "weight": 400,
+        "letterSpacing": 0.2
+      },
+      "bodySmall": {
+        "sp": 12,
+        "lineHeight": 16,
+        "weight": 400,
+        "letterSpacing": 0.2
+      },
+      "labelLarge": {
+        "sp": 14,
+        "lineHeight": 20,
+        "weight": 500,
+        "letterSpacing": 0.1
+      },
+      "labelMedium": {
+        "sp": 12,
+        "lineHeight": 16,
+        "weight": 500,
+        "letterSpacing": 0.5
+      },
+      "labelSmall": {
+        "sp": 11,
+        "lineHeight": 16,
+        "weight": 500,
+        "letterSpacing": 0.5
+      }
+    },
+    "usageOverrides": {
+      "cardTitle": {
+        "style": "bodyMedium",
+        "weight": 600
+      },
+      "cardSubtitle": {
+        "style": "bodySmall",
+        "weight": 400
+      },
+      "bannerTitle": {
+        "style": "bodyLarge",
+        "weight": 600
+      },
+      "bannerSubtitle": {
+        "style": "bodyMedium",
+        "weight": 400
+      },
+      "genreCardName": {
+        "style": "titleLarge",
+        "weight": 700
+      },
+      "rowTitle": {
+        "style": "titleLarge"
+      },
+      "tabLabel": {
+        "sp": 16
+      },
+      "clock": {
+        "style": "bodyLarge",
+        "sp": 18
+      },
+      "streamChip": {
+        "sp": 12,
+        "weight": 600
+      },
+      "gridFallbackText": {
+        "sp": 14
+      },
+      "discoverChip": {
+        "style": "bodySmall",
+        "sp": 10
+      }
+    },
+    "fontAwesomeCodepoints": {
+      "tag": "f02b",
+      "user": "f007",
+      "location_dot": "f3c5",
+      "film": "f008",
+      "circle_play": "f144",
+      "image": "f03e",
+      "images": "f302",
+      "rotate_right": "f2f9",
+      "rotate_left": "f2ea",
+      "arrows_rotate": "f021",
+      "arrow_right_arrow_left": "f0ec",
+      "magnifying_glass_plus": "f00e",
+      "magnifying_glass_minus": "f010",
+      "caret_up": "f0d8",
+      "caret_down": "f0d7",
+      "caret_left": "f0d9",
+      "caret_right": "f0da",
+      "heart": "f004",
+      "video": "f03d",
+      "play": "f04b",
+      "pause": "f04c",
+      "arrow_down_long": "f175",
+      "arrow_up_long": "f176",
+      "arrow_left_long": "f177",
+      "arrow_right_long": "f178",
+      "angle_up": "f106",
+      "angles_up": "f102",
+      "angle_down": "f107",
+      "angles_down": "f103",
+      "house": "f015",
+      "closed_captioning": "f20a",
+      "tv": "f26c",
+      "music": "f001",
+      "eye": "f06e",
+      "eye_slash": "f070",
+      "shuffle": "f074",
+      "open_folder": "f07c",
+      "list_ul": "f0ca",
+      "file_video": "f1c8",
+      "volume_low": "f027",
+      "volume_high": "f028",
+      "ellipsis": "f141",
+      "ellipsis_vertical": "f142",
+      "filter": "f0b0",
+      "sliders": "f1de",
+      "microphone": "f130",
+      "download": "f019",
+      "clock": "f017",
+      "bell": "f0f3",
+      "check": "f00c",
+      "cloud_arrow_up": "f0ee",
+      "cloud_arrow_down": "f0ed",
+      "compass": "f14e",
+      "repeat": "f363",
+      "compact_disc": "f51f",
+      "xmark": "f00d",
+      "dice": "f522",
+      "circle_xmark": "f057"
+    },
+    "fontAwesomeCitation": "R/values/fa_strings.xml:6-64",
+    "verifiedNote": "Letter spacing corrected against androidx tv-material TypographyTokens (see src/ui/LIB_DEFAULTS.md)."
+  },
+  "shapesDp": {
+    "libDefaultShapesUnverified": {
+      "extraSmall": 4,
+      "small": 8,
+      "medium": 12,
+      "large": 16,
+      "extraLarge": 28
+    },
+    "dialogPopup": 28,
+    "scrollableDialog": 8,
+    "basicDialog": 8,
+    "switchRow": 20,
+    "starPill": 16,
+    "overviewFocusBox": 8,
+    "streamChip": 4,
+    "titleValueFocus": 4,
+    "focusableRow": 8,
+    "genreStudioImageClip": 8,
+    "textFieldMultiline": 8,
+    "cornerPillPercent": 25,
+    "watchedBadge": {
+      "size": 24,
+      "ring": 0.5,
+      "ringColor": "#000000",
+      "padding": 2
+    },
+    "discoverBadgeSize": 16,
+    "serverUserCircle": 129
+  },
+  "focus": {
+    "imageCard": {
+      "focusedScale": 1.1,
+      "scaleSource": "libDefault CardDefaults.scale() (unverified)",
+      "border": {
+        "widthDp": 3,
+        "colorRole": "border",
+        "source": "libDefault CardDefaults.border(); explicit in W/ui/cards/PersonCard.kt:108-119"
+      },
+      "glow": "none (libDefault)",
+      "animation": "libDefault, not set in repo"
+    },
+    "serverUserCircle": {
+      "focusedScale": 1.2,
+      "borderDp": 3,
+      "borderRole": "onSurface",
+      "containerAlpha": {
+        "normal": [
+          0.5,
+          0.7
+        ],
+        "current": [
+          0.7,
+          0.9
+        ]
+      },
+      "citation": "W/ui/setup/ServerList.kt:136-164"
+    },
+    "button": {
+      "container": "surfaceVariant@0.8",
+      "content": "onSurface@0.8",
+      "focused": {
+        "container": "onSurface",
+        "content": "inverseOnSurface"
+      },
+      "disabled": {
+        "container": "surfaceVariant@0.4",
+        "content": "onSurface@0.4"
+      },
+      "focusedDisabledRingDp": 1.5,
+      "minHeightDp": 40,
+      "paddingDp": 4,
+      "textButtonHeightDp": 32,
+      "shape": "circle",
+      "scale": "libDefault ClickableSurfaceDefaults.scale() (focused 1.1, unverified)",
+      "citation": "W/ui/components/Button.kt:44-113"
+    },
+    "textField": {
+      "containerUnfocusedAlpha": 0.6,
+      "containerFocusedAlpha": 0.8,
+      "disabledAlpha": 0.25,
+      "errorContainerAlpha": 0.75,
+      "textRole": "onSurfaceVariant",
+      "heightDp": 40,
+      "citation": "W/ui/components/EditTextBox.kt:71-81,220"
+    },
+    "tab": {
+      "textSp": 16,
+      "hPaddingDp": 16,
+      "indicatorHeightDp": 2,
+      "selectedIndicatorWidthFraction": 0.25,
+      "focusedIndicatorColorRole": "border",
+      "inactiveTextAlpha": 0.5,
+      "citation": "W/ui/components/TabRow.kt:189-265"
+    },
+    "dropdownItem": {
+      "focusedBg": "inverseSurface",
+      "focusedText": "inverseOnSurface",
+      "unfocusedBg": "surfaceColorAtElevation(3dp)",
+      "citation": "W/ui/components/TvDropdownMenuItem.kt:33-45"
+    },
+    "switchRow": {
+      "focusedBg": "onSurface",
+      "unfocusedBg": "surfaceVariant@0.8",
+      "radiusDp": 20,
+      "paddingDp": 8
+    },
+    "overviewText": {
+      "focusedBg": "onPrimary@0.4"
+    },
+    "titleValueText": {
+      "focusedBg": "onPrimary@0.75",
+      "focusedScale": 1.1
+    },
+    "focusableItemRow": {
+      "focusedBg": "border@0.25"
+    },
+    "slider": {
+      "trackDp": 6,
+      "focusedTrackDp": 12,
+      "thumb": "#FFFFFF circle",
+      "citation": "W/ui/components/SliderBar.kt"
+    }
+  },
+  "motionMs": {
+    "backdropImageCrossfade": 800,
+    "dynamicBackdropColor": 1250,
+    "backdropExtractDelay": 500,
+    "tabContentFadeIn": {
+      "duration": 300,
+      "delay": 100
+    },
+    "tabContentFadeOut": {
+      "duration": 200
+    },
+    "screensaverItemFade": {
+      "duration": 500,
+      "delay": 100
+    },
+    "screensaverIn": 1000,
+    "screensaverOut": 500,
+    "focusedAfterDelay": 500,
+    "personFocusedAfterDelay": 1000,
+    "marquee": {
+      "initialDelay": 250,
+      "velocityDpPerSec": 40,
+      "startsAfterFocusMs": 500
+    },
+    "slidingCardText": {
+      "unfocusedGapDp": 12,
+      "focusedGapDp": 4,
+      "easing": "libDefault animateDpAsState spring"
+    },
+    "navDrawer": {
+      "collapsedDp": 64,
+      "expandedDp": 224,
+      "spring": "Spring.StiffnessMedium",
+      "citation": "W/ui/nav/NavigationDrawerAndroid.kt:107-140"
+    },
+    "defaultComposeTweenEasing": "FastOutSlowInEasing = cubic-bezier(0.4,0,0.2,1)",
+    "pageTransition": "libDefault androidx.navigation3 NavDisplay (no custom spec in repo)",
+    "dialogOpenInputBlockMs": 1000,
+    "delayedLoadingPageMs": 300
+  },
+  "backdrop": {
+    "citations": [
+      "W/ui/nav/Backdrop.kt",
+      "W/ui/nav/ApplicationContent.kt:28-29",
+      "W/services/BackdropService.kt"
+    ],
+    "styleEnum": {
+      "BACKDROP_DYNAMIC_COLOR": 0,
+      "BACKDROP_IMAGE_ONLY": 1,
+      "BACKDROP_NONE": 2,
+      "default": "BACKDROP_DYNAMIC_COLOR"
+    },
+    "image": {
+      "anchor": "top-end",
+      "widthFraction": 0.7,
+      "heightFraction": 0.7,
+      "contentScale": "Fit",
+      "crossfadeMs": 800,
+      "drawerOpenBlackOverlayAlpha": 0.75,
+      "topScrim": {
+        "enabledByDefault": true,
+        "fromAlpha": 0.55,
+        "toAlpha": 0,
+        "endFractionOfImageHeight": 0.25,
+        "blend": "Multiply"
+      },
+      "maskHorizontal": {
+        "from": "transparent",
+        "to": "black",
+        "endFractionOfImageWidth": 0.6,
+        "blend": "DstIn"
+      },
+      "maskVertical": {
+        "from": "black",
+        "to": "transparent",
+        "spanFractionOfImageHeight": 1.0,
+        "blend": "DstIn"
+      }
+    },
+    "dynamicColor": {
+      "radialRadiusFractionOfWidth": 0.8,
+      "colorTransitionMs": 1250,
+      "base": "colorScheme.background",
+      "blobs": [
+        {
+          "corner": "top-left",
+          "color": "secondary",
+          "alpha": 0.4
+        },
+        {
+          "corner": "bottom-right",
+          "color": "primary",
+          "alpha": 0.4
+        },
+        {
+          "corner": "bottom-left",
+          "color": "theme background -> transparent"
+        },
+        {
+          "corner": "top-right",
+          "color": "tertiary",
+          "alpha": 0.35
+        }
+      ],
+      "drawOrderBottomToTop": [
+        "top-left",
+        "bottom-right",
+        "bottom-left",
+        "top-right"
+      ],
+      "paletteRules": {
+        "primary": "darkVibrant ?: darkMuted",
+        "secondary": "vibrant if cool else muted if cool else vibrant else muted",
+        "tertiary": "vibrant ?: lightVibrant",
+        "coolTest": "b > r && (b+g) > r*1.5",
+        "lruCache": 50,
+        "library": "androidx.palette 1.1.0"
+      }
+    },
+    "screensaverVignette": {
+      "colors": [
+        "transparent",
+        "#00000040"
+      ],
+      "stops": [
+        0,
+        0.85
+      ],
+      "radiusDivisor": 1.5,
+      "blend": "Multiply",
+      "citation": "W/ui/components/AppScreensaver.kt:216-226"
+    }
+  },
+  "cards": {
+    "citation": "W/ui/UiConstants.kt:93-119",
+    "posterHeightDp": 172,
+    "episodeHeightDp": 128,
+    "liveTvHeightDp": 96,
+    "progressBarHeightDp": 6,
+    "serverUserCircleDp": 129,
+    "personCardWidthDp": 108,
+    "chapterCardHeightDp": 120,
+    "bannerDefaultHeightDp": 120,
+    "aspectRatios": {
+      "WIDE": 1.7777778,
+      "FOUR_THREE": 1.3333334,
+      "TALL": 0.6666667,
+      "SQUARE": 1,
+      "minimum": 0.6666667
+    },
+    "posterWidthDp": 114.667,
+    "overlay": {
+      "insetDp": 4,
+      "gapDp": 4,
+      "watchedBadgeDp": 24,
+      "pill": {
+        "bg": "#00000080",
+        "radiusPercent": 25,
+        "padDp": 4,
+        "textStyle": "bodyMedium",
+        "textRole": "onSurface"
+      },
+      "heartSp": 20,
+      "bannerHeartSp": 16,
+      "progressRole": "tertiary",
+      "fallbackIconFraction": 0.4,
+      "fallbackTextSp": 14
+    },
+    "textGapBelowImageDp": 4,
+    "titleGapUnfocusedDp": 12,
+    "titleGapFocusedDp": 4,
+    "grids": {
+      "POSTER": {
+        "columns": 6,
+        "gapDp": 16,
+        "aspect": "TALL",
+        "scale": "FillBounds"
+      },
+      "WIDE": {
+        "columns": 4,
+        "gapDp": 24,
+        "aspect": "WIDE",
+        "scale": "Crop"
+      },
+      "SQUARE": {
+        "columns": 6,
+        "gapDp": 16,
+        "aspect": "SQUARE",
+        "scale": "FillBounds"
+      },
+      "verticalContentPaddingDp": 16,
+      "citation": "W/ui/components/CollectionFolderGrid.kt:123-185"
+    },
+    "rows": {
+      "itemRowGapDp": 16,
+      "itemRowHorizontalPaddingDp": 16,
+      "itemRowVerticalPaddingDp": 8,
+      "titleToRowGapDp": 8,
+      "titlePaddingStartDp": 8,
+      "homeRowBottomPaddingDp": 8
+    },
+    "homeRowDefaults": {
+      "heightDp": 172,
+      "spacingDp": 16,
+      "aspectRatio": "TALL",
+      "imageType": "PRIMARY",
+      "showTitles": false,
+      "genre": {
+        "heightDp": 128,
+        "aspect": "WIDE"
+      },
+      "liveTv": {
+        "heightDp": 96,
+        "aspect": "WIDE",
+        "contentScale": "FIT"
+      },
+      "citation": "W/data/model/HomeRowConfig.kt:250-276"
+    },
+    "genreCardTintAlpha": 0.6,
+    "studioCardTintAlpha": 0.4,
+    "genreStudioImageAlpha": 0.75,
+    "genreStudioImageClipDp": 8
+  },
+  "layoutDp": {
+    "navDrawerCollapsed": 64,
+    "navDrawerExpanded": 224,
+    "navDrawerIcon": 24,
+    "navDrawerItemGap": 4,
+    "pageContentStartInset": 72,
+    "pageContentEndInset": 16,
+    "header": {
+      "top": 48,
+      "bottom": 32,
+      "start": 8,
+      "height": 180,
+      "logoHeight": 60,
+      "logoMaxWidth": 320,
+      "citation": "W/ui/components/HeaderUtils.kt"
+    },
+    "homeHeader": {
+      "titleWidthFraction": 0.75,
+      "detailsWidthFraction": 0.6,
+      "overviewWidth": 400,
+      "overviewHeight2Lines": 48,
+      "overviewHeight3Lines": 60
+    },
+    "homeListBottomPadding": 172,
+    "homeTitleReserve": 50,
+    "tabRowPadding": {
+      "top": 16,
+      "bottom": 16,
+      "endWhenClock": 184
+    },
+    "clock": {
+      "vertical": 16,
+      "horizontal": 24,
+      "textSp": 18
+    },
+    "settingsPanelWidthFraction": 0.4,
+    "settingsContentPadding": 16,
+    "dialog": {
+      "popupPadding": 24,
+      "popupRadius": 28,
+      "popupElevation": 1,
+      "menuElevation": 3,
+      "scrollableWidth": 600,
+      "scrollableMaxHeight": 380,
+      "scrollableContentPadding": 16,
+      "itemGap": 8
+    },
+    "spacingScale": [
+      4,
+      8,
+      16,
+      24,
+      32
+    ],
+    "designCanvas": "960x540 dp (Android TV 1080p at 320dpi); NOT enforced in code"
+  },
+  "assets": {
+    "fontFile": "R/font/fa_solid_900.ttf",
+    "vectorDrawables": [
+      "video_solid",
+      "baseline_play_arrow_24",
+      "baseline_pause_24",
+      "baseline_stop_24",
+      "baseline_skip_next_24",
+      "baseline_skip_previous_24",
+      "baseline_fast_forward_24",
+      "baseline_fast_rewind_24",
+      "baseline_undo_24",
+      "baseline_more_vert_96",
+      "vector_settings",
+      "captions_svgrepo_com",
+      "circular_arrow_right",
+      "gf_dvr",
+      "ic_rotten_tomatoes_fresh",
+      "ic_rotten_tomatoes_rotten"
+    ],
+    "rasterLogos": [
+      "mipmap-xxxhdpi/ic_launcher_foreground.webp",
+      "mipmap-xhdpi/ic_banner_foreground.png",
+      "mipmap-hdpi/eclipse.jpeg (sample photo)"
+    ]
+  }
+}

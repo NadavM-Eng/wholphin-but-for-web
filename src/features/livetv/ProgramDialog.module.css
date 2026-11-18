@@ -1,0 +1,95 @@
+/* Box(background surfaceColorAtElevation(5dp), RoundedCornerShape(16dp)) -> Column(padding 16, spacedBy 8).
+   A Compose Dialog with the platform default width is content-sized up to the platform's dialog width, 440dp on
+   the TV (refshots 34-live-tv-program-dialog-*); the loaded dialog's action column is fillMaxWidth, so it is
+   always that wide. The spinner and the error message stay content-sized. */
+.panel {
+  border-radius: 16px;
+  max-width: min(440px, 100%);
+  /* a Compose Dialog whose content only has a background draws no shadow (Dialogs.kt adds .shadow() only in
+     DialogPopup, BasicDialog and ScrollableDialog) */
+  box-shadow: none;
+}
+
+.loaded {
+  width: 440px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  color: var(--c-on-surface);
+}
+
+/* dir="auto" texts: each block sits at the dialog's start edge whatever its own direction (the rule of
+   DetailHeader.module.css); stretched, an English title was pushed to the far side of a Hebrew dialog */
+.title,
+.episode,
+.overview {
+  align-self: flex-start;
+  max-width: 100%;
+}
+
+/* The four Texts are trimmed as Compose does it (LineHeightStyle.Trim.Both: no half-leading above the first or
+   below the last line): 25.8 / 18.75 / 16.4 / 16.4dp for one line each, so the loaded dialog with all of them
+   and both button rows is 246dp tall (refshots 34-live-tv-program-dialog-now), not 260dp: `t-trim` in global.css
+   (it owns margin-block, so none is set here). */
+.title {
+  composes: t-titleLarge from global;
+  composes: t-trim from global;
+}
+
+.episode {
+  composes: t-titleMedium from global;
+  composes: t-trim from global;
+}
+
+.time {
+  composes: t-titleSmall from global;
+  composes: t-trim from global;
+}
+
+.overview {
+  composes: t-bodyMedium from global;
+  composes: t-trim from global;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+
+/* Column(spacedBy 16dp, CenterHorizontally, padding top 8dp) */
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding-top: 8px;
+}
+
+/* LazyRow(spacedBy 16dp, CenterHorizontally) */
+.recordRow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Row(spacedBy 4dp, CenterVertically) */
+.buttonContent {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Icons.Default.Close tinted Color.Red */
+.cancelIcon {
+  color: var(--fx-favorite-active);
+}
+
+.spinner {
+  margin: 8px;
+}

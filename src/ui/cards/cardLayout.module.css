@@ -1,0 +1,13 @@
+/* Shared card column: image, then 4dp, then the sliding title (Column spacedBy(4.dp)). */
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: none;
+  min-width: 0;
+}
+
+/* Image box that takes its size from the width and an aspect ratio. */
+.aspect {
+  width: 100%;
+}

@@ -1,0 +1,27 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  padding: 4px 6px;
+  border-radius: 4px;
+  background: rgb(from var(--c-secondary-container) r g b / 0.5);
+  color: var(--c-on-surface);
+  /* ProvideTextStyle(TextStyle(12sp, SemiBold)) merges into the ambient bodyLarge, which brings its .5sp
+     letter spacing; the one-line text is as tall as the font (14dp), so the chip is 22dp. */
+  font-size: 12px;
+  line-height: var(--t-font-height);
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.capped {
+  max-width: 160px;
+}
+
+.text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

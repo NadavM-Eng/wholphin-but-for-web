@@ -1,0 +1,135 @@
+/*
+ * SwitchServerContent / SwitchUserContent: a Box with the Column at Alignment.Center and the message at
+ * Alignment.BottomCenter drawn over it. The grid gives the same picture (equal space above and below the
+ * column, the message at the bottom of the lower space) and, unlike the Box, lets the lower row grow when a
+ * message needs more room than the window leaves, so the two never overlap on short windows. The Column's
+ * own 16dp vertical padding is the rows' minimum instead, because the TV message overlaps that padding
+ * (540dp canvas: 78dp below the column's content, a two-line message takes 68dp).
+ */
+.frame {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(16px, 1fr) auto minmax(auto, 1fr);
+  min-height: 100dvh;
+  transition:
+    opacity 150ms linear,
+    filter 150ms linear;
+}
+
+/* Modifier.dimAndBlur: alpha .5 + blur 16dp. */
+.dimmed {
+  opacity: 0.5;
+  filter: blur(16px);
+}
+
+.column {
+  grid-row: 2;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding-inline: 16px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  text-align: center;
+}
+
+/*
+ * Compose lays text out with LineHeightStyle.Default (Trim.Both; tv-material sets none): the half-leading
+ * above the first line and below the last is dropped, so the displaySmall title is 42.2dp tall (not 44) and
+ * the titleLarge line 25.8dp (not 28): the kit's t-trim (global.css), exact in every engine. The column is
+ * centred, so every such line moves the circles (refshots 01-setup-*).
+ */
+.title {
+  composes: t-displaySmall t-trim from global;
+  color: var(--c-on-surface);
+}
+
+.subtitle {
+  composes: t-titleLarge t-trim from global;
+  color: var(--c-on-surface);
+  overflow-wrap: anywhere;
+}
+
+.placeholder {
+  visibility: hidden;
+}
+
+/* The lower row: the message sits at its bottom edge (Alignment.BottomCenter). */
+.bottom {
+  grid-row: 3;
+  align-self: end;
+  min-width: 0;
+}
+
+/* SwitchErrorMessage: bodyMedium, error colour, centred, max 3 lines, padding 32dp start/end/bottom.
+   The clamp box cannot be trimmed (it is not a block container), so the 1.8dp half-leading that Compose
+   drops below the last line comes off the bottom padding instead. */
+.message {
+  composes: t-bodyMedium from global;
+  padding: 0 32px 30.2px;
+  color: var(--c-error);
+  text-align: center;
+  white-space: pre-line;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+}
+
+.message:empty {
+  display: block;
+  padding: 0;
+  min-height: 16px;
+}
+
+/* AnimatedContent of the server picker's message: it clips (SizeTransform) and slides vertically,
+   default spring (~400ms) approximated with a 300ms decelerate tween. */
+.messageBox {
+  position: relative;
+  display: grid;
+  overflow: hidden;
+}
+
+/* Old and new message share one grid cell, so the box keeps the taller one while both are shown. */
+.messageBox .message {
+  position: relative;
+  grid-area: 1 / 1;
+  align-self: end;
+}
+
+.messageBox .messageOut {
+  animation: msg-slide-out 300ms cubic-bezier(0, 0, 0.2, 1) forwards;
+}
+
+.messageIn {
+  animation: msg-slide-in 300ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+@keyframes msg-slide-in {
+  from {
+    transform: translateY(50%);
+  }
+}
+
+@keyframes msg-slide-out {
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .messageIn,
+  .messageBox .messageOut {
+    animation-duration: 1ms;
+  }
+}

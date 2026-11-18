@@ -1,0 +1,30 @@
+/* SeriesDetails.kt:370: LazyColumn(contentPadding = PaddingValues(bottom = 80.dp)), where the movie and episode
+   pages have 8dp (common/DetailPage.module.css). Doubled selector: it must win over the common class whatever
+   the order of the two style sheets. */
+.page.page {
+  padding-bottom: 80px;
+}
+
+/* Studios: GenreText with bodyLarge (SeriesDetails.kt:681-688). A Compose Text without a LineHeightStyle trims
+   the leading above its first and below its last line (see common/DetailHeader.module.css): 18.75dp, not 24. */
+.studios {
+  composes: t-bodyLarge t-line from global;
+  color: var(--c-on-surface);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  /* dir="auto" text hugging the start edge (DetailHeader.module.css) */
+  width: fit-content;
+  max-width: 100%;
+}
+
+/* Genres: GenreText with 4dp bottom padding. */
+.genres {
+  padding-bottom: 4px;
+}
+
+/* The series buttons are a plain Row (SeriesDetails.kt:386-395: start padding 8, bottom 16), not the LazyRow of
+   ExpandablePlayButtons with its 8dp content padding: no room above or below the 40dp buttons. */
+.buttonRow > div {
+  padding-block: 0;
+}

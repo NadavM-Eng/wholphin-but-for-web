@@ -1,0 +1,14 @@
+.row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  /* 8dp content padding, plus room so the 1.1x focus scale is not clipped by the scroll box. */
+  padding: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+.row::-webkit-scrollbar {
+  display: none;
+}

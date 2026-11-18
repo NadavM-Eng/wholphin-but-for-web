@@ -1,0 +1,21 @@
+/* AnimatedVisibility(expandVertically / shrinkVertically). */
+.collapse {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 250ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.collapse > * {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.collapse[data-hidden] {
+  grid-template-rows: 0fr;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .collapse {
+    transition: none;
+  }
+}

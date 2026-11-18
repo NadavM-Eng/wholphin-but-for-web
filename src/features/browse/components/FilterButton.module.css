@@ -1,0 +1,104 @@
+/* ExpandableFilterButton: the count sits after the glyph (end padding 4dp). */
+.button {
+  gap: 0;
+}
+
+.count {
+  composes: t-titleSmall from global;
+  padding-inline-end: 4px;
+}
+
+/* Menus: M3 DropdownMenu at surface+3dp (menu 1) and +5dp (menu 2, approximated with surface-3). */
+.panel {
+  position: fixed;
+  z-index: 950;
+  min-width: 112px;
+  max-width: min(280px, calc(100vw - 16px));
+  max-height: calc(100dvh - 16px);
+  overflow-y: auto;
+  padding-block: 8px;
+  border-radius: 4px;
+  background: var(--c-surface-3);
+  color: var(--c-on-surface);
+  box-shadow:
+    0 2px 6px 2px rgb(from var(--fx-black) r g b / 0.15),
+    0 1px 2px rgb(from var(--fx-black) r g b / 0.3);
+  overscroll-behavior: contain;
+  animation: open 120ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.panel2 {
+  z-index: 951;
+  background: var(--c-surface-3);
+}
+
+@keyframes open {
+  from {
+    opacity: 0;
+    transform: scaleY(0.9);
+  }
+}
+
+.rowWrap {
+  display: block;
+}
+
+.firstMarker {
+  /* marker only */
+}
+
+.remove {
+  color: var(--c-error);
+}
+
+/* onError while focused; gated like the kit's rows (LIB_DEFAULTS.md "One highlight at a time"). */
+:where(:root:not([data-pointer])) .remove:focus-visible {
+  color: var(--c-on-error);
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .remove:hover {
+    color: var(--c-on-error);
+  }
+}
+
+/* material3 HorizontalDivider() (FilterByButton.kt:135, 208): 1dp outlineVariant, no padding of its own. */
+.divider {
+  margin: 0;
+  border: 0;
+  border-top: 1px solid var(--fx-m3-outline-variant);
+}
+
+.spinner {
+  display: flex;
+  justify-content: center;
+  padding: 8px;
+}
+
+.empty {
+  composes: t-labelLarge from global;
+  padding: 12px;
+}
+
+.star {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* FilledStarColor; EmptyStarColor while the row is focused (FilterByButton.kt:283). */
+.starIcon {
+  width: 18px;
+  height: 18px;
+  color: var(--fx-star-filled);
+}
+
+:where(:root:not([data-pointer])) .starRow:focus-visible .starIcon {
+  color: var(--fx-star-empty);
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .starRow:hover .starIcon {
+    color: var(--fx-star-empty);
+  }
+}

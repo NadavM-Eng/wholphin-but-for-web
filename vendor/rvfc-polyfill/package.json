@@ -1,0 +1,9 @@
+{
+  "name": "rvfc-polyfill",
+  "version": "1.0.0-wholphin",
+  "description": "Minimal HTMLVideoElement.requestVideoFrameCallback shim for jassub, written for Wholphin Web from the WICG video-rvfc specification",
+  "license": "GPL-2.0-only",
+  "type": "module",
+  "main": "index.js",
+  "sideEffects": true
+}

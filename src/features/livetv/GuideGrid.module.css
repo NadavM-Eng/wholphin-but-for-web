@@ -1,0 +1,125 @@
+/*
+ * Box(fillMaxSize, background = colorScheme.background) around the ProgramGuide. The guide's layout is only as
+ * tall as its rows (MinaBox: `min(itemsSize.height, constraints.maxHeight)`), and Compose centres a child that
+ * is smaller than the size it was told to fill: a guide with few channels sits in the middle of the free space
+ * (refshots 34-live-tv-guide-channel-2: 4 rows start 26dp under the top of a 340dp box).
+ */
+.wrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: var(--c-background);
+  /* the layers below (line, focused program, channels, timeline) are ordered among themselves only */
+  isolation: isolate;
+}
+
+/*
+ * The programguide box: background = colorScheme.background. The grid itself is laid out left-to-right in every
+ * locale (hours run left to right; an RTL guide would need mirrored scroll math for no gain).
+ */
+.box {
+  position: relative;
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: var(--c-background);
+  direction: ltr;
+  touch-action: pan-x pan-y;
+  outline: none;
+  scrollbar-width: thin;
+}
+
+.content {
+  position: relative;
+}
+
+/* Timeline row: sticky at the top, above everything but the corner (drawn after the channels upstream). */
+.timeline {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+}
+
+/* `topCorner`: surface, sticky in both directions. */
+.corner {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--c-surface);
+}
+
+/* Timeline cell: background, then surfaceVariant inset 2dp horizontally with 4dp corners; text padding 2dp.
+   The label is a one-line Compose Text: no half-leading above it (LineHeightStyle.Trim.Both), so the digits
+   start 2dp + the font's own ascent under the cell top (`t-line` in global.css). */
+.time {
+  position: absolute;
+  top: 0;
+  box-sizing: border-box;
+  padding-inline: 2px;
+  background: var(--c-background);
+}
+
+.timeInner {
+  composes: t-bodyLarge from global;
+  composes: t-line from global;
+  display: block;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 2px;
+  border-radius: 4px;
+  background: var(--c-surface-variant);
+  color: var(--c-on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* No stacking context of its own: the focused program is raised above the "now" line (ProgramCell). */
+.layer {
+  position: absolute;
+  inset: 0;
+}
+
+/* `currentTime`: a 2dp Surface in tertiary @ 25%, full height, above the programs (but under the focused one). */
+.now {
+  position: absolute;
+  top: 0;
+  z-index: 1;
+  background: rgb(from var(--c-tertiary) r g b / 0.25);
+  pointer-events: none;
+}
+
+/* Channel column: sticky at the start, scrolls vertically with the rows. */
+.channels {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+}
+
+/* Refreshing spinner: 64dp circle (background @ 50%), 16dp padding, bottom-end. */
+.refreshing {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-end: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgb(from var(--c-background) r g b / 0.5);
+  pointer-events: none;
+}
+
+/* Phones and portrait windows have no TV counterpart (the TV canvas is always 16:9): centring a short guide there
+   leaves a large empty band under the buttons, so the rows stay right under them. */
+@media (max-width: 599px), (max-aspect-ratio: 1/1) {
+  .wrap {
+    justify-content: flex-start;
+  }
+}

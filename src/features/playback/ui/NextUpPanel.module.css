@@ -1,0 +1,174 @@
+/*
+ * PlaybackPage.kt:685-697: padding(8).fillMaxHeight(1 - playerSize).fillMaxWidth(.66f), bottom-center, elevation 2.
+ * The 8dp padding comes first, so the fractions are of the screen minus 16dp.
+ */
+.panel {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  transform: translateX(-50%);
+  width: calc((100% - 16px) * 0.66);
+  height: calc((100% - 16px) * 0.4);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 24px;
+  border-radius: 8px;
+  /* surfaceColorAtElevation(2dp): between the generated 1dp and 3dp surfaces */
+  background: color-mix(in srgb, var(--c-surface-1) 50%, var(--c-surface-3));
+  color: var(--c-on-surface);
+  z-index: 20;
+  animation: rise 250ms ease-out;
+}
+
+/*
+ * Compose lays these texts out with LineHeightStyle.Default (Trim.Both; tv-material sets none): the leading above
+ * the first line and below the last is dropped, so a one-line titleMedium is 18.75dp tall, not 24dp, and every gap
+ * below depends on it. 1.172em is Roboto's ascent + descent. Negative margins rather than `text-box: trim-both`:
+ * Chromium skips the end trim when a -webkit-line-clamp box holds exactly the clamped number of lines.
+ */
+.heading,
+.title,
+.overview,
+.runtime,
+.count {
+  margin-block: calc((1.172em - 1lh) / 2);
+}
+
+.heading {
+  composes: t-titleLarge from global;
+  text-align: center;
+}
+
+/*
+ * Row(spacedBy 32, CenterVertically, padding 8). Upstream both children fill the row's height, so the alignment
+ * never shows; where the web caps the card's width (below) the card keeps the text's top line instead.
+ */
+.body {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+  flex: 1;
+  min-height: 0;
+  padding: 8px;
+  container-type: size;
+}
+
+/* fillMaxHeight + aspectRatio; web: never wider than half the row (tall or narrow windows) */
+.cardBox {
+  width: min(50cqw, calc(100cqh * var(--ratio)));
+  height: min(100cqh, calc(50cqw / var(--ratio)));
+  flex: none;
+}
+
+.card {
+  width: 100%;
+  height: 100%;
+}
+
+/* CircleShape on a box that is wider than tall: a pill, not an ellipse */
+.badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: var(--fx-black-50);
+  color: var(--c-on-surface);
+  pointer-events: none;
+}
+
+.count {
+  composes: t-titleMedium from global;
+  padding: 12px;
+}
+
+/* Column(fillMaxHeight, weight 1), top-aligned; like a Compose Column it does not clip a last line that runs over */
+.text {
+  flex: 1;
+  min-width: 0;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.title {
+  composes: t-titleMedium from global;
+  flex: none;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.overview {
+  composes: t-bodyMedium from global;
+  flex: none;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.runtime {
+  composes: t-bodySmall from global;
+  flex: none;
+  padding-top: 4px;
+  white-space: pre;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Web addition (the remote's Back cancels the countdown): out of the flow so the ported layout is unchanged */
+.cancel {
+  position: absolute;
+  inset-block-start: 8px;
+  inset-inline-end: 8px;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%);
+  }
+}
+
+/* Phones: the panel takes the full width, with tighter padding and gap; the overview clamps a line earlier. */
+@media (max-width: 719px) {
+  .panel {
+    width: calc(100% - 16px);
+    padding: 12px;
+  }
+
+  .body {
+    gap: 16px;
+    padding: 0;
+  }
+
+  .overview {
+    -webkit-line-clamp: 3;
+  }
+}
+
+@media (max-height: 459px) {
+  .panel {
+    padding: 8px 12px;
+    gap: 4px;
+  }
+
+  .overview {
+    display: none;
+  }
+
+  .text {
+    gap: 4px;
+  }
+}

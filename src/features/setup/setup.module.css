@@ -1,0 +1,184 @@
+/* Shared pieces of the setup screens (server picker, user picker, login / PIN dialogs). */
+
+/* The LazyRow of circles (spacedBy 24dp, contentPadding h48 v16). The web wraps and centres instead of
+   scrolling sideways, so every circle stays reachable on a phone. */
+.circles {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 32px 24px;
+  max-width: 100%;
+  padding: 16px 48px;
+}
+
+@media (max-width: 599px) {
+  .circles {
+    padding-inline: 0;
+    gap: 24px 20px;
+  }
+}
+
+/* UserList: Button(width 200dp) with FA icon + text, inside Row(padding vertical 8dp). */
+.switchRow {
+  display: flex;
+  justify-content: center;
+  padding-block: 8px;
+}
+
+/* UserList.kt uses the plain androidx.tv.material3.Button (min 58x40dp, padding 16/10dp), not Wholphin's
+   4dp-padded 48dp Button: the kit Button's default-variant metrics are overridden here. */
+.switchRow .switchButton {
+  width: 200px;
+  min-height: 40px;
+  padding: 10px 16px;
+  /* the icon's own 8dp end padding is the only space before the text (UserList.kt:140-144) */
+  gap: 0;
+}
+
+.switchIcon {
+  padding-inline-end: 8px;
+}
+
+/* SwitchServerContent: non-focusable spacer that mirrors the "Switch servers" button. */
+.switchSpacer {
+  height: 56px;
+}
+
+.errorBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ---- dialogs ---- */
+
+.dialog {
+  padding: 16px;
+}
+
+/* Column(...).padding(16.dp).fillMaxWidth(.4f) of the add-server and login dialogs: the padding comes off
+   the window first, so the column is 40% of (window - 32dp) and the dialog 32dp more: 403dp on the 960dp
+   canvas (refshots 01-setup-add-dialog-*: 806px at 2px/dp). Web: never narrower than that (or the window),
+   never wider than 640dp. */
+.dialogWide {
+  width: max(min(403.2px, 100%), calc((100vw - 32px) * 0.4 + 32px));
+  max-width: min(640px, 100%);
+}
+
+.dialogCompact {
+  width: auto;
+  max-width: min(480px, 100%);
+}
+
+.dialogColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+/*
+ * Compose drops the half-leading above the first and below the last line of every Text
+ * (LineHeightStyle.Default = Trim.Both): a one-line bodyLarge is 18.75dp tall, not 24dp, and the dialogs are
+ * that much shorter (refshots: add-server 147dp, Quick Connect 183.5dp). The kit's t-trim (global.css) does it
+ * exactly in every engine; every text here is a flex or grid item.
+ */
+.dialogText {
+  composes: t-titleMedium t-trim from global;
+  color: var(--c-on-surface);
+  text-align: center;
+  width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.dialogLabel {
+  composes: t-bodyLarge t-trim from global;
+  color: var(--c-on-surface);
+  text-align: center;
+}
+
+.code {
+  composes: t-displayMedium t-trim from global;
+  color: var(--c-on-surface);
+  user-select: all;
+}
+
+/* Row(height 32dp, spacedBy 8dp): spinner + titleMedium text. */
+.waiting {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 32px;
+}
+
+.waiting .dialogText {
+  width: auto;
+}
+
+/* UserStateError / add-server error: error colour lines, start-aligned like upstream's Column. */
+.errors {
+  composes: t-bodyLarge from global;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--c-error);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* the t-trim rule (global.css) on each line */
+.errors > * {
+  margin-block: calc((var(--t-font-height) * 1em - 1lh) / 2);
+}
+
+.fullField {
+  width: 100%;
+}
+
+/* Login rows: label + 280dp text box, centred. */
+.fieldRow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 280px);
+  align-items: center;
+  justify-content: center;
+  column-gap: 8px;
+  max-width: 100%;
+}
+
+.fieldRowLabel {
+  composes: t-bodyLarge t-trim from global;
+  color: var(--c-on-surface);
+}
+
+.rowField {
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 420px) {
+  .fieldRow {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 4px;
+    width: 100%;
+  }
+}
+
+.trouble {
+  composes: t-bodyLarge t-trim from global;
+  color: var(--c-on-surface);
+}
+
+.loading {
+  display: grid;
+  place-items: center;
+  min-height: 201px;
+}
+
+.form {
+  align-self: stretch;
+}

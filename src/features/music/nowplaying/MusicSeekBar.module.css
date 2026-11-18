@@ -1,0 +1,82 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  width: 95%;
+  margin-inline: auto;
+  padding-top: 8px;
+}
+
+.root {
+  --bar: 6px;
+  position: relative;
+  direction: ltr;
+  display: flex;
+  align-items: center;
+  height: 24px;
+  padding-inline: 4px;
+  cursor: pointer;
+  touch-action: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.active,
+:where(:root:not([data-pointer])) .root:focus-visible {
+  --bar: 12px;
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .root:hover {
+    --bar: 12px;
+  }
+}
+
+.track {
+  position: relative;
+  flex: 1;
+  height: var(--bar);
+  border-radius: var(--bar);
+  background: rgb(from var(--c-on-surface) r g b / 0.25);
+  transition: height 150ms ease;
+}
+
+.buffered,
+.progress {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  min-width: var(--bar);
+  border-radius: var(--bar);
+}
+
+.buffered {
+  background: rgb(from var(--c-on-surface) r g b / 0.65);
+}
+
+.progress {
+  background: var(--c-border);
+}
+
+.knob {
+  position: absolute;
+  top: 50%;
+  width: calc(var(--bar) * 2 + 4PX);
+  height: calc(var(--bar) * 2 + 4PX);
+  border-radius: 50%;
+  /* SeekBar.kt thumb: fixed Color.White (not a theme colour; design-tokens.json has no white token) */
+  background: var(--fx-white);
+  transform: translate(-50%, -50%);
+  transition:
+    width 150ms ease,
+    height 150ms ease;
+}
+
+.times {
+  composes: t-labelMedium from global;
+  display: flex;
+  justify-content: space-between;
+  padding-inline: 4px;
+  color: var(--c-on-surface);
+  /* the bar above is left-to-right in every language (.root): elapsed under its start, total under its end */
+  direction: ltr;
+}

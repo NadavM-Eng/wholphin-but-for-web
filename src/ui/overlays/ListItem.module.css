@@ -1,0 +1,206 @@
+.item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--c-on-surface);
+  text-align: start;
+  transform: scale(1);
+  transition:
+    transform 500ms cubic-bezier(0, 0, 0.2, 1),
+    background-color 120ms linear,
+    color 120ms linear;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* rows with a long-press menu: no native link callout or text selection under the finger */
+.hasMenu {
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.hasLeading {
+  min-height: 56px;
+}
+
+.two {
+  min-height: 64px;
+}
+
+.three {
+  min-height: 80px;
+}
+
+.dense {
+  min-height: 40px;
+  padding: 10px 12px;
+}
+
+.dense.two {
+  min-height: 56px;
+}
+
+.dense.three {
+  min-height: 72px;
+}
+
+.selected {
+  background: rgb(from var(--c-secondary-container) r g b / 0.4);
+  color: var(--c-on-secondary-container);
+}
+
+:where(:root:not([data-pointer])) .item:is(:focus-visible, [data-focus-held]),
+:global([data-demo-focus]) .item {
+  background: var(--c-inverse-surface);
+  color: var(--c-inverse-on-surface);
+  transform: scale(1.05);
+  transition-duration: 300ms, 120ms, 120ms;
+  z-index: 1;
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .item:hover {
+    background: var(--c-inverse-surface);
+    color: var(--c-inverse-on-surface);
+    transform: scale(1.05);
+    transition-duration: 300ms, 120ms, 120ms;
+    z-index: 1;
+  }
+}
+
+.noScale,
+:where(:root:not([data-pointer])) .noScale:is(:focus-visible, [data-focus-held]),
+:where(:root[data-pointer]) .noScale:hover,
+:global([data-demo-focus]) .noScale {
+  transform: none;
+}
+
+.item[aria-disabled='true'] {
+  cursor: default;
+}
+
+/*
+ * Disabled content. tv-material's Surface fades its content to .6 when disabled and to .8 when disabled and
+ * focused (SurfaceImpl stateAlpha); the reference shows onSurface at .48 on a disabled, unfocused row (refshots
+ * 36-image-subtitles-captions-dialog, "Search & Download": #837b8c on #25202f), i.e. a further .8 whose source
+ * was not found. .48 is that measurement; .64 for the focused row follows the same two factors and is unmeasured.
+ */
+.item[aria-disabled='true'] > * {
+  opacity: 0.48;
+}
+
+.item[aria-disabled='true'] > .leading {
+  opacity: 0.384;
+}
+
+:where(:root:not([data-pointer])) .item[aria-disabled='true']:is(:focus-visible, [data-focus-held]),
+:where(:root[data-pointer]) .item[aria-disabled='true']:hover,
+:global([data-demo-focus]) .item[aria-disabled='true'] {
+  background: transparent;
+  color: var(--c-on-surface);
+  transform: none;
+  box-shadow: inset 0 0 0 2px var(--c-border);
+}
+
+:where(:root:not([data-pointer])) .item[aria-disabled='true']:is(:focus-visible, [data-focus-held]) > *,
+:where(:root[data-pointer]) .item[aria-disabled='true']:hover > *,
+:global([data-demo-focus]) .item[aria-disabled='true'] > * {
+  opacity: 0.64;
+}
+
+:where(:root:not([data-pointer])) .item[aria-disabled='true']:is(:focus-visible, [data-focus-held]) > .leading,
+:where(:root[data-pointer]) .item[aria-disabled='true']:hover > .leading,
+:global([data-demo-focus]) .item[aria-disabled='true'] > .leading {
+  opacity: 0.512;
+}
+
+.leading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  min-width: 32px;
+  min-height: 32px;
+  margin-inline-end: 8px;
+  opacity: 0.8;
+  /* a Font Awesome glyph here is a Text in the ambient bodyLarge: 16sp (DialogItem, Dialogs.kt) */
+  font-size: 16px;
+}
+
+.dense .leading {
+  min-width: 20px;
+  min-height: 20px;
+  font-size: 14px;
+}
+
+.texts {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Each slot holds Compose Texts, whose boxes are as tall as the font, not the line height: a headline and its
+   supporting line sit 16.5dp apart, centred in the row's minimum height (refshots 23-playback-movie-settings-dialog). */
+.headline {
+  composes: t-titleMedium from global;
+  composes: t-trimBox from global;
+}
+
+.headlineDense {
+  composes: t-titleSmall from global;
+  composes: t-trimBox from global;
+}
+
+.overline {
+  composes: t-labelSmall from global;
+  composes: t-trimBox from global;
+  opacity: 0.6;
+}
+
+.overlineDense {
+  composes: t-labelSmall from global;
+  composes: t-trimBox from global;
+  opacity: 0.6;
+}
+
+.supporting {
+  composes: t-bodySmall from global;
+  composes: t-trimBox from global;
+  opacity: 0.8;
+}
+
+/*
+ * `text-box` rounds each trimmed edge to whole device pixels (a wrapped two-line headline with a supporting
+ * line came out 1dp taller than on the TV: refshots 34-live-tv-view-options). A slot that holds nothing but
+ * text is therefore trimmed exactly, with margins (the t-trim rule); so is one whose child trims itself that
+ * way. Slots with other element children keep `text-box`, which does not add up with a child's own.
+ */
+:is(.headline, .headlineDense, .overline, .overlineDense, .supporting):not(:has(> *)) {
+  text-box: normal;
+  margin-block: calc((var(--t-font-height) * 1em - 1lh) / 2);
+}
+
+:is(.headline, .headlineDense, .overline, .overlineDense, .supporting):has(> :global(.t-trim)) {
+  text-box: normal;
+}
+
+.trailing {
+  composes: t-labelLarge from global;
+  flex: none;
+  margin-inline-start: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.trailingDense {
+  composes: t-labelSmall from global;
+  flex: none;
+  margin-inline-start: 8px;
+  display: flex;
+  align-items: center;
+}

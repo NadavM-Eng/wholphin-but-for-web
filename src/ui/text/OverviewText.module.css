@@ -1,0 +1,34 @@
+.box {
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 120ms linear;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:where(:root:not([data-pointer])) .box:is(:focus-visible, [data-focus-held]),
+:global([data-demo-focus]) .box {
+  background: rgb(from var(--c-on-primary) r g b / 0.4);
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .box:hover {
+    background: rgb(from var(--c-on-primary) r g b / 0.4);
+  }
+}
+
+/* One Compose Text in a box of fixed height (Text.padding(8.dp).height(lines x 20.dp)): the first line starts at the
+   top of the box without its half-leading, and the box keeps its height. The paragraph is moved up by the
+   half-leading and given it back below: exact in every engine and in a line-clamp box, where `text-box` is not. */
+.text {
+  composes: t-bodyMedium from global;
+  color: var(--c-on-surface);
+  white-space: pre-line;
+  margin-block: calc((var(--t-font-height) * 1em - 1lh) / 2) calc((1lh - var(--t-font-height) * 1em) / 2);
+}
+
+.clamped {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

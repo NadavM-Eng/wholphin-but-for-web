@@ -1,0 +1,24 @@
+.container {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 48px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  padding-inline: 16px;
+}
+
+.toast {
+  composes: t-bodyMedium from global;
+  max-width: min(560px, 100%);
+  padding: 10px 16px;
+  border-radius: 20px;
+  background: var(--c-inverse-surface);
+  color: var(--c-inverse-on-surface);
+  white-space: pre-line;
+  text-align: center;
+  box-shadow: 0 2px 8px rgb(from var(--fx-black) r g b / 40%);
+}

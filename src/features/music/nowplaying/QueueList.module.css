@@ -1,0 +1,74 @@
+.title {
+  composes: t-titleMedium from global;
+  padding-block: 8px;
+  color: var(--c-on-surface);
+}
+
+.empty {
+  composes: t-bodyMedium from global;
+  padding-block: 8px;
+}
+
+/* LazyColumn contentPadding bottom 16, start/end 16; the rows follow each other with no gap */
+.list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0 16px 16px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.entry {
+  padding-inline-end: 8px;
+  border-radius: 8px;
+  background: rgb(from var(--c-surface) r g b / 0.5);
+}
+
+.song {
+  width: 100%;
+}
+
+/* MoveButton (NavDrawerPreference.kt:262): a 32dp round tv Button with a 16sp FA caret. The two carets and the
+   more button sit 4dp apart (Row spacedBy 4dp), right after the list item. */
+.move {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-inline-end: 4px;
+  border-radius: 50%;
+  background: rgb(from var(--c-surface-variant) r g b / 0.8);
+  color: var(--c-on-surface);
+  font-size: 16px;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.move[aria-disabled='true'] {
+  opacity: 0.38;
+  cursor: default;
+}
+
+:where(:root:not([data-pointer])) .move:not([aria-disabled='true']):focus-visible {
+  background: var(--c-inverse-surface);
+  color: var(--c-inverse-on-surface);
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .move:not([aria-disabled='true']):hover {
+    background: var(--c-inverse-surface);
+    color: var(--c-inverse-on-surface);
+  }
+}
+
+@media (pointer: coarse) {
+  .move {
+    width: 40px;
+    height: 40px;
+  }
+}
