@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # ---- build: compile the web app and bundle the server ------------------------------------
-FROM node:24-alpine AS build
+FROM node:26-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 # the postinstall hook (tools/quiet-playwright.mjs) must exist before npm ci runs it
@@ -13,7 +13,7 @@ COPY . .
 RUN npx vite build && npm run serve:build
 
 # ---- runtime: one bundled server file + the built app, no node_modules -------------------
-FROM node:24-alpine
+FROM node:26-alpine
 ENV NODE_ENV=production \
     PORT=8080 \
     DIST_DIR=/app/dist
