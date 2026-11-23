@@ -1,6 +1,4 @@
-import { useTranslation } from 'react-i18next'
-import { plainT } from './text'
-import { formatDuration } from '../../../lib/format'
+import { formatClock } from '../../../lib/format'
 import { dpCss } from '../../../theme/scale'
 import { getPlaybackEngine, usePlaybackStore } from '../engine'
 import styles from './TrickplayPreview.module.css'
@@ -10,10 +8,10 @@ const HEIGHT_DP = 160
 /**
  * `TrickplayPreview` + `SeekPreviewImage` (overlay/TrickplayPreview.kt, SeekPreviewImage.kt): a 160dp tall
  * thumbnail cropped from the sprite sheet with a 1.5dp border, and the time chip below it. Without trickplay
- * only the chip shows.
+ * only the chip shows. The chip's time is a clock ("1:02:03"), like the strip's two times (owner request;
+ * upstream writes it in words).
  */
 export function TrickplayPreview({ positionMs }: { positionMs: number }) {
-  const t = plainT(useTranslation().t)
   const trickplay = usePlaybackStore((s) => s.trickplay)
   const img = trickplay ? getPlaybackEngine().trickplayImage(positionMs) : null
   const ratio = img ? img.width / img.height : 16 / 9
@@ -32,7 +30,9 @@ export function TrickplayPreview({ positionMs }: { positionMs: number }) {
           }}
         />
       )}
-      <span className={styles.chip}>{formatDuration(t, Math.floor(positionMs / 1000) * 1000)}</span>
+      <span className={styles.chip} dir="ltr" data-player-preview-time>
+        {formatClock(positionMs)}
+      </span>
     </div>
   )
 }

@@ -8,10 +8,16 @@ function rowsScrollTop(app: App): Promise<number> {
   return app.homeRowsScroller.evaluate((el) => el.scrollTop)
 }
 
-test('Back button: absent on Home, present on an inner page, returns with scroll and focus restored', { tag: [TAG.desktop, TAG.engines] }, async ({ page, app }) => {
+test('Back button: absent on Home and on the pages the drawer leads to, present on an inner page, returns with scroll and focus restored', { tag: [TAG.desktop, TAG.engines] }, async ({ page, app }) => {
   await app.goto('/')
   await app.expectHome()
   await expect(app.backButton).toHaveCount(0)
+  // a drawer destination: the drawer is the way out, no Back button
+  await app.goto('/favorites')
+  await expect(app.gridCards.first()).toBeVisible()
+  await expect(app.backButton).toHaveCount(0)
+  await app.goto('/')
+  await app.expectHome()
 
   // scroll the rows with the wheel and open a card from a lower row
   const rows = app.homeRows
@@ -84,10 +90,11 @@ test('Escape: goes Back from an inner page with focus and scroll restored; on Ho
   await expect(app.drawer).not.toHaveAttribute('data-open')
 })
 
-test('a deep-linked inner page goes Back to Home', { tag: [TAG.desktop, TAG.phone, TAG.iphone] }, async ({ page, app }) => {
-  await app.goto('/favorites')
-  await expect(app.gridCards.first()).toBeVisible()
-  await expect(page).toHaveURL(/\/favorites(\?|$)/)
+test('a deep-linked inner page goes Back to Home', { tag: [TAG.desktop, TAG.phone, TAG.iphone] }, async ({ page, app, api }) => {
+  // an item page: the pages the drawer leads to (Favorites, a library) have no Back button
+  const movie = await api.findMovie('Big Buck Bunny')
+  await app.goto(`/item/${movie.Id}`)
+  await expect(page).toHaveURL(new RegExp(`/item/${movie.Id}`))
   await expect(app.pageRoot).toBeVisible()
   await expect(app.backButton).toBeVisible()
   await app.activate(app.backButton)

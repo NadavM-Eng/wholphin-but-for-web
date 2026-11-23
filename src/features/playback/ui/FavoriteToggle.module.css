@@ -1,0 +1,9 @@
+/*
+ * The heart is a Font Awesome glyph (the detail pages' favourite icon), not an SVG that fills the button as the
+ * strip's other icons do, so its size is tied to the strip's button here: 1dp of the strip is --pb-size / 38
+ * (PlaybackButton.module.css: a 24dp icon in a 38dp button, both shrinking with the strip). The glyph fills its
+ * em box edge to edge where a 24dp Material icon is drawn about 20dp wide: 5/6 of the icon size looks as large.
+ */
+.icon {
+  font-size: calc(var(--pb-size, 38px) / 38 * var(--icon-dp, 24) * 5 / 6);
+}

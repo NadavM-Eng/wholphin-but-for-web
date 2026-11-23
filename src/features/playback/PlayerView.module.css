@@ -8,7 +8,8 @@
  *     viewport height where the browser has it: a phone's address bar);
  *   - never less than 46 real pixels (uppercase PX: not scaled), which is 12.8% of a 360px high window, the
  *     lowest phone in landscape. A window lower than that gets a strip above the share.
- * Phones in portrait (two rows of buttons, see Controller.module.css): 100dp, with the same 12.8% limit, and at
+ * Phones in portrait, and any window under 500px wide whatever its height (a phone's split screen), have two rows
+ * of buttons (see Controller.module.css): 100dp, with the same 12.8% limit, and at
  * least 72 real pixels (12.8% of a 563px high window).
  */
 .root {
@@ -31,7 +32,7 @@
   }
 }
 
-@media (max-width: 699px) and (min-height: 500px) {
+@media (max-width: 699px) and (min-height: 500px), (max-width: 499px) {
   .root {
     --player-strip-h: max(72PX, min(100px, 12.8vh));
   }
@@ -145,8 +146,8 @@
 
 /*
  * Web layout (owner request): a strip at the top and a strip at the bottom, each on its own dark gradient, and
- * the picture between them untouched. The safe-area insets are paddings of the strips, so their gradients reach
- * the screen edges.
+ * the picture between them untouched (the bottom gradient fades in from one strip height above its strip). The
+ * safe-area insets are paddings of the strips, so their gradients reach the screen edges.
  */
 .overlay {
   position: absolute;
@@ -205,12 +206,43 @@
   z-index: 1;
 }
 
-/* the control strip's own gradient, from its top edge to the screen edge; nothing above it is darkened */
+/* the control strip; its dark background is the gradient below */
 .bottom {
   position: relative;
+  /* keeps the gradient (z-index -1) behind the strip and in front of the picture */
+  isolation: isolate;
   padding: 0 env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
-  background: linear-gradient(to bottom, rgb(from var(--fx-black) r g b / 0.3), rgb(from var(--fx-black) r g b / 0.65) 40%, rgb(from var(--fx-black) r g b / 0.8));
   pointer-events: auto;
+}
+
+/*
+ * The strip's dark background (owner request: no visible upper edge). It starts one strip height above the strip,
+ * fully transparent, and darkens downward along 0.84 * t^2 * (2 - t), t = 0 at its start and 1 at the screen edge:
+ * a level start, 31% black at the strip's top edge, 42% behind the seek line, 67% behind the buttons, 84% at the
+ * screen edge. Eleven stops a tenth apart, so no step of the slope shows as a line. The part above the strip
+ * keeps the seek line and the times readable on a bright picture; it takes no pointer (a click there is a click
+ * on the picture) and the picture above it is not darkened at all.
+ */
+.bottom::before {
+  content: '';
+  position: absolute;
+  inset: -100% 0 0;
+  z-index: -1;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgb(from var(--fx-black) r g b / 0.016) 10%,
+    rgb(from var(--fx-black) r g b / 0.06) 20%,
+    rgb(from var(--fx-black) r g b / 0.129) 30%,
+    rgb(from var(--fx-black) r g b / 0.215) 40%,
+    rgb(from var(--fx-black) r g b / 0.315) 50%,
+    rgb(from var(--fx-black) r g b / 0.423) 60%,
+    rgb(from var(--fx-black) r g b / 0.535) 70%,
+    rgb(from var(--fx-black) r g b / 0.645) 80%,
+    rgb(from var(--fx-black) r g b / 0.748) 90%,
+    rgb(from var(--fx-black) r g b / 0.84)
+  );
+  pointer-events: none;
 }
 
 .slideUp {

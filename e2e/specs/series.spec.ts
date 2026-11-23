@@ -143,6 +143,50 @@ test('missing and unaired episodes show as placeholder cards with their number o
   await expect(episodeCard(page, UNAIRED)).toHaveAttribute('aria-current', 'true')
 })
 
+test('hovering another episode keeps the Cast & Crew row and the actors both episodes share; only the others change (people mocked)', { tag: [TAG.desktop] }, async ({ page, app, api }) => {
+  const series = await api.findSeries(SERIES)
+  const [s1] = await seasonsOf(api, series.Id)
+  const [e1, e2] = await episodesOf(api, series.Id, s1.Id)
+  // every episode: three actors all episodes share, one of its own and one guest star of its own (no pictures:
+  // the cards show the placeholder)
+  const person = (key: string, type: string) => ({ Id: `e2e0${'0'.repeat(22)}${key.padStart(6, '0')}`, Name: `Person ${key}`, Role: 'Role', Type: type })
+  await page.route(/\/Items\/[0-9a-f]{32}(\?|$)/i, async (route) => {
+    const res = await route.fetch()
+    const body = (await res.json()) as { Type?: string; IndexNumber?: number; People?: unknown[] }
+    if (body.Type === 'Episode') {
+      const n = String(body.IndexNumber ?? 0)
+      body.People = [person('1', 'Actor'), person('2', 'Actor'), person('3', 'Actor'), person(`10${n}`, 'Actor'), person(`20${n}`, 'GuestStar')]
+    }
+    await route.fulfill({ response: res, json: body })
+  })
+  await app.goto(`/series/${series.Id}?season=${s1.Id}&episode=${e1.Id}`)
+  const cast = page.locator('[data-page-root]').getByText('Cast & Crew', { exact: true })
+  await expect(cast).toBeVisible()
+  await expect(page.getByText('Person 101', { exact: true })).toBeVisible()
+  await app.settle()
+
+  // mark the shared actors' cards and record every moment the row is gone
+  await page.evaluate(() => {
+    const w = window as unknown as { __rowGone: number }
+    w.__rowGone = 0
+    const has = () => Array.from(document.querySelectorAll('[data-page-root] *')).some((el) => el.childElementCount === 0 && el.textContent === 'Cast & Crew')
+    new MutationObserver(() => {
+      if (!has()) w.__rowGone++
+    }).observe(document.querySelector('[data-page-root]')!, { subtree: true, childList: true })
+    for (const el of Array.from(document.querySelectorAll('[data-focus-key^="cast:"]')).slice(0, 3)) el.setAttribute('data-e2e-kept', '')
+  })
+  await episodeCard(page, e2.Id).hover()
+  await expect.poll(() => query(page, 'episode')).toBe(e2.Id)
+  // the second episode's own actor and guest star replace the first one's
+  await expect(page.getByText('Person 102', { exact: true })).toBeVisible()
+  await expect(page.getByText('Person 202', { exact: true })).toBeVisible()
+  await expect(page.getByText('Person 101', { exact: true })).toHaveCount(0)
+  // the row never left the page, and the three shared cards are the same elements as before
+  expect(await page.evaluate(() => (window as unknown as { __rowGone: number }).__rowGone)).toBe(0)
+  await expect(page.locator('[data-e2e-kept]')).toHaveCount(3)
+  await expect(page.locator('[data-e2e-kept]').first()).toContainText('Person 1')
+})
+
 test('"Mark entire series played / unplayed" asks first and sends the request (mocked)', { tag: [TAG.desktop] }, async ({ page, app, api }) => {
   const series = await api.findSeries(SERIES)
   const sent: string[] = []

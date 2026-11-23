@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { plainT } from './text'
 import { MaterialIcon, Slider } from '../../../ui'
@@ -7,12 +8,18 @@ import { PlaybackButton } from './PlaybackButton'
 import { volumeIcon } from './playerIcons'
 import styles from './VolumeControl.module.css'
 
+/** Where a finger is the main pointer the stylesheet hides the slider: a mouse there opens nothing either. */
+const sliderHidden = () => typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches
+
 /**
  * Web addition (the TV has hardware volume): mute button plus a volume slider that opens on hover, built from
- * the strip's PlaybackButton and the kit Slider. The slider opens on the start side of the button: the buttons
- * are packed against the end edge, so the button stays under the pointer while the slider pushes the buttons
- * before it away. Touch screens get only the mute button (phones use hardware volume; iOS ignores
- * `video.volume`).
+ * the strip's PlaybackButton and the kit Slider. Volume is the last button of the strip's left group, and the
+ * slider opens at its physical right in every language (the strip's row is left to right: Controller.module.css),
+ * laid over the free part of the left side, where "Ends at" stands (not drawn meanwhile). It takes no room in the
+ * row, so nothing moves; it is cut where the left side ends. In the two-row strip of a narrow window it stands over
+ * the buttons at the left of volume instead. Inside its box the slider keeps the language's direction, like every
+ * kit Slider (in Hebrew the low end is at the right).
+ * Touch screens get only the mute button (phones use hardware volume; iOS ignores `video.volume`).
  */
 export function VolumeControl({ onInteract, iconSize = 24 }: { onInteract: () => void; iconSize?: number }) {
   const t = plainT(useTranslation().t)
@@ -23,28 +30,30 @@ export function VolumeControl({ onInteract, iconSize = 24 }: { onInteract: () =>
   // The slider opens on pointer hover only: in the D-pad focus order it would swallow Left/Right on the way to
   // the buttons beside it (keyboard users have M, and the wheel over the video).
   const [open, setOpen] = useState(false)
+  const slider = useRef<HTMLDivElement>(null)
+  // The pointer may rest on the control while the keyboard is used: Tab or an arrow pressed outside the slider
+  // closes it first (synchronously: the arrow navigation runs later in the same key press), so focus never lands
+  // on a control the open slider hides and the arrows do not stop inside it. Moving the mouse opens it again.
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab' && !e.key.startsWith('Arrow')) return
+      if (slider.current?.contains(document.activeElement)) return
+      flushSync(() => setOpen(false))
+    }
+    window.addEventListener('keydown', onKey, true)
+    return () => window.removeEventListener('keydown', onKey, true)
+  }, [open])
+  const openByMouse = (e: { pointerType: string }) => e.pointerType === 'mouse' && !sliderHidden() && setOpen(true)
   return (
     <div
       className={styles.root}
       data-open={open || undefined}
-      onPointerEnter={(e) => e.pointerType === 'mouse' && setOpen(true)}
+      data-volume-open={open || undefined}
+      onPointerEnter={openByMouse}
+      onPointerMove={open ? undefined : openByMouse}
       onPointerLeave={() => setOpen(false)}
     >
-      <div className={styles.slider} inert={!open}>
-        <Slider
-          value={muted ? 0 : Math.round(volume * 100)}
-          min={0}
-          max={100}
-          step={5}
-          label={t('web_playback_volume')}
-          valueText={`${Math.round((muted ? 0 : volume) * 100)}%`}
-          onChange={(v) => {
-            onInteract()
-            engine.setVolume(v / 100)
-            engine.setMuted(v === 0)
-          }}
-        />
-      </div>
       <PlaybackButton
         flat
         name="volume"
@@ -58,6 +67,23 @@ export function VolumeControl({ onInteract, iconSize = 24 }: { onInteract: () =>
           engine.setMuted(!silent)
         }}
       />
+      <div ref={slider} className={styles.slider} inert={!open} data-player-volume-slider>
+        <div className={styles.sliderBox}>
+          <Slider
+            value={muted ? 0 : Math.round(volume * 100)}
+            min={0}
+            max={100}
+            step={5}
+            label={t('web_playback_volume')}
+            valueText={`${Math.round((muted ? 0 : volume) * 100)}%`}
+            onChange={(v) => {
+              onInteract()
+              engine.setVolume(v / 100)
+              engine.setMuted(v === 0)
+            }}
+          />
+        </div>
+      </div>
     </div>
   )
 }

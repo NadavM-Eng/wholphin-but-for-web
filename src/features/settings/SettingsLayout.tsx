@@ -1,7 +1,8 @@
 import clsx from 'clsx'
-import { useCallback, useEffect, useRef, type FocusEvent, type KeyboardEvent, type ReactNode } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type FocusEvent, type KeyboardEvent, type ReactNode } from 'react'
 import { useLocation } from 'react-router'
-import { useGoBack } from '../../app/shell'
+import { BackButton, useDrawerOpen, useGoBack } from '../../app/shell'
+import { useDp } from '../../theme/scale'
 import { useScrollRestore } from '../../app/useScrollRestore'
 import styles from './SettingsLayout.module.css'
 
@@ -21,10 +22,16 @@ function wrapItems(list: HTMLElement): HTMLElement[] {
   )
 }
 
+/** True from the first Settings screen of a visit until Settings is left: only the first one plays the opening. */
+let visiting = false
+
+/** The least empty area beside the panel (dp) that counts as a place to click to leave. */
+const CLICK_AWAY_MIN = 48
+
 export type SettingsLayoutProps = {
   title: string
   children: ReactNode
-  /** Content left of the panel (subtitle preview). Without it the area is empty like upstream. */
+  /** Content beside the panel (subtitle preview). Without it the area is empty like upstream. */
   aside?: ReactNode
   /** `panel`: 40% wide (PreferencesPage); `narrow`: 25% (SubtitleStylePage). */
   width?: 'panel' | 'narrow'
@@ -34,13 +41,51 @@ export type SettingsLayoutProps = {
 
 /**
  * The upstream settings page frame (`PreferencesPage`, PreferencesContent.kt:798-828): background, and a
- * panel at the end edge (40% wide, full height, surface at 1dp) that fades and slides in from half its
- * width, with a centered headlineSmall title and a 16dp padded list. Full width on phones.
- * Escape / browser Back / the shell's floating Back button close it; clicking the empty area closes it too.
+ * panel (40% wide, full height, surface at 1dp) with a centered headlineSmall title and a 16dp padded list.
+ * Full width on phones.
+ * Escape / browser Back close it, and so does a click on the empty area beside the panel.
+ * Web-only (owner requests):
+ * - the panel looks like the open nav drawer (its colour, its soft end edge) and opens out of it: the drawer's
+ *   panel widens into this one with the drawer's spring and the content fades in; between Settings screens
+ *   nothing moves (upstream fades the page and slides the panel in);
+ * - the panel stands at the start edge, the side of the nav drawer, in both directions (upstream: the end edge);
+ * - the page Settings was opened from stays visible in the empty area, at its own brightness (PageUnderlay);
+ * - there is no Back button while that area is there to click. Where it is not (the panel fills the window, or a
+ *   preview takes the area) the layout places one itself: the shell's floating one would lie on the panel.
  */
 export function SettingsLayout({ title, children, aside, width = 'panel', initialFocusId }: SettingsLayoutProps) {
-  // Escape and the floating Back button are the shell's (FullScreenLayout); a click on the empty area is Back too
+  // Escape is the shell's (FullScreenLayout); a click on the empty area is Back too
   const back = useGoBack()
+  // Chosen from the open drawer (it is still open while this renders for the first time): its panel widens into
+  // this one. Opened any other way (an address, a reload), or moving between Settings screens: it just appears.
+  const drawerOpen = useDrawerOpen()
+  const [opening, setOpening] = useState(() => !visiting && drawerOpen)
+  useEffect(() => {
+    visiting = true
+    return () => {
+      // the address is already the next page's
+      if (!/^\/settings(\/|$)/.test(window.location.pathname)) visiting = false
+    }
+  }, [])
+  // Room beside the panel, measured: the panel's least width follows the interface scale, a width query does not
+  const dp = useDp()
+  const minRoom = dp(CLICK_AWAY_MIN)
+  const pageRef = useRef<HTMLDivElement | null>(null)
+  const panelRef = useRef<HTMLElement | null>(null)
+  const [room, setRoom] = useState(true)
+  useLayoutEffect(() => {
+    const page = pageRef.current
+    const panel = panelRef.current
+    if (!page || !panel) return
+    const measure = () => setRoom(page.clientWidth - panel.offsetWidth >= minRoom)
+    measure()
+    if (typeof ResizeObserver !== 'function') return
+    const ro = new ResizeObserver(measure)
+    ro.observe(page)
+    ro.observe(panel)
+    return () => ro.disconnect()
+  }, [minRoom])
+  const clickAway = aside == null && room
   const location = useLocation()
   const listRef = useRef<HTMLDivElement | null>(null)
   const scrollRef = useScrollRestore<HTMLDivElement>('settings')
@@ -98,13 +143,25 @@ export function SettingsLayout({ title, children, aside, width = 'panel', initia
   }
 
   return (
-    <div className={clsx(styles.page, width === 'narrow' && styles.narrow, aside != null && styles.withAside)}>
+    <div ref={pageRef} className={clsx(styles.page, width === 'narrow' && styles.narrow, aside != null && styles.withAside, opening && styles.opening)}>
       {aside != null ? (
-        <div className={styles.aside}>{aside}</div>
+        <div className={styles.aside}>
+          <BackButton className={styles.asideBack} />
+          {aside}
+        </div>
       ) : (
-        <div className={styles.empty} onClick={back} aria-hidden />
+        <>
+          {!clickAway && <BackButton className={styles.back} />}
+          <div className={styles.empty} onClick={back} aria-hidden />
+        </>
       )}
-      <section className={styles.panel} aria-label={title}>
+      <section
+        ref={panelRef}
+        className={styles.panel}
+        aria-label={title}
+        // the opening is over when the ground (::before) has arrived; the content's fade ends before it
+        onAnimationEnd={(e) => e.target === e.currentTarget && e.pseudoElement === '::before' && setOpening(false)}
+      >
         <header className={styles.header}>
           <h1 className={styles.title}>{title}</h1>
         </header>

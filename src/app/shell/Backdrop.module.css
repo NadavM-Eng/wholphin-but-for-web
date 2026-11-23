@@ -78,12 +78,6 @@
   transition: opacity 800ms linear;
 }
 
-/* drawer open: black @ .75 over the image box (inside the masks) */
-.dim {
-  position: absolute;
-  inset: 0;
-  background: rgb(from var(--fx-black) r g b / 0.75);
-}
 
 /* TOP_SCRIM_ALPHA .55 -> transparent at TOP_SCRIM_END_FRACTION .25 (Multiply with black = black overlay) */
 .scrim {

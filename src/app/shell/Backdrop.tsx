@@ -3,24 +3,24 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { usePrefs } from '../../stores/preferences'
 import { COLOR_ANIM_MS, dynamicBackground, fastOutSlowIn, mixColors, type BackdropColors } from './backdropColors'
 import styles from './Backdrop.module.css'
-import { useBackdropPending, useBackdropResult, usePageBackdropStore } from './backdropService'
+import { isResumedBackdrop, useBackdropPending, useBackdropResult, usePageBackdropStore } from './backdropService'
 
 /** ApplicationContent.kt TOP_SCRIM_* (used in Backdrop.module.css). */
 export const TOP_SCRIM_ALPHA = 0.55
 export const TOP_SCRIM_END_FRACTION = 0.25
 
 export type BackdropProps = {
-  drawerOpen: boolean
   rtl: boolean
   enableTopScrim?: boolean
 }
 
 /**
  * W/ui/nav/Backdrop.kt: full-window layer behind the drawer pages. Optional colour wash (dynamic style),
- * then the backdrop image in the top-end 70% x 70% box, faded in over 800 ms, darkened 75% while the
- * drawer is open, with the top scrim and the start/bottom alpha masks.
+ * then the backdrop image in the top-end 70% x 70% box, faded in over 800 ms, with the top scrim and the
+ * start/bottom alpha masks.
+ * Web (owner request): the image is not darkened while the drawer is open (upstream draws black at 75% over it).
  */
-export function Backdrop({ drawerOpen, rtl, enableTopScrim = true }: BackdropProps) {
+export function Backdrop({ rtl, enableTopScrim = true }: BackdropProps) {
   const published = useBackdropResult()
   const own = usePageBackdropStore((s) => s.result)
   const ownTopScrim = usePageBackdropStore((s) => s.topScrim)
@@ -42,7 +42,6 @@ export function Backdrop({ drawerOpen, rtl, enableTopScrim = true }: BackdropPro
           ) : (
             result.imageUrl && <FadeImage key={result.imageUrl} src={result.imageUrl} />
           )}
-          {drawerOpen && <div className={styles.dim} />}
           {topScrim && <div className={styles.scrim} />}
         </div>
       )}
@@ -50,9 +49,12 @@ export function Backdrop({ drawerOpen, rtl, enableTopScrim = true }: BackdropPro
   )
 }
 
-/** Coil crossfade (800 ms, linear) from nothing: the previous image was already blanked by the service. */
+/**
+ * Coil crossfade (800 ms, linear) from nothing: the previous image was already blanked by the service.
+ * Not for the image a page shows again when Settings closes over it: that one is there at once.
+ */
 function FadeImage({ src }: { src: string }) {
-  const [loaded, setLoaded] = useState(false)
+  const [loaded, setLoaded] = useState(() => isResumedBackdrop(src))
   return (
     <img
       className={clsx(styles.image, loaded && styles.loaded)}

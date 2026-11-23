@@ -189,6 +189,18 @@ export function selectionForPath(path: string, state: DrawerState): DrawerSelect
   return null
 }
 
+/**
+ * True for a page the drawer itself leads to (Home, Search, Favorites, Discover, a library): the shell shows no
+ * Back button there, the drawer is the way out (owner request; web-only, the TV has no on-screen Back). Until the
+ * libraries have loaded the drawer is empty, so the path's shape decides and the button does not flash.
+ */
+export function isDrawerDestination(path: string, state: DrawerState): boolean {
+  if (selectionForPath(path, state) != null) return true
+  if (state.items.length + state.moreItems.length > 0) return false
+  const p = path.split('?')[0].replace(/\/+$/, '') || '/'
+  return p === nav.favorites() || p === nav.discover() || /^\/(livetv|(library|recordings)\/[^/]+)$/.test(p)
+}
+
 /** Walks the stack from the top down; first match wins. */
 export function selectionForStack(paths: readonly string[], state: DrawerState): DrawerSelection | null {
   for (let i = paths.length - 1; i >= 0; i--) {

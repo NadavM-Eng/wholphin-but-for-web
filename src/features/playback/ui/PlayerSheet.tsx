@@ -7,8 +7,12 @@ export interface PlayerSheetProps {
   onClose: () => void
   label: string
   children: ReactNode
-  /** `bottom-start` / `bottom-end`: BottomDialog gravity; `center`: plain Dialog (subtitle delay, search, help) */
-  placement: 'bottom-start' | 'bottom-end' | 'center'
+  /**
+   * `bottom-left` / `bottom-right`: upstream's BottomDialog, standing on the control strip at that physical side in
+   * every language, above the button group that opens it (settings at the left; subtitles, audio, chapters, queue at
+   * the right); `center`: plain Dialog (subtitle delay, search, help)
+   */
+  placement: 'bottom-left' | 'bottom-right' | 'center'
   /** surfaceColorAtElevation 1 or 3; 'scrim' = TransparentBlack50 (subtitle delay) */
   surface?: 1 | 3 | 'scrim'
   /** CSS selector inside the sheet for the first focus; default: the first focusable */
@@ -29,13 +33,14 @@ const FOCUSABLE = 'button:not([disabled]), [href], input, [tabindex]:not([tabind
  * The player's dialogs. They render inside the player (not portalled to <body>) so they stay visible in
  * fullscreen and over the video without a dim (`setDimAmount(0f)`), 8dp from the screen edges with 8dp corners.
  * The bottom ones are `BottomDialog` (overlay/PlaybackControls.kt): a 424dp wide list on the surface color;
- * on the web they stand on the control strip instead of the screen's bottom edge (the strip's buttons open them).
+ * on the web they stand on the control strip instead of the screen's bottom edge, at the physical side where the
+ * button that opens them is in every language (upstream: gravity start or end, mirrored with the language).
  * Escape / Backspace / a click outside close them; focus is trapped for the arrow-key navigator and restored to
  * the opener on close.
  */
 export function PlayerSheet({ onClose, label, children, placement, surface = 1, initialFocus, wrap, header, closeKeys, className, style }: PlayerSheetProps) {
   const panel = useRef<HTMLDivElement>(null)
-  // BottomDialog (bottom-start / bottom-end): a list whose focused row may reach past the panel's sides
+  // BottomDialog: a list whose focused row may reach past the panel's sides
   const list = placement !== 'center'
   const close = useRef(onClose)
   useEffect(() => {
@@ -58,6 +63,9 @@ export function PlayerSheet({ onClose, label, children, placement, surface = 1, 
   }, [])
 
   const onKeyDown = (e: KeyboardEvent) => {
+    // a dialog opened from a row of the sheet is drawn elsewhere in the page, but its keys still reach this handler
+    // through React: they are that dialog's (its Escape must not close the sheet too)
+    if (!panel.current?.contains(e.target as Node)) return
     const typing = e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement
     const again = !typing && !e.ctrlKey && !e.altKey && !e.metaKey && !!closeKeys?.includes(e.key.toLowerCase())
     if (e.key === 'Escape' || (e.key === 'Backspace' && !typing) || again) {
@@ -96,8 +104,8 @@ export function PlayerSheet({ onClose, label, children, placement, surface = 1, 
 
   return (
     <div
-      className={clsx(styles.backdrop, placement === 'center' ? styles.center : placement === 'bottom-end' ? styles.bottomEnd : styles.bottomStart)}
-      data-player-sheet
+      className={clsx(styles.backdrop, placement === 'center' ? styles.center : placement === 'bottom-right' ? styles.bottomRight : styles.bottomLeft)}
+      data-player-sheet={placement}
       onPointerDown={(e) => {
         if (e.target === e.currentTarget) close.current()
       }}

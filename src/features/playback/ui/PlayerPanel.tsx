@@ -20,8 +20,8 @@ export interface PlayerPanelProps {
 
 /**
  * A list panel of the web player (chapters, queue), opened by a button of the control strip: a PlayerSheet at the
- * end side, standing on the strip, at most half the window wide (the whole width on a phone) and scrolling
- * inside. Owner request, after Jellyfin's web player; the TV shows these lists as rows of cards under its
+ * physical right (above its button in every language), standing on the strip, at most half the window wide (the
+ * whole width on a phone) and scrolling inside. Owner request, after Jellyfin's web player; the TV shows these lists as rows of cards under its
  * controller (ChapterRowOverlay.kt, QueueRowOverlay.kt). Like every player sheet it does not dim the video and
  * closes with Escape / Back, a press outside it (which includes its own button) and its Close button; focus goes
  * to the current row and returns to the button.
@@ -31,7 +31,7 @@ export function PlayerPanel({ name, title, onClose, shortcut, initialFocus, chil
   return (
     <PlayerSheet
       label={title}
-      placement="bottom-end"
+      placement="bottom-right"
       surface={1}
       onClose={onClose}
       initialFocus={initialFocus}

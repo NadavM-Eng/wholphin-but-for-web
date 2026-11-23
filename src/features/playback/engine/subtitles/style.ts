@@ -141,3 +141,24 @@ export function subtitleStyle(p: SubtitleStylePrefs, videoHeightPx: number): Sub
     line,
   }
 }
+
+/**
+ * What the style options can do to the subtitles on screen (the player's subtitle style sheet says so when it is
+ * not everything): `text` cues are drawn by the app in the chosen style (also the sample line, with no track
+ * chosen); `image` subtitles (PGS) are pictures and only take the image opacity; `styled` ones (ASS/SSA) are drawn
+ * by libass in the script's own style; `burned` ones are part of the picture the server sends.
+ */
+export type SubtitleStyleReach = 'text' | 'image' | 'styled' | 'burned'
+
+export function subtitleStyleReach(subtitle: { kind: 'text' | 'ass' | 'pgs' | 'burn-in' | 'unavailable' } | null): SubtitleStyleReach {
+  switch (subtitle?.kind) {
+    case 'pgs':
+      return 'image'
+    case 'ass':
+      return 'styled'
+    case 'burn-in':
+      return 'burned'
+    default:
+      return 'text'
+  }
+}

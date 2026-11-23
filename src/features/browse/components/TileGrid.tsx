@@ -151,6 +151,7 @@ export function TileGrid({ kind, parent, includeItemTypes, collectionType }: Pro
               <div
                 ref={scroller}
                 className={clsx(styles.scroller, styles.scrollerTiles)}
+                data-grid-scroller
                 onKeyDown={onKeyDown}
                 onFocus={(e) => {
                   const cell = (e.target as HTMLElement).closest<HTMLElement>('[data-grid-index]')

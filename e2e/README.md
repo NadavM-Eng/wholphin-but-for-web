@@ -19,7 +19,8 @@ npx playwright test e2e/specs/home.spec.ts -g "arrow keys"   # one test
 ```
 
 - The dev server is started on port **5601** (`E2E_PORT`), with its own Vite cache (`node_modules/.vite-5601`), and
-  reused when it already runs. Workers: 4 (`E2E_WORKERS`); a full run (257 tests, seven projects) takes about five minutes.
+  reused when it already runs. Workers: 4 (`E2E_WORKERS`); the last timed full run (267 tests in the seven projects, at commit
+  `bf31148`) took five minutes. The suite has grown since: `npm run e2e:list` prints the current list.
 - Two runs at the same time (several agents or working copies on one machine) must not share a port: give each its
   own `E2E_PORT` (for example `E2E_PORT=5701 npm run e2e`). A port other than 5601 (or `E2E_RUN_ID`) also gives the
   run its own output folder (`e2e/.output/<run>/`) and its own device ids (`wholphin-e2e-<run>-…`), so the runs do not
@@ -68,8 +69,8 @@ Signed-out tests start with `test.use(SIGNED_OUT)`.
 
 Other engines, things to know:
 
-- Playwright's WebKit on a Windows desktop with display scaling (e.g. 110 %) lays the page out narrower than the
-  requested viewport (1440 becomes 1256 CSS px). The `page` fixture enlarges the viewport so the page gets the
+- Playwright's WebKit on a Windows desktop with display scaling lays the page out narrower than the
+  requested viewport (at 125 %, 1440 becomes 1152 CSS px). The `page` fixture enlarges the viewport so the page gets the
   project's CSS size (`matchCssViewport`, shared with the crawler). Read the CSS width with
   `page.evaluate(() => innerWidth)`, not `page.viewportSize()`. The `iphone` profile therefore has no `isMobile`
   (mobile viewport emulation cannot be compensated); it keeps touch, `hover: none` and the iOS user agent.
@@ -95,9 +96,17 @@ Other engines, things to know:
   playlist cell), `data-queue-marker` (`playing` / `queued` on a song row), `data-mini-player`, `data-pref-id` (a
   settings row), `data-channel` and `data-focus-key^="lt-program:"` (the guide), `data-photo-folder`,
   `data-slideshow-stage`, the player's `data-player-strip` (the control strip), `data-player-top`, `data-player-button="<name>"`
-  (`play`, `chapters`, `queue`, `settings`, `back`, `panel-close`...), `data-player-time`, `data-player-sheet`,
+  (`play`, `chapters`, `queue`, `settings`, `favorite`, `back`, `panel-close`...), `data-player-group="left|transport|right"`
+  (the strip's three button groups), `data-player-skip` (the strip's Skip button), `data-player-volume-slider` (the place
+  the volume slider opens in; `data-volume-open` on its parent while it is open), `data-player-ends-at`,
+  `data-player-time="elapsed|remaining"`, `data-player-preview-time` (the chip over the seek bar), `data-player-titles`
+  (title and subtitle of the top strip), `data-player-sheet="bottom-left|bottom-right|center"` (where the sheet stands),
   `data-player-panel="chapters|queue"` with `data-chapter` / `data-queue` rows and `data-current` on the one being played,
-  `data-seekbar`, and the few existing `data-testid`s of the setup screens. Do not add test ids to `src/` from a test task: list the missing hook in your report (see below).
+  `data-seekbar`, `data-subtitle-sample` (the sample line the subtitle layer draws while the player's subtitle style sheet is
+  open), `data-player-subtitle-style` (that sheet's list) and `data-subtitle-style-note="image|styled|burned"` (its note for
+  subtitles the options cannot restyle), `data-fullscreen` (the layout of full-screen routes), `data-page-underlay` (the box
+  behind the Settings panel; it holds the copy of the page Settings was opened from, or nothing), `data-settings-list`
+  (the list of a Settings screen), and the few existing `data-testid`s of the setup screens. Do not add test ids to `src/` from a test task: list the missing hook in your report (see below).
   English strings are fine as names: the suite pins `locale: 'en-US'`.
 - **Waiting.** `app.goto(path)` navigates and settles (same rule as the crawler, `tools/shots/settle.ts`: network
   quiet, fonts and visible images loaded, no visible `aria-busy`, layout stable). After that use web-first
@@ -137,6 +146,16 @@ Other engines, things to know:
 - **Reduced motion.** The suite runs with `prefers-reduced-motion` and also injects a stylesheet that removes every
   transition and animation (`style[data-e2e="no-animation"]`, the crawler's). That stylesheet can hide bugs of
   the app's own reduced-motion rule: a test about it removes the element first (`context-menu.spec.ts`).
+  `test.use({ reducedMotion: 'no-preference' })` alone leaves that stylesheet in place: the "with animations on"
+  tests of `settings.spec.ts` assert which animations start and what covers the page, not how the motion looks. A
+  test of a real transition removes the element and calls `page.emulateMedia({ reducedMotion: 'no-preference' })`
+  (the volume slider's transition test in `playback-layout.spec.ts`). A passing test says nothing about how an
+  animation looks: judge that from frames recorded at normal speed, with the stylesheet removed (`docs/TOOLING.md`,
+  section 12).
+- **The player's dev hook.** In a development build the playback engine publishes itself and its store as
+  `window.__playback`. The player tests use it for states a test item does not have (a queue, chapters, a Skip
+  button, an hour-long duration, a subtitle kind). A state set this way is a stand-in for the real one: say so in
+  the coverage row.
 - **Console / requests.** Any console error, page error, failed request or HTTP >= 400 fails the test. Suite-wide
   exceptions (each with its reason) are in `GLOBAL_ALLOWANCES` (`fixtures/guard.ts`); a failure a test provokes on
   purpose is allowed in that test with `guard.allow(/pattern/, 'reason')`. Allowed hits are listed as annotations
@@ -144,6 +163,8 @@ Other engines, things to know:
 - **Known app bugs.** A test that documents a bug that is not fixed yet calls `test.fail()` with a comment that
   points to "Known app issues" below; it starts failing ("expected to fail") once the bug is fixed, which is the
   signal to drop `test.fail()`.
+- Every browser of the suite runs with Playwright's default hidden scrollbars, where layout that depends on the room a scrollbar takes cannot be tested. A spec that needs real ones starts its own browser with `ignoreDefaultArgs: ['--hide-scrollbars']` (still headless and muted): see `grid-stability.spec.ts`.
+- `data-subtitle-renderer="ass"` / `"pgs"` mark the layers of the two subtitle renderers that draw on a canvas.
 
 ## Adding a spec for a new area
 
@@ -167,9 +188,10 @@ Other engines, things to know:
 | Sign-in | cold start without a saved server lands on the server list | `signin` | desktop, phone |
 | | Add Server: unreachable (Unable to connect), not a Jellyfin (Invalid server info), valid -> user list | `signin` | desktop, phone |
 | | password login: wrong password shows the error, right one lands on Home | `signin` | desktop, phone |
+| | a user the server lists without a password is signed in by the click: one sign-in request with the empty password, Home at once, the login dialog never opens; a listed user with a password gets the dialog as before (the public user list is mocked, and the request is passed on with the test account's real password) | `signin` | desktop, phone, firefox, webkit |
 | | whole sign-in with the keyboard only | `signin` | keyboard |
 | | deep link while signed out reopens after sign-in (`?next`) | `signin` | desktop |
-| | session survives a reload (Home and an inner page) | `signin` | desktop, phone |
+| | session survives a reload (Home, and Favorites, which as a page the drawer leads to has no Back button) | `signin` | desktop, phone |
 | Accounts | Quick Connect: code shown, approved through the API, app signs in | `accounts` | desktop, phone |
 | | PIN: set + confirm, required on next entry and after reload, wrong PIN rejected, removed | `accounts` | desktop, phone |
 | | switch user from the drawer, sign in as a second user, back to the first without a password | `accounts` | desktop |
@@ -184,9 +206,9 @@ Other engines, things to know:
 | | a reloaded, scrolled "View more" grid brings the card that takes focus fully into view | `home` | keyboard |
 | | Back with the mouse to a scrolled "View more" grid: the opened card has focus again and the page stays where it was, also when the window cuts that card | `home` | desktop |
 | | a press elsewhere that ends without a click (middle or secondary button) gives the keyboard-focused card its look back | `home` | desktop, firefox, webkit |
-| Back / Escape | no Back on Home; Back on an inner page returns with scroll and focus restored | `navigation` | desktop |
-| | Escape goes back with scroll and focus restored; Escape on Home toggles page and drawer | `navigation` | keyboard |
-| | deep-linked inner page goes Back to Home | `navigation` | desktop, phone |
+| Back / Escape | no Back button on Home or on a page the drawer leads to (Favorites); on an inner page it is there and returns with scroll and focus restored | `navigation` | desktop, firefox, webkit |
+| | Escape goes back with scroll and focus restored; Escape on Home toggles page and drawer | `navigation` | keyboard, firefox, webkit |
+| | a deep-linked item page has the Back button and goes Back to Home | `navigation` | desktop, phone, iphone |
 | | Back in the phone top bar | `navigation` | phone |
 | | Escape right behind Enter on a card is answered by the page that opens (Back to Home, card focused, drawer closed) | `navigation` | keyboard, firefox, webkit |
 | | Escape at the moment the router is through, before the new page shows (sent from a microtask of the router's `pushState`): answered by the new page, from a Home card and from a drawer entry | `navigation` | keyboard, firefox, webkit |
@@ -199,7 +221,7 @@ Other engines, things to know:
 | | touch long-press opens the dialog without a native contextmenu (iOS) and the release does not click | `context-menu` | phone, iphone |
 | | Favorite / Unfavorite change the server state | `context-menu` | writes |
 | | Mark as watched changes the server state | `context-menu` | writes |
-| Drawer | rail collapsed, expands on hover, collapses on leave; libraries = `/UserViews` in order | `drawer` | desktop |
+| Drawer | rail collapsed, expands on hover, collapses on leave; libraries = `/UserViews` in order; the open drawer lies over the page, which does not move aside (one fixed 400 ms wait: the old push was a transition) | `drawer` | desktop, firefox, webkit |
 | | navigating closes it and marks the entry | `drawer` | desktop |
 | | keyboard focus expands it; Enter navigates and focus moves into the page; back to Home focuses the first card | `drawer` | keyboard |
 | | Favorites by keyboard, twice: the first card takes focus and stays the same element (the grid is not re-created when `?tab=` is written); on the second visit (cached data) it takes focus again, not the tab row | `drawer` | keyboard |
@@ -238,6 +260,7 @@ Other engines, things to know:
 | Series | season tabs switch the episode strip and the URL follows | `series` | desktop, phone, firefox, webkit, iphone |
 | | a deep link selects and focuses its episode; the arrows move the selection and the URL; Enter right after an arrow still comes Back to the episode that was opened | `series` | keyboard |
 | | missing and unaired episodes show as placeholder cards (mocked) | `series` | desktop |
+| | hovering another episode keeps the Cast & Crew row in the page (a mutation observer counts every moment it is gone: none) and the cards of the actors both episodes share stay the same elements; only the episode's own actor and guest star change (people mocked) | `series` | desktop |
 | | "Mark entire series played / unplayed" asks first and sends the request (mocked) | `series` | desktop |
 | | Down from the episode strip onto the buttons scrolls the overview (reduced motion: the TV with animations off) with the focused button whole in view; Up returns to the top | `series` | keyboard |
 | Search | searches as you type, the URL keeps the query, Back returns to the results | `search` | desktop, phone, firefox, webkit, iphone |
@@ -259,6 +282,18 @@ Other engines, things to know:
 | | interface scale, finger drag (real touch, `app.touchDrag`): at every move the root font size and the slider's box are unchanged while the thumb and the summary show the pending value; lifted, the size is applied in one write and the slider is in view at the same height | `settings` | phone |
 | | interface scale, mouse drag: during the drag the root font size and the slider's box are unchanged, the summary shows the pending value and the same point gives the same value again; the release applies once, the slider stays in view, at the same height, focused; a click on the track applies at its release | `settings` | desktop, firefox, webkit |
 | | interface scale under dispatched touch pointer events: a drag applies nothing until its release, a cancelled one nothing at all | `settings` | firefox, webkit, iphone |
+| Settings as a panel | Settings chosen from the drawer: a copy of the page stays behind the panel (`data-page-underlay`: `inert`, `aria-hidden`, the same row titles, every card where it was, the rail closed in it, nothing drawn over it); nothing in the copy can take focus or answer the app's lookups (no `data-focusable`, `data-focus-trap`, `data-shell`, `data-page-root`, `tabindex`, media element or non-SVG `id`); no Back button; focus is in the panel and Shift+Tab stays out of the copy | `settings` | desktop, firefox, webkit |
+| | from the open drawer to Settings without a blink, read at every animation frame from the click on: only "the page with its drawer open" and "Settings with the copy behind it and no Back button" are ever seen | `settings` | desktop, firefox, webkit |
+| | a click beside the panel goes one step back: from a sub-screen to Settings (focus on the row that opened it, the same copy behind), from Settings to the page, which is usable again (no copy left, a pointer meets the card, the drawer opens under the mouse) | `settings` | desktop, firefox, webkit |
+| | Escape goes one step back the same way, with Settings opened from the drawer by the keyboard; back on the page focus is on the card it was on, not on the drawer entry, and the arrows are the page's | `settings` | keyboard, firefox, webkit |
+| | Settings opened by its address: no copy and a flat background, no Back button; a dialog's Escape closes only the dialog; Escape and a click beside the panel go Home | `settings` | desktop, firefox, webkit |
+| | the copy shows the page where it was scrolled (1000x460 window): a "View more" grid scrolled with the window and a library grid scrolled in its own box have every card where it was | `settings` | desktop, firefox, webkit |
+| | `/settings/subtitles` on a wide window keeps a Back button (a preview fills the area beside the panel); back on Settings there is none and the copy is there again | `settings` | desktop, firefox, webkit |
+| | narrowing the window until the panel is the whole width brings the Back button, widening it takes it away again | `settings` | desktop |
+| | phone width: Settings is the whole width and keeps its Back button, which goes one step back each time; the drawer sheet is closed on the page that returns | `settings` | phone, iphone |
+| | with reduced motion off (the suite's no-animation stylesheet stays): opening Settings from the drawer starts the ground's slide once and the fade of header and list, and nothing else; the panel itself and the page neither move nor fade; nothing starts on the next Settings screen, where the ground is at rest | `settings` | desktop, firefox, webkit |
+| | with reduced motion off, back on the page: one cover holding the copy is added over the real page and removed again, and the page does not run its own fade | `settings` | desktop, firefox, webkit |
+| | with reduced motion off, back on the page (Escape): on each of the first 90 frames the page's backdrop is the picture it had, at full opacity; it does not blank and fade in again | `settings` | desktop, firefox, webkit |
 | Playback | H.264 item in headless Edge: plays, pauses (k), seeks (5 = 50 %), exits; Stopped report carries the position | `playback` | writes |
 | | detail Resume opens the player at the resume point (`?t=`) | `playback` | writes |
 | | a 15 s H.264 clip plays, pauses and Back leaves; the engine's own H.264 report is an annotation; each engine its own clip, user data restored | `playback-engines` | firefox, webkit |
@@ -267,12 +302,22 @@ Other engines, things to know:
 | | PGS subtitles over a directly played file: the track comes as a `.sup` file without a token in its address and is drawn on a canvas; a picture inside a cue (9.5 s, 3 s, 17.5 s), none between cues, and it appears within half a second of a cue start while playing | `playback-direct` | writes |
 | | the second audio track of a file: an HLS remux whose reason is `SecondaryAudioNotSupported`, the server's encoder report says video and audio are copied; the first track with an ASS subtitle plays directly | `playback-direct` | writes |
 | | an HDR10 file on a display that is not HDR is played directly in desktop Chromium (skipped where the browser has no HEVC Main 10 decoder; the support it reports is an annotation) | `playback-direct` | writes |
-| Player layout | controls shown (mouse) over a paused frame: no element with a background lies over the picture and its pixels are the bare frame's, also with the chapters panel open; only the top and bottom strips are dark; the web preference "Dim the video while the controls are shown" brings the TV scrim back | `playback-layout` | writes |
-| | a 2.39:1 film: the control strip is at most 12.8 % of the window height in ten window sizes (9 % on the desktop ones), sits on the bottom edge and starts below the picture on 16:9 windows; every button whole inside the window and the strip, none overlapping; one row of buttons on desktop and phone landscape, two on phone portrait; title in the top strip, "Ends at" in the row | `playback-layout` | writes |
-| | mouse: the Chapters button (no Queue button for a single movie) opens a panel on the strip at the end side, at most half the window wide, one row per chapter with pictures, the current one marked and focused; an outside press (video stays paused), the button itself and the Close button close it; choosing a chapter seeks and hides the controls | `playback-layout` | writes |
-| | keyboard only: Enter focuses Play; Left / Right reach every button of the strip, Up the seek bar and Back, Tab the same set; chapters and queue panels by button and by H / Q: focus on the current row, arrows stay inside, Escape / Backspace / the same key close with focus back on the button; Enter on a chapter seeks without bringing the controls back; Enter on the next queue entry plays it (the address follows) | `playback-layout` | writes |
-| | Hebrew: transport at the right in left-to-right order, options at the left, elapsed left and remaining right of the seek line, Back at the right, the panel at the left | `playback-layout` | writes |
-| | touch (390x844 and 844x390 in the writes project): a tap shows the strip (two rows in portrait, one in landscape, within 12.8 %), the chapters panel is as wide as the screen in portrait and at most half in landscape, a tap on a row seeks | `playback-layout` | writes |
+| Player layout | controls shown (mouse) over a paused frame: no element with a background lies over the picture and its pixels are the bare frame's down to where the strip's gradient begins, also with the chapters panel open; only the top and bottom strips are dark; the web preference "Dim the video while the controls are shown" brings the TV scrim back | `playback-layout` | writes |
+| | the bottom strip's gradient, measured on a white frame at 1440x900, 2558x1328 and 390x844: nothing above one strip height over the strip, at most 2 % black at its start, 20-36 % at the strip's top edge, 79-86 % at the window's bottom edge, darker downward only and no step above 3 % a pixel row; a click in the gradient above the strip plays / pauses the picture | `playback-layout` | writes |
+| | a 2.39:1 film: the control strip is at most 12.8 % of the window height in fourteen window sizes from 360 to 3440 wide (9 % on the desktop ones), sits on the bottom edge and starts below the picture on 16:9 windows; every button whole inside the window and the strip, none overlapping, in the fixed order (settings, favourite, picture in picture, volume; the transport; subtitles, audio, chapters, queue, fullscreen), settings on the left padding, the last button on the right padding, transport centred within 1 px; one row of buttons on desktop and phone landscape, two on phone portrait; title in the top strip, "Ends at" between the left group and the transport | `playback-layout` | writes |
+| | mouse: the Chapters button (no Queue button for a single movie) opens a panel on the strip at the right (`data-player-sheet="bottom-right"`), above its button, at most half the window wide, one row per chapter with pictures, the current one marked and focused; an outside press (video stays paused), the button itself and the Close button close it; choosing a chapter seeks and hides the controls | `playback-layout` | writes |
+| | keyboard only: Enter focuses Play; Right walks to the last button and Left to Settings, through every button (favourite too) in the drawn order (volume is the transport's neighbour at the left, subtitles the one at the right); Up the seek bar and Back; Tab from Back: the seek bar, then the row from left to right; chapters and queue panels by button and by H / Q: focus on the current row, arrows stay inside, Escape / Backspace / the same key close with focus back on the button; Enter on a chapter seeks without bringing the controls back; Enter on the next queue entry plays it (the address follows) | `playback-layout` | writes |
+| | fixed positions, English against Hebrew in one playback (the language preference is switched): in eight windows from 360x740 to 3440x1440, and at interface scale 50 % and 200 % on a desktop and two phone sizes, with no optional button, with chapters and a queue, and with a Skip button (store states through the dev hook `window.__playback`): the strip's rules hold; when chapters and queue appear between audio and fullscreen, subtitles and audio stand two places further left and nothing else moves; neither group moves when the Skip button appears; and every button, the Skip button's right edge and the seek bar are at the same place in both languages; elapsed left and remaining right of the seek line | `playback-layout` | writes |
+| | the sheets stand at the physical side of their button, above it, on the strip and inside the window, at 1280 and 360 wide, in both languages: Settings (with speed, scale, bitrate) at the left edge (`bottom-left`), subtitles, audio, chapters and queue at the right edge (`bottom-right`), in the left / right half of a wide window; the volume slider at 1280x720 in both languages keeps the rules of the rows below | `playback-layout` | writes |
+| | the times are clocks (`m:ss`, `-h:mm:ss`), drawn left to right with the minus in front in Hebrew too, digits of equal width; the seek bar keeps its length over three positions while the remaining time goes from 8 to 6 characters (an hour-long duration through the dev hook); the preview chip and the chapter list show clocks; the seek bar's `aria-valuetext` keeps the words | `playback-layout` | writes |
+| | the top strip: no picture in it, Back 3.5-8 dp from the start edge, the title at most 6 dp after Back and at most 52 dp from the edge (64 dp before), mirrored exactly in Hebrew, at 1280 and 360 wide | `playback-layout` | writes |
+| | the volume slider (mouse), English and Hebrew, at interface scale 100 % and 200 %, in five one-row windows from 700 to 1920 wide, without and with chapters, queue and a Skip button: on hover it opens at the right of the volume button, laid over the strip: no transport button and no other button is laid out anywhere else (boxes compared within half a pixel, without the hover look), the Skip button keeps its box and stays drawn and clickable, nothing leaves the window or scrolls sideways; the slider starts at the volume button's right edge and is cut where the left side of the strip ends (the transport's left edge), so as much of it shows as that side has free: all of it without a Skip button in every one of these windows and beside one in a wide row (a narrower row with a Skip button is recorded as a `volume slider cut` annotation); no button lies under it and a pointer meets nothing but the slider along it; "Ends at" is not drawn meanwhile and is back afterwards; the pointer moved from the button onto the slider keeps it open | `playback-layout` | writes |
+| | the same while the slider opens and while it closes, with the real transitions held at 15, 50 and 85 % (900x600 with a Skip button): nothing has moved, the Skip button is drawn and clickable, and only the slider's width and opacity, the opacity of "Ends at" and the hover look of the volume button are in transition | `playback-layout` | writes |
+| | the volume slider in the two-row strip (390 and 360 wide with a mouse, 100 % and 200 %): it ends at the volume button's left edge and lies whole inside the window over favourite and picture in picture, which are not drawn and take no click meanwhile while every other button is and does; with one of the two absent (an item without a favourite button through the dev hook; the video's own `disablePictureInPicture`) settings is not drawn either; no button moves, the Skip button of the first row stays, and everything is back when the pointer leaves | `playback-layout` | writes |
+| | a window under 500 wide that is also short (360x400, 390x420, 499x360; a phone's split screen) has the two-row strip at interface scale 100 % and 200 %: every button inside the window, at least 20 px wide, no sideways scroll, and the volume slider keeps the rules of the two-row strip | `playback-layout` | writes |
+| | the keyboard while the pointer rests on volume (900x600; the Skip button stays drawn and clickable beside the open slider): an arrow or Tab pressed outside the slider closes it first, so the arrows (picture in picture, volume, the transport and back) and Tab / Shift+Tab go past the slider's place and a Skip button reached by Tab is drawn; a mouse move opens it again; an arrow inside the slider changes the volume and keeps it open; in the two-row strip the arrow or Tab that goes to a button under the slider closes it first and that button is drawn | `playback-layout` | writes |
+| | the favourite button: a click marks the playing episode on the server and the next one unmarks it (one write each, the controls stay up); with the next queue entry's item held back (a routed request) the store is in between (second entry, first item), the button shows the second entry's state and is disabled, a click and Enter send nothing and leave both episodes as they were; once loaded it marks the second episode | `playback-layout` | writes |
+| | touch (390x844, 360x740 and 844x390 in the writes project): a tap shows the strip (two rows in portrait: the transport, then the left group at the left and the right group at the right with every button present; one row in landscape; within 12.8 %; buttons not smaller than 36 % / 61.3 % of the strip), a tap on volume mutes and opens no slider (`pointer: coarse`), the settings sheet (left) and the subtitles sheet (right) fit the screen, a tap on Play reaches Play while Next is disabled, the chapters panel is as wide as the screen in portrait and at most half, at the right, in landscape, a tap on a row seeks | `playback-layout` | writes |
 | Music | music library opens the music tabs | `music` | desktop, phone, firefox, webkit, iphone |
 | | album Play fills the queue; mini player shows progress; body padded by the bar | `music` | desktop, firefox, webkit |
 | | audio playlist on the playlist page: music menu on a song, focus back to the row, Play all marks the rows, the last row stays clear of the mini player | `detail` | desktop |
@@ -293,12 +338,30 @@ Other engines, things to know:
 | | resizing Home, a library grid and Favorites raises no ResizeObserver loop error | `engines` | desktop, firefox, webkit |
 | | scrollbars are themed (standard properties, `::-webkit-scrollbar` fallback at most 8px) | `engines` | desktop, firefox, webkit |
 | | the card "more" button opens the menu dialog and Escape returns focus to the card (Safari: clicks do not focus) | `engines` | desktop, firefox, webkit |
-| | smoke subset in Firefox / WebKit: sign-in, Home, drawer, a library (sort, filter, view options, letter jump, paging), movie page and its choosers, series, search, right-click and Menu-key menus, Back and Escape, theme, Hebrew, no overflow, the settings theme dialog, a slider under touch pointer events, music library and album Play with the mini player, photo album into the viewer, the guide and its program dialog, a short H.264 playback | tagged specs | firefox, webkit |
-| | touch subset with the iPhone profile: sign-in, Home, drawer sheet, movie page, series, search, More button, long-press, Back, Hebrew, no overflow, the settings theme dialog, a slider under touch pointer events, music library, photo album into the viewer | tagged specs | iphone |
+| | smoke subset in Firefox / WebKit: sign-in, Home, drawer, a library (sort, filter, view options, letter jump, paging), movie page and its choosers, series, search, right-click and Menu-key menus, Back and Escape, theme, Hebrew, no overflow, the settings theme dialog, a slider under touch pointer events, the interface scale's mouse drag, a Settings slider under the mouse with text selected, sign-in of a user without a password, Settings as a panel over the page (the copy, the ways back, the opening and the return), music library and album Play with the mini player, photo album into the viewer, the guide and its program dialog, a short H.264 playback | tagged specs | firefox, webkit |
+| | touch subset with the iPhone profile: sign-in, Home, drawer sheet, movie page, series, search, More button, long-press, Back, Hebrew, no overflow, the settings theme dialog, a slider under touch pointer events, Settings at phone width with its Back button, music library, photo album into the viewer | tagged specs | iphone |
 | All | no console errors, page errors or failed requests on any visited page | fixture | all |
+| Grid stability | a library grid that just fits its scroller does not move for 16 frames at any height from 2 px below to 6 px above the fit point (real scrollbars; display scale 1, 1.25, 1.5; widths around 2560-pixel screens) | `grid-stability` | desktop |
+| | the same at other item counts, interface scale 90 % and 130 %, 390 px width, list view, Hebrew | `grid-stability` | desktop |
+| | a grid scrolled by the page (View more) and the genre tile grid | `grid-stability` | desktop |
+| Sliders with a mouse | a Settings slider follows the mouse with text selected on the page (select all, a double click on the slider, a selection across the row), from edge to edge, out of the window and back; no drag-and-drop begins, no pointer is cancelled, a drag selects no text, the pressed slider keeps focus for the keys; English and Hebrew | `slider-mouse` | desktop, firefox, webkit |
+| | the Now Playing seek bar follows the mouse with everything selected and after a double click on it | `slider-mouse` | desktop |
+| | the player seek bar and volume slider follow the mouse with everything selected (a guard: the player page allows no selection) | `slider-mouse` | writes |
+| Player fills the window | the video box is the window at nine window sizes, several interface scales and pixel ratios, after a resize and in fullscreen, with the controls hidden and shown; the page reserves no scrollbar room; a 16:9 film in a 16:9 window touches all four edges (edge pixels sampled) | `playback-layout` | writes |
+| Subtitle direction | text subtitles: a Hebrew or Arabic line ends at the left and an English one at the right, whatever the interface language; lines stay centred (glyphs measured with a DOM Range; the subtitle text is supplied by request interception) | `subtitles-bidi` | desktop, phone |
+| | a track that stores its closing punctuation first is laid out as on the players it was made for, in the English and the Hebrew interface | `subtitles-bidi` | desktop |
+| | ASS: a right-to-left script in reading order is drawn right to left; a script that stores its full stops first is left as it is | `subtitles-bidi` | desktop |
+| Subtitle style in the player | a paused film in headless Edge (1600x900): the Settings menu is as wide as its longest label (the label is over 70 % of the menu's width); Settings > Subtitle style opens a sheet that is wider than the menu, under 400 px and see-through, with the options of the Settings page and without the row that opens another page; with no subtitle track a sample line shows in the current style; a colour choice opens its own dialog, whose Escape closes only that dialog, and the chosen colour changes the sample at once; arrow keys on the size slider change the size and do not seek the video; with a burned-in subtitle (set through the dev hook, not a real track) the sheet shows its note and no sample line; Escape goes back to Settings, then closes, and the sample line goes with the sheet; the two preferences are put back | `playback-subtitle-style` | writes |
 
 The Discover spec signs in to a real server with a limited account (`TEST_JELLYFIN_USER` /
 `TEST_JELLYFIN_PASSWORD`); it is skipped when those are not configured.
+
+The Projects column says where a test is tagged to run, not that it has run there (some older rows name only the
+main projects; the two subset rows under Engines say what also runs in Firefox, WebKit and the iPhone profile). State on 2026-11-24 (commit
+`509db33`): the tests added on 2026-11-23 and 24 (the sign-in row for a user without a password, the series row for
+the actor rows, the "Settings as a panel" rows and the "Subtitle style in the player" row) passed when each change
+was made; the `firefox` and `webkit` projects were not run for them, and whether the `iphone` project was is not
+recorded. The full suite was last run on 2026-11-22 (commit `c2316a4`).
 
 ## Known app issues
 

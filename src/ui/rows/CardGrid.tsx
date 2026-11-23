@@ -1,8 +1,9 @@
 import { useVirtualizer, useWindowVirtualizer, type Virtualizer } from '@tanstack/react-virtual'
 import clsx from 'clsx'
-import { useImperativeHandle, useLayoutEffect, useRef, useState, type ReactNode, type Ref, type RefObject } from 'react'
+import { useEffect, useImperativeHandle, useLayoutEffect, useRef, useState, type ReactNode, type Ref, type RefObject } from 'react'
 import { useDp } from '../../theme/scale'
 import { cardWidth, columnCount, rowCount, rowOfIndex, type GridColumns } from '../lib/gridMath'
+import { observeResize } from '../lib/observeResize'
 import styles from './CardGrid.module.css'
 import { loadScroll, saveScroll } from './scrollMemory'
 
@@ -25,7 +26,11 @@ export type CardGridProps = {
   gap?: number
   /** Row height estimate in CSS px from the card width (rows are measured after render). */
   estimateRowHeight?: (cardWidthPx: number) => number
-  /** Scroll container; default the window (page scroll). */
+  /**
+   * Scroll container; default the window (page scroll). The element must carry `data-grid-scroller` (its
+   * scrollbar gutter is then always reserved, src/theme/global.css): the cards are sized from its width, so
+   * that width must not depend on whether the grid overflows.
+   */
   getScrollElement?: () => HTMLElement | null
   /** Remember the vertical scroll offset under this key. */
   restoreKey?: string
@@ -44,6 +49,9 @@ export function CardGrid(props: CardGridProps) {
   return props.getScrollElement ? <ElementGrid {...props} /> : <WindowGrid {...props} />
 }
 
+/** Marks the element that scrolls a grid; its scrollbar gutter is always reserved (src/theme/global.css). */
+const GRID_SCROLLER_ATTR = 'data-grid-scroller'
+
 type Layout = { columns: number; cardWidthPx: number; rows: number; gapPx: number; padPx: number }
 
 function useGridLayout(props: CardGridProps) {
@@ -53,21 +61,12 @@ function useGridLayout(props: CardGridProps) {
   useLayoutEffect(() => {
     const el = container.current
     if (!el) return
-    setWidth(el.clientWidth)
-    // Deferred to the next frame and skipped when unchanged: a state update inside the observer callback
-    // re-lays the grid synchronously, which Safari reports as "ResizeObserver loop completed with
-    // undelivered notifications".
-    let raf = 0
-    const ro = new ResizeObserver((entries) => {
-      const w = entries[0].contentRect.width
-      cancelAnimationFrame(raf)
-      raf = requestAnimationFrame(() => setWidth((prev) => (prev === w ? prev : w)))
-    })
-    ro.observe(el)
-    return () => {
-      cancelAnimationFrame(raf)
-      ro.disconnect()
-    }
+    // One measure, the same one on mount and after a resize (whole px: the cards themselves are laid out by
+    // CSS, this width only picks the image size and the row height estimate), read once per frame and never
+    // inside the observer callback (observeResize).
+    const measure = () => setWidth(el.clientWidth)
+    measure()
+    return observeResize(el, measure)
   }, [])
   const gapPx = dp(props.gap ?? 16)
   const cols = props.columns.kind === 'auto' ? { ...props.columns, minCardWidth: dp(props.columns.minCardWidth) } : props.columns
@@ -101,11 +100,23 @@ function WindowGrid(props: CardGridProps) {
     scrollMargin: margin,
     initialOffset: () => (props.restoreKey ? (loadScroll(props.restoreKey) ?? 0) : 0),
   })
-  return <GridBody {...props} container={container} layout={layout} virtualizer={virtualizer} margin={margin} />
+  return <GridBody {...props} container={container} layout={layout} virtualizer={virtualizer} margin={margin} windowScrolled />
 }
 
 function ElementGrid(props: CardGridProps) {
   const { container, layout, estimate } = useGridLayout(props)
+  const { getScrollElement } = props
+  useEffect(() => {
+    if (!import.meta.env.DEV) return
+    const el = getScrollElement?.()
+    if (el && !el.hasAttribute(GRID_SCROLLER_ATTR)) {
+      console.error(
+        `CardGrid: the scroll element needs the ${GRID_SCROLLER_ATTR} attribute (a reserved scrollbar gutter, src/theme/global.css); without it a grid that just fits its scroller shifts sideways on every frame.`,
+      )
+    }
+    // checked once, when the grid mounts
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   const virtualizer = useVirtualizer({
     count: layout.rows,
     getScrollElement: props.getScrollElement!,
@@ -131,12 +142,16 @@ function GridBody({
   layout,
   virtualizer,
   margin,
+  windowScrolled,
 }: CardGridProps & {
   container: RefObject<HTMLDivElement | null>
   layout: Layout
   virtualizer: Virtualizer<Window, Element> | Virtualizer<HTMLElement, Element>
   margin: number
+  /** The page scrolls this grid: while it is mounted the page reserves its scrollbar gutter (global.css). */
+  windowScrolled?: boolean
 }) {
+  const windowMark = windowScrolled ? { 'data-grid-window': '' } : undefined
   // Save the offset as the user scrolls.
   const offset = virtualizer.scrollOffset
   useLayoutEffect(() => {
@@ -166,7 +181,7 @@ function GridBody({
 
   if (count === 0) {
     return (
-      <div ref={container} className={clsx(styles.grid, className)}>
+      <div ref={container} className={clsx(styles.grid, className)} {...windowMark}>
         {empty && <div className={styles.empty}>{empty}</div>}
       </div>
     )
@@ -174,7 +189,7 @@ function GridBody({
 
   const rows = virtualizer.getVirtualItems()
   return (
-    <div ref={container} className={clsx(styles.grid, className)} style={{ height: virtualizer.getTotalSize() }}>
+    <div ref={container} className={clsx(styles.grid, className)} style={{ height: virtualizer.getTotalSize() }} {...windowMark}>
       {layout.cardWidthPx > 0 &&
         rows.map((r) => {
           const startIdx = r.index * layout.columns

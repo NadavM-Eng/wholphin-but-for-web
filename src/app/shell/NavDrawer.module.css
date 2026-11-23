@@ -42,6 +42,33 @@
   width: var(--shell-rail-open-width);
 }
 
+/*
+ * Owner request: the open drawer lies over the page instead of pushing it aside (the TV moves the page by 160dp).
+ * Its panel is the surface colour, solid under the entries and fading out past the end edge so the page under it
+ * gets no hard border. The
+ * phone's sheet has its own background.
+ */
+.drawer:not(.sheet)::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  z-index: -1;
+  width: calc(var(--shell-rail-open-width) + 64px);
+  background: linear-gradient(to right, var(--c-surface) var(--shell-rail-open-width), transparent 100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--drawer-spring-ms) var(--drawer-spring);
+}
+
+:global([dir='rtl']) .drawer:not(.sheet)::before {
+  background: linear-gradient(to left, var(--c-surface) var(--shell-rail-open-width), transparent 100%);
+}
+
+.drawer[data-open]:not(.sheet)::before {
+  opacity: 1;
+}
+
 .list {
   flex: 1;
   min-height: 0;

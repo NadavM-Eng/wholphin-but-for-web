@@ -8,6 +8,7 @@ import {
   librariesFromViews,
   libraryDrawerId,
   libraryIcon,
+  isDrawerDestination,
   selectionForPath,
   selectionForStack,
 } from './drawerItems'
@@ -96,6 +97,15 @@ describe('selection', () => {
     expect(selectionForPath(`/library/${ID(4)}`, state)).toBe(libraryDrawerId(ID(4)))
     expect(selectionForPath(`/library/${ID(6)}`, state)).toBe(libraryDrawerId(ID(6)))
     expect(selectionForPath(`/item/${ID(1)}`, state)).toBeNull()
+  })
+
+  it('knows the pages the drawer leads to (no Back button there); before the libraries load, by the shape of the path', () => {
+    for (const p of ['/', '/search?q=x', '/favorites?tab=Movie', `/library/${ID(1)}`, '/livetv']) expect(isDrawerDestination(p, state), p).toBe(true)
+    // a detail page, and a folder inside a library (it has the shape of a library path but is not in the drawer)
+    for (const p of [`/item/${ID(1)}`, `/library/${ID(99)}`]) expect(isDrawerDestination(p, state), p).toBe(false)
+    const empty = { items: [], moreItems: [] }
+    for (const p of ['/', '/favorites', `/library/${ID(99)}`, `/recordings/${ID(6)}`, '/livetv']) expect(isDrawerDestination(p, empty), p).toBe(true)
+    expect(isDrawerDestination(`/item/${ID(1)}`, empty)).toBe(false)
   })
 
   it('walks the stack from the top', () => {

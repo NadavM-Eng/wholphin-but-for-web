@@ -2,7 +2,7 @@
 
 The chronological record of how Wholphin Web was built: who did each phase, what came out of it, what went wrong, and which commits landed it.
 
-Last updated: 2026-11-18
+Last updated: 2026-11-24
 
 Related documents: [README.md](README.md) (index), [DECISIONS.md](DECISIONS.md) (decisions), [ARCHITECTURE.md](ARCHITECTURE.md) (structure), [DEVIATIONS.md](DEVIATIONS.md) (differences from upstream), [TOOLING.md](TOOLING.md) (tools and commands), [STATUS.md](STATUS.md) (current state), [spec/](spec/) (behavior specs extracted from upstream), [CLAUDE.md](../CLAUDE.md) (working agreement).
 
@@ -10,10 +10,10 @@ Related documents: [README.md](README.md) (index), [DECISIONS.md](DECISIONS.md) 
 
 - The state labels below are the ones defined in [README.md](README.md#status-labels).
 - **Built** means an agent wrote the code and its own checks passed. **Reviewed** means a separate agent examined it afterwards. **Verified in a browser** means someone drove it in a real browser and recorded the result. **Planned** means nothing exists yet.
-- Numbers come from the agents' own final reports, which are kept in a local archive that is not part of the repository. Where a report is missing or incomplete, this log says so.
-- Phases 1 to 17 happened on 2026-11-17. Phases 18 to 30 ran from 2026-11-17 into 2026-11-18. Most commits were made by the lead in batches, so a commit's time is when work was saved, not when it was done.
-- Model tiers: **top tier** is Claude Opus, **mid tier** is Claude Sonnet. No agent so far ran on the smallest tier (Haiku). For phases 18 to 28 the workflow runner's records name each agent's model: the merge, repair, area, shared-kit, shared-code fixer and integrator agents ran on Claude Fable, a top-tier model; after the usage limit of phase 20, checkers, reviewers, area fixers, verifiers and auditors ran on Claude Opus instead (phase 20 says why). Which model the top-tier agents of phases 14 to 17 used is not recorded in this log. For phase 29, only the integrator's model is recorded here; for phase 30, no agent's model is.
-- From phase 9 on, several phases ran at the same time. Phases 11 to 17 are listed in the order in which their work landed in git, and each one states when its workflow started and finished. Those clock times are taken from the workflow runner's own run records; the table at the start of phase 11 puts them side by side. Phases 18 to 29 overlap as well (the comparison pass of phase 23 ran beside phases 18 to 22, and the backdrop colours job of phase 27 beside the final check of phase 26); they are listed in the order in which each one started or, for the documents and decisions, in which it was settled.
+- Numbers come from the agents' own final reports, which are kept in a local archive that is not part of the repository. Where a report is missing or incomplete, this log says so. Phases 33 and 34 had no build agents; their numbers are the lead's own.
+- Phases 1 to 17 happened on 2026-11-17. Phases 18 to 30 ran from 2026-11-17 into 2026-11-18. Phase 31 is the rest of 2026-11-18, up to the first public release; phase 32 is 2026-11-22; phases 33 and 34 are 2026-11-23 and 2026-11-24; phase 35 is the rest of 2026-11-24, up to the second public release. Most commits were made by the lead in batches, so a commit's time is when work was saved, not when it was done.
+- Model tiers: **top tier** is Claude Opus, **mid tier** is Claude Sonnet. No agent so far ran on the smallest tier (Haiku). For phases 18 to 28 the workflow runner's records name each agent's model: the merge, repair, area, shared-kit, shared-code fixer and integrator agents ran on Claude Fable, a top-tier model; after the usage limit of phase 20, checkers, reviewers, area fixers, verifiers and auditors ran on Claude Opus instead (phase 20 says why). Which model the top-tier agents of phases 14 to 17 used is not recorded in this log. For phase 29, only the integrator's model is recorded here; for phase 30, no agent's model is. For phases 31 and 32 the workflow scripts name a model for some agents only: the privacy finders and re-checkers ran on Claude Sonnet, the privacy fixer and every verifier and checker on Claude Opus; the model of the fixers and builders is not recorded. Phases 33 and 34 were the lead's own work, apart from one review job whose models are not recorded. In phase 35 the lead had set no model on the agents of the documentation job or of the privacy sweep, so all of them (10 and 56) ran on Claude Fable, the lead's own model; only the fix-up of the sweep's findings in the documents ran on Claude Sonnet (T-76).
+- From phase 9 on, several phases ran at the same time. Phases 11 to 17 are listed in the order in which their work landed in git, and each one states how long its workflow ran. Those durations are taken from the workflow runner's own run records; the table at the start of phase 11 puts them side by side. Phases 18 to 29 overlap as well (the comparison pass of phase 23 ran beside phases 18 to 22, and the backdrop colours job of phase 27 beside the final check of phase 26); they are listed in the order in which each one started or, for the documents and decisions, in which it was settled.
 - Phases 6, 8, 9 and 10 were first written while some of their agents were still running. Where a later report or a later commit made a sentence wrong, the sentence was corrected in place and the correction says so.
 
 ## Summary of the method
@@ -41,7 +41,7 @@ The owner asked for Wholphin, an Android TV app for Jellyfin, to be rebuilt as a
 - **`wave3a`** (folder `.worktrees/w3`): playback, settings, Seerr and the production server (wave 3a, at the same time as wave 2), and later Live TV, music and photos (wave 4).
 - **`e2e`** (folder `.worktrees/e2e`): the end-to-end test suite, the CI workflow and the browser-compatibility review. It was merged into `main` and the worktree was removed.
 - **`integration`** (folder `.worktrees/int`): the final merge of `wave3a` with `main`.
-- Later worktrees (phases 23 to 27): **`parity`** (folder `.worktrees/parity`) for the comparison with the Android TV pictures; **`final`** (folder `.worktrees/final`, created from `integration` at `c14b168`) for merging that pass into the audited app and for the final check and repair; **`colors`** for the backdrop colour fix; **`polish`** for the polish round (phase 29); and short-lived ones for the documentation passes and for the cancelled demo. Since 2026-11-18 `main` holds all of their work (phases 28 and 29). The lead plans to remove the branches `final`, `colors`, `parity`, `integration`, `polish` and `wave3a` and their worktrees once this documentation pass is done; their commits stay in `main`'s history.
+- Later worktrees (phases 23 to 27): **`parity`** (folder `.worktrees/parity`) for the comparison with the Android TV pictures; **`final`** (folder `.worktrees/final`, created from `integration` at `c14b168`) for merging that pass into the audited app and for the final check and repair; **`colors`** for the backdrop colour fix; **`polish`** for the polish round (phase 29); and short-lived ones for the documentation passes and for the cancelled demo. Since 2026-11-18 `main` holds all of their work (phases 28 and 29). These branches and their worktrees were removed on 2026-11-18 (phase 30); their commits are in `main`'s history. The work of phases 31 to 34 was done in the main checkout.
 
 The main tree stayed the place for the shell, Home, browsing, detail pages, search and the fix pass.
 
@@ -55,6 +55,8 @@ The main tree stayed the place for the shell, Home, browsing, detail pages, sear
 - Nothing may record Live TV or create recording timers.
 
 With these guards on, up to four workflows ran at the same time.
+
+**After the first public release** (phases 32 to 34) the work is maintenance: the owner hands over one item at a time and looks at each result on the trial deployment (phase 30). Small, clear interface changes are made by the lead directly, on a fast path without a workflow; workflows are kept for large or risky work (phase 33; [DECISIONS.md](DECISIONS.md) T-63). A new build replaces the trial only after the owner's yes for that build (O-45).
 
 **Sources of truth.** The upstream Kotlin source comes first. The specs extracted from it come second, and the working agreement third (see [CLAUDE.md](../CLAUDE.md)).
 
@@ -343,7 +345,7 @@ Notes on these numbers:
 
 **Goal:** the first real screens: the app shell (navigation drawer, backdrop, clock, Back handling), server and user setup with login, the home page with shared item logic, and an automatic screenshot crawler.
 
-**Who:** one workflow in the main tree with 15 agents, from 14:48 to 16:31. All 15 returned. (The first version of this log said the integrator had returned nothing; see Integration below.)
+**Who:** one workflow in the main tree with 15 agents, for about 1 hour 43 minutes. All 15 returned. (The first version of this log said the integrator had returned nothing; see Integration below.)
 
 | Stage | Agents |
 |---|---|
@@ -501,7 +503,7 @@ The lead then committed wave 2 as `b37c856`.
 
 **Goal:** the riskiest feature (playback), the settings screens, Seerr discover and requests (the owner's top priority after movies and TV), and the production server with Docker packaging.
 
-**Who:** one workflow in the worktree (`.worktrees/w3`, branch `wave3a`), started from commit `029b43d` at the same time as wave 2. It ran from 14:52 to 17:47. 18 agents started and 18 returned (12 top tier, 6 mid tier).
+**Who:** one workflow in the worktree (`.worktrees/w3`, branch `wave3a`), started from commit `029b43d` at the same time as wave 2. It ran for about 2 hours 55 minutes. 18 agents started and 18 returned (12 top tier, 6 mid tier).
 
 | Stage | Agents |
 |---|---|
@@ -554,11 +556,11 @@ The lead then committed wave 2 as `b37c856`.
 
 **Verified by the builder:**
 - In the system Edge, muted, with real media at 1920x1080: every button and dialog with the mouse; keyboard-only seeking and shortcuts; chapters; an episode with a successor (queue row, Next Up countdown, autoplay of the next episode); touch at 390x844 and 844x390; a Live TV channel; forced error paths.
-- On the real server with the limited test account: one episode with intro and outro segments (Skip Intro and Skip Outro). The episode got marked played during the test; the builder reset it and confirmed the reset.
+- One episode with intro and outro segments (Skip Intro and Skip Outro). The episode got marked played during the test; the builder reset it and confirmed the reset.
 - 295 tests pass at that point, 16 of them new.
 - These runs used a visible browser window, which the briefs then still preferred for hardware decoding. Phase 15 (incident 2) explains why that stopped.
 
-**Not verified:** Safari, iOS, Firefox and Chrome with the new controls (Edge only); real phones; hardware media keys; a successful subtitle download (neither test account has the permission, so only the refusal path ran); remote trailers; cinema-mode intros; the HDR subtitle style on an HDR display; a right-to-left interface.
+**Not verified:** Safari, iOS, Firefox and Chrome with the new controls (Edge only); real phones; hardware media keys; a successful subtitle download (only the refusal path ran); remote trailers; cinema-mode intros; the HDR subtitle style on an HDR display; a right-to-left interface.
 
 ### Playback reviews and fix
 
@@ -583,7 +585,7 @@ Three reviewers examined engine and controls together: 19 findings, 7 major and 
 - **Rejected:** a 1280x720 against 1280x725 size reading (the browser reports the coded size of the synthetic file); a stutter at the start of an HDR tone-mapping transcode (the CPU-capped throwaway server is slower than real time at first); slow starts and HTTP 500 fragments in Firefox (the reviewer itself tied the errors to the full disk, and a re-run with free space passed).
 - **Deferred:**
   - The HDR transcode stall. It cannot be re-run within the rules: no repeated heavy transcodes on the real server, and the throwaway server has no such file.
-  - Two similar speaker icons in the control row (the web-only volume control next to upstream's audio-track button), a design choice for the lead or the owner.
+  - Two similar speaker icons in the control row (the web-only volume control next to upstream's audio-track button), a design choice for the lead or the owner. (Settled in phase 31: the audio-track button became a music note.)
   - Hiding the two image-subtitle opacity preferences, which belongs to the settings track.
 
 ### Gates and merge notes
@@ -689,14 +691,14 @@ One top-tier agent ran the whole-tree checks in the worktree.
 
 **Goal:** the owner asked for everything to be documented, so the project can be reviewed at the end.
 
-**Who:** the lead set up the structure. One workflow with 13 agents (4 top tier, 9 mid tier) ran from 16:21 to 16:44, and all 13 returned. One documentation agent wrote each of the six documents from the repository and the agent-log archive, a fact-check agent per document corrected it against the same sources, and one editing agent made the set agree, removed duplication and added [README.md](README.md) as the index.
+**Who:** the lead set up the structure. One workflow with 13 agents (4 top tier, 9 mid tier) ran for about 23 minutes, and all 13 returned. One documentation agent wrote each of the six documents from the repository and the agent-log archive, a fact-check agent per document corrected it against the same sources, and one editing agent made the set agree, removed duplication and added [README.md](README.md) as the index.
 
 **Outcome:**
 - **Commit `4abbe23`:**
   - Adds a "Documentation" section to [CLAUDE.md](../CLAUDE.md), with the document set and the rule that builders do not edit the docs. Builders list deviations, fixed upstream bugs, decisions and verification in their reports, and the lead folds those into the docs.
   - Adds `tools/archive-agent-logs.mjs`, which writes a local, git-ignored archive of every agent's brief and report. That archive is the primary source of this log.
 
-**Limits:** the documents describe the project as it stood at about 16:44. The archive they were written from had been generated while the wave 1 emulator agent, the wave 2 integrator and part of wave 3a were still running. This log has since been corrected for those three (phases 6, 8 and 9) and extended with phases 11 to 17. The documents are updated after each wave from the agents' reports, because builders do not edit them.
+**Limits:** the documents describe the project as it stood when that workflow ended. The archive they were written from had been generated while the wave 1 emulator agent, the wave 2 integrator and part of wave 3a were still running. This log has since been corrected for those three (phases 6, 8 and 9) and extended with phases 11 to 17. The documents are updated after each wave from the agents' reports, because builders do not edit them.
 
 **Commits:**
 - `4abbe23` Documentation duty: docs layout, reporting rule for agents, agent-log archiver
@@ -706,18 +708,18 @@ The first versions of the six documents were committed together with wave 2 in `
 
 ## Phase 11: Test data and reference shots
 
-**How phases 11 to 17 overlap.** The six workflows below ran on the same day, several at once. Times are to the nearest minute.
+**How phases 11 to 17 overlap.** The six workflows below ran on the same day, several at once. Times are hours:minutes counted from the start of wave 3b, to the nearest minute.
 
 | Phase | Workflow | Where it ran | Started | Finished |
 |---|---|---|---|---|
-| 12 | Wave 3b | main tree | 16:35 | 20:04 |
-| 14 | Wave 4 | worktree, branch `wave3a` | 18:36 | 20:46 |
-| 11 | Test data and reference shots | main tree, tooling folders only | 18:52 | 19:27 |
-| 13 | End-to-end suite, CI, compatibility review | worktree, branch `e2e` | 18:52 | 19:37 |
-| 16 | Main fix pass | main tree | 20:07 | 21:51 |
-| 17 | Final merge, stage 1 | worktree, branch `integration` | 20:48 | 22:54 |
+| 12 | Wave 3b | main tree | 0:00 | 3:29 |
+| 14 | Wave 4 | worktree, branch `wave3a` | 2:01 | 4:11 |
+| 11 | Test data and reference shots | main tree, tooling folders only | 2:17 | 2:52 |
+| 13 | End-to-end suite, CI, compatibility review | worktree, branch `e2e` | 2:17 | 3:02 |
+| 16 | Main fix pass | main tree | 3:32 | 5:16 |
+| 17 | Final merge, stage 1 | worktree, branch `integration` | 4:13 | 6:19 |
 
-Between 18:52 and 19:27 four workflows ran at the same time. Phase 15 (the incidents) is not a workflow; its events are spread over the rest of that day.
+For about 35 minutes (2:17 to 2:52) four workflows ran at the same time. Phase 15 (the incidents) is not a workflow; its events are spread over the rest of that day.
 
 **Goal:** close three gaps in the throwaway test server's data (no image subtitles, no media segments, a CPU cap that a recreated container would lose), then capture the Android TV reference pictures that were still missing: Live TV, the skip-intro button and image subtitles.
 
@@ -809,7 +811,7 @@ The emulator signed in through Quick Connect on the throwaway test server, as be
 - 211 tests pass at that point.
 
 **Not verified:**
-- A library with thousands of top-level items. The largest ones visible to the limited test account hold 64 series and 57 movies.
+- A library with thousands of top-level items. The libraries visible to the limited test account are far smaller.
 - Arrow-key navigation across the header, grid and letters. It was written but not exercised by the builder.
 - Delete from the grid menu, and Play and Shuffle (the playback page was a placeholder in this tree).
 - Themes other than Purple, and the tablet size.
@@ -832,7 +834,7 @@ Two builders worked one after the other.
 - Both servers at 1920x1080, 1280x720 and 390x844 with touch, next to the reference shots.
 - Writes only on the throwaway test server, each one undone and checked through the API.
 - Delete: the limited test account may not delete, so the button's permission gating was checked with a mocked permission and a stubbed request.
-- Real server, read-only: for a one-season series of 153 episodes, opening a late episode fetched only two pages.
+- Real server, read-only: for a long one-season series, opening a late episode fetched only two pages.
 - 223 tests pass at that point.
 
 **Not verified:** a real deletion; that theme music is audible and stops on leaving; playback after Play (a placeholder here); placeholder cards for missing and unaired episodes (both servers hide such episodes); submitting "create new playlist".
@@ -1070,7 +1072,7 @@ This is the first workflow in which agents committed. The merge agent and the ga
 - Synced lyrics, the visualizer, the track details handed to the operating system and the drawer's Now Playing entry work, and opening a video stops the music.
 - Crawler: 0 errors and 0 warnings after one fix. 25 new tests.
 
-**Not verified:** anything on the real server (no music library is visible to the limited test account); hardware media keys; favorites and deletes; the tablet size, right-to-left and other themes. Remote control from another device is not built, because the web app has no live connection to Jellyfin yet.
+**Not verified:** anything on the real server; hardware media keys; favorites and deletes; the tablet size, right-to-left and other themes. Remote control from another device is not built, because the web app has no live connection to Jellyfin yet.
 
 ### Photos and screensaver track
 
@@ -1081,9 +1083,9 @@ This is the first workflow in which agents committed. The merge agent and the ga
 
 **Upstream bugs fixed (4)**, among them the viewer opening on the wrong photo when a grid also holds albums or videos.
 
-**Verified:** on the throwaway test server in headless Edge at three sizes: the grids, the viewer with keyboard, mouse and synthetic touch gestures, clips in the slideshow, and the screensaver appearing after 34 seconds of idling with a 30-second setting. Read-only on the real server's only home-videos library. 24 new tests.
+**Verified:** on the throwaway test server in headless Edge at three sizes: the grids, the viewer with keyboard, mouse and synthetic touch gestures, clips in the slideshow, and the screensaver appearing after 34 seconds of idling with a 30-second setting. Read-only on the real server. 24 new tests.
 
-**Not verified:** the photo viewer on the real server (no photo library is visible to the test account); saving a color filter; fullscreen and the wake lock, which cannot be tested meaningfully without a window; a browser that blocks a clip's sound.
+**Not verified:** the photo viewer on the real server; saving a color filter; fullscreen and the wake lock, which cannot be tested meaningfully without a window; a browser that blocks a clip's sound.
 
 ### What the reviews found
 
@@ -1229,7 +1231,7 @@ The owner allows a minimal Seerr test request in principle, because the limited 
 - **Flows that cannot run for real** were exercised with mocks: delete from a page and from a grid menu, and "mark entire series played". "Create new playlist" ran for real on the throwaway test server and the test deletes the playlist again.
 - **New specs:** browse (8 tests), detail (13), series (4), search (4) and Home customization (2). That is 31 tests. The five specs passed three runs in a row, 37 of 37 each; the 37 include the sign-in tests of the `setup` project.
 
-**Not done:** the playlist page was not checked on the real server (none visible to the limited test account); the media info report lacks the device profile, which lives with playback on the other branch.
+**Not done:** the playlist page was not checked on the real server; the media info report lacks the device profile, which lives with playback on the other branch.
 
 **Problem reported:** one run of the whole suite by this fixer had 5 failures in specs it did not own. Four were preference tests (theme, interface scale, Hebrew twice): after the dev server had hot-reloaded a file, the suite's helper for setting a preference loaded a second copy of the preferences module, so the setting never reached the app. The fifth, a test of where the right-click menu opens, failed once and passed on two reruns. The fixer left both to the owner of the test fixtures. The re-check agent below changed the helper to use the module the page has actually loaded, and its two full runs passed.
 
@@ -1337,7 +1339,7 @@ From the hand-over notes on the branch (`docs/final-merge-notes.md`):
 
 **Goal:** bring the fix pass of phase 16 (commit `3ab4a60` on `main`) into the merged app on branch `integration`, make the two sides' solutions to the same problems into one, and have independent checkers examine the result.
 
-**Where and when:** the worktree of phase 17 (`.worktrees/int`, branch `integration`). The workflow started at 22:57 on 2026-11-17. The merge agent worked for about 81 minutes; the three checkers started together at 00:18 on 2026-11-18.
+**Where and when:** the worktree of phase 17 (`.worktrees/int`, branch `integration`). The workflow started on 2026-11-17. The merge agent worked for about 81 minutes; the three checkers started together right after it.
 
 **Who:** one workflow with 5 top-tier agents (Claude Fable). The merge agent and the three checkers returned. The fifth, the repair agent, was cut off by the usage limit (phase 20); its work was finished in phase 21.
 
@@ -1431,7 +1433,7 @@ Later, in phase 21, the License page in the app gained the text of the exception
 
 **Goal:** finish the interrupted repair of phase 18, bring `main`'s new documents into `integration`, apply seven small fixes the lead had collected, run every gate and the container check, and then have someone who did not do the work audit it before it lands.
 
-**When and who:** one workflow with 2 agents, both returned. The repair agent (Claude Fable) started at 06:44 on 2026-11-18 and worked for about 75 minutes. The auditor (Claude Opus) started at 07:59 and worked for about 13 minutes. Only the repair agent was authorized to commit on `integration`. The record is section 9 of `docs/final-merge-notes.md`.
+**When and who:** one workflow with 2 agents, both returned. The repair agent (Claude Fable) started on 2026-11-18 and worked for about 75 minutes. The auditor (Claude Opus) started when it had finished and worked for about 13 minutes. Only the repair agent was authorized to commit on `integration`. The record is section 9 of `docs/final-merge-notes.md`.
 
 ### Repair
 
@@ -1496,7 +1498,7 @@ The stale document lines and the deploy-guide step were corrected in phase 22 (`
 
 **The independent verifier** (on `c14b168`) found no wait, timeout or loosened check added by these commits and returned "ready to land". Its runs: the drawer tests twenty times over, 127 of 127; the keyboard project four times over, 79 of 79; a script of its own that arrives from the drawer cold and warm, 107 of 107; `typecheck`, `test` (572 tests) and `lint` (25 warnings) as above; the whole suite 190 of 191. The one failure was a WebKit library test that counted 3 cards instead of 4 after the Favorites filter; it passed when run alone, and the verifier's reading (not proven) is that the shared test account's favorites changed during the run through another suite running at the same time. It also reported a problem older than these fixes: an arrow key toward the page, pressed about 16 ms after Enter on a drawer entry, can send focus back into the drawer, because the new page has nothing to focus yet. That problem was fixed later, in the final check and repair (phase 26, findings shell-keyboard-1 and shell-keyboard-2 in `docs/final-merge-notes.md` section 12.2).
 
-**Landing.** On 2026-11-18 at 09:35 `main` was moved forward to `integration` at `c14b168`, as git's reference log of `main` records it (a fast-forward: no merge commit, `main` simply points at the same commit).
+**Landing.** On 2026-11-18 `main` was moved forward to `integration` at `c14b168`, as git's reference log of `main` records it (a fast-forward: no merge commit, `main` simply points at the same commit).
 
 **Commits** (all on branch `integration`, and on `main` since the fast-forward): `6674717`, `62fe020` (the lead), `940e0d9`, `afd1afb`, `f8024f0`, `f935a79`, `1100e1e`, `c14b168` (notes, section 10).
 
@@ -1504,7 +1506,7 @@ The stale document lines and the deploy-guide step were corrected in phase 22 (`
 
 **Goal:** compare every web screen with the 244 reference pictures taken from the Android TV app in phases 6 and 11, fix real differences in look and layout, check the fixes independently, and integrate them.
 
-**Where and when:** a separate worktree, `.worktrees/parity`, on branch `parity`, which branches off `integration` at `c6a1d1f` (during phase 18). The workflow started at 23:55 on 2026-11-17. It ran beside phases 18 to 22.
+**Where and when:** a separate worktree, `.worktrees/parity`, on branch `parity`, which branches off `integration` at `c6a1d1f` (during phase 18). The workflow started on 2026-11-17. It ran beside phases 18 to 22.
 
 **Who:** one workflow with four stages and an integration step. Over the original run and the resumed run, 50 agents were started and 38 returned: every agent of the resumed run returned, including the integrator; the twelve that did not return are the eleven first checkers and the first integrator, cut off by the usage limit (phase 20). The resumed run's record counts 35 agents, 9 of them area results taken from the cache.
 
@@ -1552,11 +1554,11 @@ The first eleven checkers were cut off by the usage limit (phase 20). In the res
 - The focus ring of a genre tile in the first or last column was clipped.
 - The mini player bar, a web addition, was not recorded as a difference from the TV app.
 
-Eleven fixers (Claude Opus) started between 07:29 and 07:39 and reported 32 fixes in all (table above). Some findings were answered with a request to the shared kit or to the lead instead of a fix: for example a row for [DEVIATIONS.md](DEVIATIONS.md), which only the lead edits.
+Eleven fixers (Claude Opus) started within ten minutes of each other and reported 32 fixes in all (table above). Some findings were answered with a request to the shared kit or to the lead instead of a fix: for example a row for [DEVIATIONS.md](DEVIATIONS.md), which only the lead edits.
 
 ### Integration
 
-The integrator (Claude Fable) started at 07:47 on 2026-11-18 and returned at 10:07, after about 140 minutes. Its record is `docs/parity-notes.md`.
+The integrator (Claude Fable) started on 2026-11-18 and returned after about 140 minutes. Its record is `docs/parity-notes.md`.
 
 **What it did:**
 - Committed the pass's work as it found it (213 files), one commit per group of areas, before changing anything (`b5cacbc` to `3e7de07`).
@@ -1576,7 +1578,7 @@ The integrator (Claude Fable) started at 07:47 on 2026-11-18 and returned at 10:
 
 The pass's work reached the app in two merges on branch `final`: as of `2a25082` in phase 25, and its last commits (`b1e0f33` at `f27f68a`, the notes `d23d5bc` at `b120d5f`) in phases 25 and 26. It landed on `main` with phase 28.
 
-**Commits** (all on branch `parity`, on `main` since phase 28): `b5cacbc`, `a157961`, `5b1f5be`, `c7bc265`, `2ef1dca`, `3e7de07` (07:48, the areas' work), `07a2971`, `097a001` (08:47), `161598d` (09:07), `2a25082` (09:18), `b1e0f33` (09:44), `d23d5bc` (10:06, notes).
+**Commits** (all on branch `parity`, on `main` since phase 28): `b5cacbc`, `a157961`, `5b1f5be`, `c7bc265`, `2ef1dca`, `3e7de07` (the areas' work), `07a2971`, `097a001`, `161598d`, `2a25082`, `b1e0f33`, `d23d5bc` (notes).
 
 ## Phase 24: Owner decisions and housekeeping of 2026-11-18
 
@@ -1591,25 +1593,25 @@ The pass's work reached the app in two merges on branch `final`: as of `2a25082`
 
 **Housekeeping:**
 - **Docker leftovers** from earlier attempts at this project: the owner allowed deleting them, and the lead removed them the same day. Nothing else was touched.
-- **A public demo, cancelled.** The owner asked for a demo on GitHub Pages, in which visitors would type their own server address. A workflow was started on a worktree cut from `integration` and stopped before it wrote any code; its one agent did not return. The reason, as the lead recorded it: on the free plan, GitHub Pages needs a public repository, and a public demo distributes the GPL application, so the source would have to be public too. That conflicts with the decision on going public. The owner then said: "No demo".
+- **A public demo, cancelled.** The owner asked for a demo on GitHub Pages, in which visitors would type their own server address. A workflow was started on a worktree cut from `integration` and stopped before it wrote any code; its one agent did not return. The reason, as the lead recorded it: a public demo distributes the GPL application, so the source would have to be public too. That conflicts with the decision on going public. The owner then said: "No demo".
 
-**State of the branches** (first written at 09:51 on 2026-11-18, brought up to date after phase 28):
+**State of the branches** (first written on 2026-11-18, brought up to date after phase 28):
 - `integration` holds the merged, repaired and audited app (phases 17, 18, 21 and 22), at `c14b168`. It is pushed to the private repository as a backup branch.
-- `main` was moved forward to `integration` on 2026-11-18 at 09:35 (a fast-forward), so it was at `c14b168`; the documents followed at 09:51 (`2b40f89`). Before that it was at `e689d64` (the fix pass of phase 16 and the documents of phase 19).
+- `main` was moved forward to `integration` on 2026-11-18 (a fast-forward), so it was at `c14b168`; the documents followed (`2b40f89`). Before that it was at `e689d64` (the fix pass of phase 16 and the documents of phase 19).
 - `parity` holds the comparison pass at `d23d5bc` (phase 23).
-- **Comparison pass landed on `main`:** yes, on 2026-11-18 at 13:35, when `main` was moved forward to `final` at `e1b7e04` (phase 28). `main` then also holds the early merge, the final check and repair, and the backdrop colour fix (phases 25 to 27).
+- **Comparison pass landed on `main`:** yes, on 2026-11-18, when `main` was moved forward to `final` at `e1b7e04` (phase 28). `main` then also holds the early merge, the final check and repair, and the backdrop colour fix (phases 25 to 27).
 
 ## Phase 25: Early merge of the comparison pass (branch `final`)
 
 **Goal:** bring the comparison pass of phase 23 into the audited app without waiting for its integrator to finish, and have every resolution reviewed by someone who did not make it. The record is section 11 of `docs/final-merge-notes.md`.
 
-**Where and when:** a new worktree, `.worktrees/final`, on branch `final`, created from `integration` at `c14b168`. The workflow started at 09:30 on 2026-11-18 and its last agent returned at about 09:56.
+**Where and when:** a new worktree, `.worktrees/final`, on branch `final`, created from `integration` at `c14b168`. The workflow ran on 2026-11-18 for about 26 minutes.
 
 **Who:** one workflow with 8 agents, all returned: the merge agent (Claude Fable), six reviewers (Claude Opus), one per area (shell, arrow keys, dialogs and menus; browse grids and detail pages; Live TV; music; settings, licence page, setup and strings; the end-to-end suite and the crawler), and a repair agent (Claude Fable).
 
 **The rule used:** the comparison pass owns how things look; the integration owns how things behave (focus, keyboard, the mixed-direction text rules, the room for the mini player, the playback session, removed strings, end-to-end stability, the licence page's content).
 
-**The merge.** `parity` as of `2a25082` was merged at 09:43 (`3085fba`, 253 files). 13 files had conflicts; each resolution is listed in section 11.1 of the notes. 36 files had been changed on both sides since the fork; the 23 that merged without a conflict were each read against both sides. Three of them needed follow-ups: the phone rule for playlist row buttons (`7ebc953`), the music header's lines on phones (`817594e`), and the pivot scroll, which aligned an item to the window's bottom edge under the music mini player (`e8a7731`).
+**The merge.** `parity` as of `2a25082` was merged (`3085fba`, 253 files). 13 files had conflicts; each resolution is listed in section 11.1 of the notes. 36 files had been changed on both sides since the fork; the 23 that merged without a conflict were each read against both sides. Three of them needed follow-ups: the phone rule for playlist row buttons (`7ebc953`), the music header's lines on phones (`817594e`), and the pivot scroll, which aligned an item to the window's bottom edge under the music mini player (`e8a7731`).
 
 **Gates after the merge:** `npm run gen` no diff; `typecheck` and `e2e:typecheck` clean; `test` 68 files, 620 tests; `lint` 0 errors, 25 warnings; `build` passes. End-to-end suite once: 190 of 191; the failure was the keyboard sign-in test, a race in parity's test lines (fixed on `parity` by `b1e0f33`, which the merge did not yet have). Crawler on the screens the conflicts touched: 28 pictures, all ok.
 
@@ -1624,23 +1626,23 @@ Three tests were added, each seen failing before its fix: one unit test and two 
 
 **Not verified** (section 11.4 of the notes): the guide header, the music header, the program dialog and the License rows in Hebrew after the merge; an arrow-key walk to an item taller than the room below the pivot with the mini player showing (checked by reading only); the full crawl and the TV compare sheet on the merged tree (both were run in phase 26).
 
-**Commits** (on branch `final`, on `main` since phase 28): `3085fba` (09:43), `7ebc953`, `817594e`, `e8a7731` (09:43), `0eb008b` (09:46, notes section 11), `e3df8a1`, `6180e80`, `73ed619` (09:55), `8f88b38` (09:56, notes section 11.5), `1572963`, `f27f68a` (09:57).
+**Commits** (on branch `final`, on `main` since phase 28): `3085fba`, `7ebc953`, `817594e`, `e8a7731`, `0eb008b` (notes section 11), `e3df8a1`, `6180e80`, `73ed619`, `8f88b38` (notes section 11.5), `1572963`, `f27f68a`.
 
 ## Phase 26: Final check and repair
 
 **Goal:** have the merged tree of phase 25 examined from as many angles as possible at once, repair everything found, and audit the result before it lands. The record is section 12 of `docs/final-merge-notes.md`.
 
-**Where and when:** branch `final`. The workflow started at 10:00 on 2026-11-18 and the audit returned at 13:33, about 3.5 hours.
+**Where and when:** branch `final`. The workflow ran on 2026-11-18 and the audit returned after about 3.5 hours.
 
 **Who:** one workflow with 25 agents, all returned. Following the owner's instruction of the same day (phase 24), the fan-out was written into the workflow script.
 
-| Stage | Agents | Time (local) |
+| Stage | Agents | Duration |
 |---|---|---|
-| Check | 13 independent checkers (Claude Opus), one per angle | 10:00 to between 10:14 and 10:45 |
-| Fix | 9 area fixers (Claude Opus): Home, browse and search; detail; playback; Live TV; music; photos; settings and setup; Discover; tools and end-to-end tests. They worked side by side without seeing each other's work | 10:45 to 11:01 |
-| Shared code | 1 fixer (Claude Fable) for the shell, navigator and overlays, which no area owns | 11:01 to 11:54 |
-| Integrate | 1 integrator (Claude Fable): read every change, settled the requests between fixers, merged parity's last commit, added tests, ran every gate | 11:54 to 12:57 |
-| Audit | 1 independent auditor (Claude Opus) | 12:57 to 13:33 |
+| Check | 13 independent checkers (Claude Opus), one per angle | 14 to 45 minutes |
+| Fix | 9 area fixers (Claude Opus): Home, browse and search; detail; playback; Live TV; music; photos; settings and setup; Discover; tools and end-to-end tests. They worked side by side without seeing each other's work | about 16 minutes |
+| Shared code | 1 fixer (Claude Fable) for the shell, navigator and overlays, which no area owns | about 53 minutes |
+| Integrate | 1 integrator (Claude Fable): read every change, settled the requests between fixers, merged parity's last commit, added tests, ran every gate | about 63 minutes |
+| Audit | 1 independent auditor (Claude Opus) | about 36 minutes |
 
 **The thirteen angles** (section 12.1 of the notes), with their findings: shell and keyboard 7; Home and browse 5; detail pages and dialogs 4; playback in headless Edge 4; Live TV 5; music 3; photos 3; settings and setup 4; search and Discover 3; right-to-left (Hebrew and Arabic) 2; phones and touch 4; Firefox and WebKit 3; the 208 TV comparison scenes 0.
 
@@ -1666,13 +1668,13 @@ Among the minor ones: Escape within about 10 ms of Enter went back from the page
 
 No Seerr request was created; only the e2e Discover spec read the real servers. No Live TV timer or recording was created.
 
-**Commits** (on branch `final`, on `main` since phase 28): `1d70b92`, `ccdc835`, `d6bbd30`, `695c5c3` (12:00), `f45db21`, `6f2fefd`, `3325a7d`, `0f8a201`, `96f71c0`, `2165b33`, `4d4756a`, `535394e`, `d6f2c63` (12:01; the fixers' work, committed by area), `b120d5f` (12:01, merge of `parity` at `d23d5bc`), `a60b918` (12:11), `db375e8` (12:17), `240b3f9` (12:50), `05b510d` (12:56, notes section 12).
+**Commits** (on branch `final`, on `main` since phase 28): `1d70b92`, `ccdc835`, `d6bbd30`, `695c5c3`, `f45db21`, `6f2fefd`, `3325a7d`, `0f8a201`, `96f71c0`, `2165b33`, `4d4756a`, `535394e`, `d6f2c63` (the fixers' work, committed by area), `b120d5f` (merge of `parity` at `d23d5bc`), `a60b918`, `db375e8`, `240b3f9`, `05b510d` (notes section 12).
 
 ## Phase 27: Backdrop colours
 
 **Goal:** find out why the dynamic backdrop colours differed from the TV on some items (the largest remaining difference of phase 23), fix it at the cause, and have it verified independently against the reference pictures.
 
-**Where and when:** a separate worktree on branch `colors`, cut from `final` at `f27f68a`. The workflow started at 10:08 on 2026-11-18, beside phase 26. The fixer worked until 10:52, the verifier until 10:59.
+**Where and when:** a separate worktree on branch `colors`, cut from `final` at `f27f68a`. The workflow ran on 2026-11-18, beside phase 26. The fixer worked for about 44 minutes, the verifier for about 7 more.
 
 **Who:** one workflow with 2 agents, both returned: a fixer (Claude Fable) and an independent verifier (Claude Opus).
 
@@ -1691,21 +1693,21 @@ No Seerr request was created; only the e2e Discover spec read the real servers. 
 
 **Limits, recorded:** Android's image loader caps decoded images at 4096 px and scales larger ones while decoding; that is not reproduced. A device whose Skia build samples differently, or a browser whose JPEG decoder differs from Android's by a step on a few pixels (possibly Safari on Apple hardware, not testable on this machine), could still give other colours.
 
-**Commits:** `b08f0bb`, `4c2cf63`, `ead7347` (10:50, branch `colors`), merged into `final` as `b6da6a9` at 13:33; on `main` since phase 28.
+**Commits:** `b08f0bb`, `4c2cf63`, `ead7347` (branch `colors`), merged into `final` as `b6da6a9`; on `main` since phase 28.
 
 ## Phase 28: Landing on `main`
 
 **What happened**, on 2026-11-18, by the lead:
-1. **The colour fix** was merged into `final` (`b6da6a9`, 13:33).
-2. **The drag test hardened.** The fragile test the audit of phase 26 found now takes the first overflowing Home row wherever it is, because which rows overflow and where they sit depends on the server's watched marks (`e1b7e04`, 13:35).
-3. **Landing.** At 13:35 `main` was moved forward to `final` at `e1b7e04`, as git's reference log of `main` records it: a fast-forward, no merge commit. `main` now holds the merged app, the stage 2 repair, the focus fixes, the TV comparison pass, the final check and repair, and the colour fix. `integration` stays at `c14b168` and `parity` at `d23d5bc`.
+1. **The colour fix** was merged into `final` (`b6da6a9`).
+2. **The drag test hardened.** The fragile test the audit of phase 26 found now takes the first overflowing Home row wherever it is, because which rows overflow and where they sit depends on the server's watched marks (`e1b7e04`).
+3. **Landing.** `main` was moved forward to `final` at `e1b7e04`, as git's reference log of `main` records it: a fast-forward, no merge commit. `main` now holds the merged app, the stage 2 repair, the focus fixes, the TV comparison pass, the final check and repair, and the colour fix. `integration` stays at `c14b168` and `parity` at `d23d5bc`.
 4. **The test server reset.** Hours of parallel agents had changed the throwaway test server's user data: every Codec Zoo item marked watched, about 950 sessions of the test account, a stray user. Before the last end-to-end run the lead reset it to its seed (`npm run ts:reset`).
-5. **A tool defect the reset exposed.** On Jellyfin 10.11 a freshly wiped server answers `/System/Info/Public` while its startup page still answers every other address with 503, so provisioning began too early. `waitForServer` in `tools/testserver/setup.mjs` now also waits until another address stops answering 503 (`bc93855`, 13:43, committed on `main` after the landing).
+5. **A tool defect the reset exposed.** On Jellyfin 10.11 a freshly wiped server answers `/System/Info/Public` while its startup page still answers every other address with 503, so provisioning began too early. `waitForServer` in `tools/testserver/setup.mjs` now also waits until another address stops answering 503 (`bc93855`, committed on `main` after the landing).
 
 **Gates on the landed tree** (the lead's runs on `main` at `e1b7e04`): `typecheck` and `e2e:typecheck` clean; `test` 80 files, 694 tests (eight more than in phase 26, from the colour fix's tests); `lint` 0 errors, 25 warnings; production build passes. The end-to-end suite has 221 tests; the result of the lead's last full run on the reset server is recorded in [STATUS.md](STATUS.md).
 
 6. **The first full end-to-end run on the reset server** (`bc93855`, alone): 220 of 221. The failing test opens the recordings tab of the Live TV library, and the reset server had no recordings folder: the old server's folder was a leftover of the recording incident of phase 15, and the seed had never made one.
-7. **Pre-made recordings in the seed.** Provisioning now copies a 3.5 MB clip three times into Jellyfin's default recording folder and restarts the container once; Jellyfin makes the `Recordings` library for that folder when it starts. No timer is created and nothing is recorded. `ts:verify` checks that the folder is reported (`3b1dd7b`, 13:53).
+7. **Pre-made recordings in the seed.** Provisioning now copies a 3.5 MB clip three times into Jellyfin's default recording folder and restarts the container once; Jellyfin makes the `Recordings` library for that folder when it starts. No timer is created and nothing is recorded. `ts:verify` checks that the folder is reported (`3b1dd7b`).
 8. **The second full run** (`3b1dd7b`, alone): 221 of 221. `main` was pushed, and the CI run of `3b1dd7b` succeeded.
 9. **The Docker image** `wholphin-web:latest` was rebuilt from `main` at `3b1dd7b` (258 MB). Run against the test server with `HSTS=false`, it answered `/healthz`, `/config.json` and a deep link, and sent the security headers; a missing asset answered 404. Sign-in and playback were not repeated on the rebuilt image (the integrator of phase 26 did both on the previous build).
 
@@ -1715,7 +1717,7 @@ No Seerr request was created; only the e2e Discover spec read the real servers. 
 
 **Goal:** close the points that the final check (section 12.7 of `docs/final-merge-notes.md`), its audit and the comparison pass (`docs/parity-notes.md`, section 6) had left open, check the result independently, and land it on `main`. The record is section 13 of `docs/final-merge-notes.md` (13.1 the items, 13.2 what the integrator changed, 13.3 deviations introduced or removed, 13.4 decisions, 13.5 tests, 13.6 gates, 13.7 what is not verified or still open).
 
-**Where and when:** branch `polish`, cut from `main` at `3b1dd7b`, in a worktree of its own, on the afternoon of 2026-11-18. The integrator's commits are dated 15:45 to 16:12.
+**Where and when:** branch `polish`, cut from `main` at `3b1dd7b`, in a worktree of its own, on 2026-11-18. The integrator's commits span about 27 minutes.
 
 **Who:** one workflow with 8 agents, all returned: six fixers working side by side on files that did not overlap, one integrator, who alone committed, and one independent verifier. The integrator's commits name Claude Fable; the models of the other agents are not recorded here.
 
@@ -1761,11 +1763,11 @@ No Seerr request was created; only the e2e Discover spec read the real servers. 
 **Left open** (13.7): the library grid still rebuilds its cards on every column-count change; three overlays outside the kit (`ImageFilterDialog`, the photo viewer's `ViewOptionsPanel`, the player's `PlayerSheet`) do not use the new handling for an overlay whose openers are gone; Right from the photo grid into its letter column still goes by geometry; in Hebrew the player's speed sheet shows ".25" as "25."; `ListItem` slots with element children (and the Live TV view-options title) still trim with `text-box`; the "Watch live" row in crawl pictures would need a staggered test guide and a crawler clock that follows the server; the deviations of 13.3 are still to be folded into [DEVIATIONS.md](DEVIATIONS.md).
 
 **Landing on `main`**, by the lead, on 2026-11-18:
-1. `main` was at `3d1ea68` (a documents commit), so `polish` could not be fast-forwarded. It was merged with a merge commit, `f1fb308` ("Merge the polish round (polish fab7ab5)", 16:52), cleanly, without a conflict.
+1. `main` was at `3d1ea68` (a documents commit), so `polish` could not be fast-forwarded. It was merged with a merge commit, `f1fb308` ("Merge the polish round (polish fab7ab5)"), cleanly, without a conflict.
 2. **Gates on the merged tree:** `typecheck` and `e2e:typecheck` pass; `test` 84 files, 742 tests (694 before the round); `lint` 0 errors; `build` passes.
 3. **The test server reset.** Its data had drifted during the round (each crawl's Next Up scene advances a series), so the lead reset it and provisioned it again from the main checkout. `ts:verify` after the reset: 32 checks pass. Earlier documents said 31; the check count is 32.
 4. **First full end-to-end run** (239 tests, alone), started right after the reset: 236 of 239. The three failures (two profile-PIN tests on desktop and the touch "More" button test on the phone) failed only on the page guard: the test server answered 500 to five poster requests. Its log shows Jellyfin's own "Response Content-Length mismatch" error while it fills its image cache for the first time; the same addresses answered 200 afterwards and the error did not come back. A server-side effect of the first run after a reset, not an app change.
-5. **Second run:** 238 of 239. The Escape test in `e2e/specs/navigation.spec.ts` failed in WebKit: at that moment the fourth Home row was "Recently added in Mixed Folders", a library with one item, and the test assumed that the row it lands on has two cards. The test now goes on to a row with two cards (`c358a52`, 17:14, test only).
+5. **Second run:** 238 of 239. The Escape test in `e2e/specs/navigation.spec.ts` failed in WebKit: at that moment the fourth Home row was "Recently added in Mixed Folders", a library with one item, and the test assumed that the row it lands on has two cards. The test now goes on to a row with two cards (`c358a52`, test only).
 6. **Third run,** on `c358a52`: 239 of 239 in 4.3 minutes.
 7. `main` was pushed (`3d1ea68..c358a52`). `main` is now `c358a52`.
 
@@ -1794,7 +1796,7 @@ No Seerr request was created; only the e2e Discover spec read the real servers. 
 - **Cause found, no change: the one 404 of the production smoke run.** It is `GET /wholphin/public`, the app's probe for the optional Wholphin server plugin, answered 404 by a server without the plugin. The TV app sends the same request on every user switch. A browser logs every 404, so the console line cannot be avoided; the end-to-end guard has always allowed it.
 - **Cause found, not fixed: the "ResizeObserver loop completed with undelivered notifications" message.** It appears only when a scrolled grid is resized in several steps. It comes from the list library's own row observer, which renders synchronously when a measured row comes with a scroll correction; the tree before the polish round has it too. Nothing is visible on screen; the one trace is a line in the app's own log. A library option that removed it in 32 Firefox rounds was tried and put back, because it delays every row measurement and was not run through the suite.
 - **No change needed: three overlays without the "openers gone" handling.** Probed in Chromium and Firefox. The photo viewer's view options panel and the player's sheet with the controls shown keep their opener through resizes. The photo filter dialog, and a player sheet opened while the controls are hidden, close with focus on the page body, which is the idle state of those full-screen pages by design.
-- **Left for the owner:** the player's time codes in Hebrew keep the locale's direction, as the stylesheet says on purpose ([DECISIONS.md](DECISIONS.md) Q-35).
+- **Left for the owner:** the player's time codes in Hebrew keep the locale's direction, as the stylesheet says on purpose ([DECISIONS.md](DECISIONS.md) Q-35). (Settled in phase 32: the times became clocks written left to right in every language.)
 
 **Tests:** 6 unit tests (`src/features/playback/ui/rtlValues.test.tsx`) and 2 end-to-end tests, each in Chromium, Firefox and WebKit, with a new fixture helper that reads an element's characters in the order they are drawn. Both end-to-end tests fail in all three engines with the fix switched off (for example: expected "100Mbps", received "Mbps100"). Unit tests from 84 files and 742 tests to 85 and 748; end-to-end suite from 239 to 245 tests.
 
@@ -1844,7 +1846,7 @@ The one touch problem: in Settings, scrolling the page with a finger that lands 
 
 **Not tested:** real phone hardware and pen hardware; a real moving touch in WebKit and Firefox; the handle's pick-up on iOS.
 
-**Commit:** `7ad52ba` (19:09, on `main`).
+**Commit:** `7ad52ba` (on `main`).
 
 ### Final gates and push
 
@@ -1872,46 +1874,388 @@ The image `wholphin-web:latest` was rebuilt from `main` at `7ad52ba` (258 MB), a
 
 **Commits of this phase** (on `main`): `692715f`, `7ad52ba`.
 
+## Phase 31: Owner requests, the privacy sweep, the new player and the first public release
+
+**What this phase is.** The rest of 2026-11-18, after the touch fix: two small requests of the owner, the owner's answers on what "finished" includes, the go for publishing, a privacy sweep of the repository, two must-haves before shipping (a player layout modelled on Jellyfin's own web player, and far less server transcoding), and the publication itself. The decisions are [DECISIONS.md](DECISIONS.md) O-30 to O-35 and T-58 to T-60.
+
+**Where and when:** the main checkout; every commit is the lead's, on `main`. Clock times of this phase are not recorded here, except the time of the publication.
+
+### What the owner said
+
+The lead's summaries, with the owner's words where they are quoted:
+- **The features that are not built do not block "finished"** (O-30; this settles Q-43, the question phase 30 had left open). Remote control from another device is "nice to have", not required. The music extras (Play on albums and artists from the shared menu, the options of the music tabs) do not matter as long as music works. Image subtitles drawn in the browser were left out on the lead's recommendation, after the lead had explained what that is; the PGS kind was built later the same day anyway, as part of the direct-play work below.
+- **What comes next** (O-31): "polish everything up so it would look the greatest that ever been"; after that, additions for the owner of a deployment: things that shape how that deployment's own users first get the app. The first example is the default interface language. Not built; see "What comes next".
+- **Two small requests** (O-32): the audio-track button must not look like the volume control, and the interface scale must not resize the interface while its slider is dragged.
+- **The go for publishing** (O-33): when the fixes are finished, first a privacy sweep by five concurrent agents, each on a different part ("don't treat it as high security": find and fix), then the repository becomes public. Decisions the owner made may stay in the documents; anything that describes the owner, their home, machine or server may not, and no picture of the real server.
+- **Two must-haves before shipping** (O-34): less server transcoding from a desktop Chromium browser, and a player laid out like Jellyfin's own web player. Both are described below.
+- **How to publish** (O-35): "Yes, clean copy".
+
+### Two small requests: the interface scale and the audio-track icon
+
+**Who:** one workflow with 3 agents, all returned: one fixer for the scale, one for the icon, one independent verifier for both.
+
+**The interface scale.**
+- **Reproduced** on `/settings` with a drag from 100 percent toward 180: in Chromium with a real finger (phone size) and with the mouse, in Firefox and in WebKit, the root font size went from 16 to 32 px in ten writes during the drag, the slider moved more than 500 px down the page and changed its width, and the drag ended at 200 percent with the slider out of view.
+- **Cause:** every step was stored and applied at once, so the slider moved and resized under the pointer, and the next pointer position then meant a larger value.
+- **The fix:** the shared slider (`src/ui/inputs/Slider.tsx`) got an optional mode in which a pointer drag is shown by the slider alone and applied once, at the release. The settings row turns it on for the one preference marked as re-laying out the page (`relaysOutPage()` in `src/features/settings/prefModel.ts`) and shows the pending value in its summary. A cancelled drag applies nothing. The arrow keys still apply every step, as on the TV. After the value is applied, the list scrolls so that the slider stays at the height it had.
+- **Every other slider stays live,** as on the TV: the fixer set each one it could reach to both ends and measured that none moves its own row.
+- **After the fix,** the same drag in the four set-ups: the root font size is written once, at the release, the result is 180 percent, and the slider bar's middle is within 2 px of where it was.
+
+**The icon.** The audio-track button of the player is the Material "audiotrack" music note; the volume control keeps its three speakers, so in the player a speaker means volume only. The lead chose the pair, and the owner's answer to the picture was "looks fine" (O-32). The note is what Jellyfin's own web player uses for the audio track; the TV app draws a speaker there and has no volume control. Speakers that stand for an audio stream outside the player are upstream's own icons and were left.
+
+**The verifier** returned "ready to commit" for both, with nothing blocking. With a probe of its own it sampled the root font size, the slider's box and the summary on every animation frame: real touch in Chromium at phone size (a drag, a cancel, a vertical swipe that scrolls the list), the mouse in Chromium, Firefox and WebKit, the keyboard, and Hebrew. Its notes: the bar's width changes by a few pixels during a drag when the summary text changes length, which steadies itself; after scaling down from near the top of the list the bar cannot return to its old height, because the list cannot scroll above its start.
+
+**Tests:** unit tests for the release mode of the slider and for the mark, and two new unit test files for the icons; 3 end-to-end tests in 7 runs (a real finger drag on the phone project, a mouse drag in three engines, dispatched touch pointer events in Firefox, WebKit and the iPhone project). Unit tests from 87 files and 776 tests to 89 and 794; end-to-end suite from 250 to 257 tests.
+
+**Gates** (the verifier): `typecheck`, `e2e:typecheck`, `test` (89 files, 794 tests) and `lint` pass; the `settings`, `preferences` and `playback-engines` specs in five projects, without the tests that write: 41 passed. The whole end-to-end suite was not run at this point.
+
+**Not tested:** a real phone, real iOS Safari, a pen; a real moving touch in Firefox and WebKit; the player icons in Firefox and WebKit.
+
+**Commits:** `93fe59c` (the interface scale), `6c14670` (the icon), `61d51cd` (`.gitignore` only: a local folder that is not part of the repository).
+
+### The privacy sweep
+
+**Goal:** the sweep the owner had made a condition of publishing (O-33). It was not about credentials, which had never been in the repository (T-25), but about what the documents told of the place the project was built in.
+
+**Who:** one workflow with 8 agents, all returned: five finders, one part each (the documents that tell the story; the technical documents; the application code and configuration; the tools, the tests and every picture; the whole git history), one fixer, and two re-checkers who swept the cleaned tree again.
+
+**What they found:** 76 findings, 60 in the current files and 16 in the history. None was a credential. They were sentences that described the development machine, the network it sits in or the real servers used for testing; the mechanics of the trial; clock labels; and words about the owner that were not decisions. Every picture ever committed shows only the throwaway test server.
+
+**What was fixed.** The documents now use the general thing each fact stood for: "the development machine", "a real server that other people use", "a trial behind a reverse proxy". Decisions are still credited to the owner, and the incidents of phase 15 and the accident of phase 30 are still told. The values of the local settings file were searched for in every tracked file, without printing them: none appears. The re-checkers found the remaining points mild; the last of them, wording in comments and tool READMEs, went into the next commit.
+
+**What could not be fixed by editing:** the 16 findings in the history. Old versions of the documents stay in old commits. That is the reason for the clean copy (see "The publication" below).
+
+**Checks:** `typecheck` passes and `lint` has no errors after the fixer's changes, which touched comments only in source files. No tests, servers or browsers were run for this step.
+
+**Commits:** `f3e18b1` (the documents), and parts of `bf31148` (comments and tool READMEs).
+
+### The player layout and direct play
+
+**Goal:** the two must-haves of O-34.
+- **Less server transcoding.** For a desktop Chromium browser the server converted far more than it had to: "container not supported" for Matroska files, "audio codec not supported" for AC-3 and E-AC-3 sound, and image subtitles burned into the picture. The owner wants the site to do as much as it can itself.
+- **A player laid out like Jellyfin's own web player:** no dimming of the video when the controls show, a compact control strip flush with the bottom edge, chapters and queue as icon buttons that open panels instead of rows of cards. This knowingly departs from the TV layout (T-60). After a preview the owner added: "keep the controls in the middle."
+
+**Who:** one workflow with 4 agents, all returned: a layout builder and a direct-play builder, working side by side on files that did not overlap, and one independent verifier for each. Then the lead.
+
+**The layout** (T-60).
+- **Before and after,** measured as the share of the window height that the bottom controls take: 21.5 percent before and 7.2 after on 1920x1080; 25.8 and 8.6 on 1280x720 and on 2560x1080; 28.0 and 11.8 on a phone in portrait; 42.9 and 12.8 on a phone in landscape. The limit is 12.8 percent, the black bar of a 2.39:1 film on a 16:9 screen. On a 1280x720 window the picture of the 2.39:1 test film ends at 628 px and the strip starts at 658.
+- **What moved where:** the title, the episode line, the logo, Back and the clock are in a slim strip at the top. The bottom strip has two lines: elapsed time, seek line and remaining time; then the buttons. Chapters and queue are two buttons that open panels standing on the strip; the sheets of the other buttons stand on it too. Nothing is drawn over the picture between the two strips; a new web-only preference, off by default, brings the TV's darkening back.
+- **Unchanged:** the floating Skip button, the Next Up panel, the pause mark, the spinner, the seek overlays, the error screen, every existing shortcut. New keys: H for chapters, Q for queue.
+
+**Direct play** (T-59). The builder built the app's device profile inside headless Edge, Chrome, Firefox and WebKit and asked the server for its playback answer per item, audio track and kind of subtitle, before and after: on the throwaway server, and read-only on the real server with the limited test account, where nothing was streamed or written. The full table is in `src/features/playback/engine/PLAYBACK_MATRIX.md`.
+- **Matroska:** played directly where the browser really plays a probe clip of 1.5 kB that is embedded in the app; the user agent is not asked. Edge, Chrome and Playwright's Firefox play it; Playwright's WebKit does not. Before, every Matroska file was repackaged by the server.
+- **PGS subtitles:** fetched as a file and drawn in the browser by libpgs, the renderer of Jellyfin's own web client. Before, the server burned them in, which re-encodes the picture.
+- **HDR10:** played directly where the browser tone-maps, which is desktop Chromium. Before, the server converted the picture.
+- **The second audio track of a file:** browsers play only the first audio track of a file they play directly (measured with two tones), so the profile now says so and the server repackages for any other track, with both streams copied.
+- **Audio the browser cannot decode** (AC-3, E-AC-3, DTS, TrueHD): still converted by the server, but the audio alone; the video is copied. Measured with the server's own commands in the test container: about 1.4 CPU-seconds per minute of film for AC-3 5.1 to AAC 5.1, against about 12 for re-encoding an easy 720p picture. A claim of AC-3 support is now confirmed with a silent clip.
+- **Not changed:** DVD (VobSub) and DVB subtitles are still burned in; MPEG-2, MPEG-4 ASP, AVI and MPEG-PS still need the server.
+- **Looked into and not built:** a decoder for Dolby sound inside the browser.
+- **New dependency:** libpgs 0.9.0 (MIT), loaded only when a PGS track is chosen.
+- **Probe clips and test server:** three small clips are embedded in the app for the probes (Matroska, AC-3, E-AC-3; `src/features/playback/engine/probeMedia.ts`). The seed of the throwaway test server gained one item for these cases: a Matroska file with two audio tracks, the second one flagged as default, plus a PGS and an ASS track (`tools/testserver/gen-media.mjs`). The commit message speaks of "three small sample files" on the test server; the generator gained this one item.
+
+**The verifiers** both returned "ready to commit". The layout verifier compared screenshots with the controls hidden and shown (the area between the strips: no difference at all; with the preference on, darker), measured the strip at interface scales up to 200 percent, and walked every former control, the panels, the keyboard, Hebrew, Live TV and a playlist. The direct-play verifier repeated the playback answers in four browsers (22 cases), played the files with picture and sound measured, and forced a fallback. Their minor points:
+- at 200 percent interface scale in an 800x600 window the strip's last button is cut off;
+- the top strip has no height limit at high interface scales;
+- the Skip button's label did not shrink with the strip;
+- a panel opened by its shortcut and closed with Escape leaves focus on the page body, as the existing sheets do;
+- in Playwright's Firefox a PGS track switched on while paused inside a cue showed nothing until playback went on;
+- with the controls up, subtitles still jumped into the top 70 percent of the picture, the TV's rule for its tall controller;
+- Playwright's Firefox is offered HEVC that it cannot decode and recovers through the fallback ladder;
+- two rows of the playback matrix called a WebKit result a remux where the picture is re-encoded (the matrix now carries a note that says so).
+
+**What the lead did after them:** centred the transport buttons, as the owner had asked, with a grid of three columns; made subtitles step up by the strip's height only; added one forced PGS redraw after its stream has loaded; made the Skip label shrink; added libpgs to the licence list and the notices; and changed the direct-play tests to assert the address that is played, because every test of the `writes` project shares one server session, and a test that asked that session for its play method had failed when another test played at the same moment. The other minor points were recorded and not done.
+
+**Tests:** 6 end-to-end tests for the layout (`e2e/specs/playback-layout.spec.ts`) and 4 for direct play (`e2e/specs/playback-direct.spec.ts`), in headless Edge, and new unit tests for both. Unit tests from 89 files and 794 tests to 92 and 827; end-to-end suite from 257 to 267 tests.
+
+**Final gates** (the lead, on `bf31148`): `typecheck` and `e2e:typecheck` pass; `lint` 0 errors; `build` passes; `test` 92 files, 827 tests. Three whole-suite end-to-end runs each had one different failure that passed when run alone: a WebKit library page still loading under load, the Discover drawer entry, and the shared-session test above, since fixed. The last run, alone: 267 of 267 in 5.0 minutes. `main` was pushed.
+
+**The image and the trial.** The image was rebuilt from `bf31148`, and the trial ran it. A check through the reverse proxy (sign-in, Home, an item page) passed with no Content-Security-Policy violation; the worker of the new subtitle renderer loads from the app's own origin. No video was played on the real server by the lead.
+
+**Not verified:** a real phone and real Safari; a released Firefox (only Playwright's build); a display that is HDR; a browser that decodes AC-3; Dolby Vision files; large real PGS tracks; the new layout in Firefox and WebKit beyond the existing playback test; the lead's forced PGS redraw by an independent agent; the TV-comparison scenes of the player, which were changed and not run.
+
+**Found on the way:** two items of the throwaway server had lost their seeded state during the session (a played mark, a resume point) and were set back by hand; one Firefox run of a builder hung on a play request and was stopped.
+
+**Commit:** `bf31148` (both tracks, the lead's changes, the test server's new sample item, libpgs, and the last wording of the privacy pass in comments and tool READMEs).
+
+### The publication
+
+**How** (O-35, T-58). The owner chose a clean copy. The existing repository stays private, as the archive with the full history. A new public repository holds the cleaned tree as one fresh commit. The history could not be cleaned in place: the 16 history findings of the sweep sit in old commits, and the hosting service keeps old commits reachable through pull-request references even after a branch is rewritten. The procedure for a release is a privacy sweep of the tree, then one commit on the public branch whose tree is `main`'s tree, dated in UTC and made under a no-reply identity. The private history is never pushed to the public remote.
+
+**What was published.** The root README was changed to say "first public release", and its player picture was retaken with the new layout (`1003992`). The public commit holds exactly the tree of `main` at `1003992`; it has no parent. The repository was made public on 2026-11-18 at about 21:30 UTC.
+
+**The documents at the release.** A documentation pass for the release was started the same day and did not finish: its one writer did not return, and nothing of it was committed. The published documents therefore describe the project up to the touch fix, and the released README says so: the compact player and direct play are named there as newer than the documents. Commit hashes named in the documents refer to the private history and cannot be looked up in the public repository. The documentation update of 2026-11-24 closes that gap in the private repository; it reaches the public one with the next release.
+
+**After the release** the project is in "maintenance and improvements": the owner hands over items one at a time, desktop browser first (O-35). No further public release had been made by the end of phase 34; the public repository did not contain the work of phases 32 to 34 until the second release of 2026-11-24 (phase 35; T-58).
+
+**Commit:** `1003992` (on `main`); the one public commit is not part of `main`'s history.
+
+**Commits of this phase** (on `main`): `93fe59c`, `6c14670`, `61d51cd`, `f3e18b1`, `bf31148`, `1003992`.
+
+## Phase 32: First maintenance round: four bugs and the player's strips
+
+**What this phase is.** 2026-11-22, the first round after the release. The owner came back with four bugs and with a second round of requests for the player. The decisions are [DECISIONS.md](DECISIONS.md) O-36 and O-37.
+
+**What the owner said:**
+- **Four answers, on 2026-11-19** (O-36). The player shows times as "52:53 and 1:52:53": no hour field under an hour. Settings opens next to the sidebar (the nav drawer), in left-to-right and in right-to-left languages alike (done in phase 33). View options (card size, columns, spacing, the text under a card) are global: one setting for every library (not built; see phase 34). The owner of a deployment sets defaults for all its users (O-31; not built).
+- **The order of the round** (O-37): "start only on the bugs. delegate to each for an agent. You are the lead as always." Then, for the player: a softer gradient, fixed button positions, the title closer to the edge, the time format of O-36 and a favourite button. Then: swap the two side button groups and keep their inner order, "meaning that the volume will be at the right in its row".
+- **On the pace,** on this day and the next (O-38): "it doesn't need to take more then 7 minutes". The rule that came out of it is in phase 33.
+
+### The four bugs
+
+**Who:** one workflow with 8 agents, all returned: one fixer per bug, as the owner had asked, and one independent, read-only checker per fix. All four checkers returned "pass with notes".
+
+**1. A poster grid that just fits shook sideways** (`db14d7c`).
+- **Reproduced** by measuring the cards on every animation frame in a headless Chromium started with real scrollbars. With Playwright's default, hidden scrollbars a scrollbar takes no room and the defect cannot occur, which is why no test or crawl had ever seen it. At window heights within a few pixels of the height at which the grid just fits, the layout changed on nearly every frame: the scroller's width flipped by the 10 px of the scrollbar and the last column jumped about 9 px.
+- **Cause:** a feedback loop through the vertical scrollbar. The cards are sized from the width of the element that scrolls them, and their height decides the height of its content. Content overflows, the scrollbar appears, the cards get narrower and shorter, the content fits, the scrollbar goes, the cards grow again, on every frame. Grids that scroll with the window had the same loop through the document's scrollbar. Rounding, image loading and the resize observer were measured and are not involved.
+- **The fix:** the scrollbar gutter of whatever scrolls a card grid is always reserved (`scrollbar-gutter: stable` in `src/theme/global.css`, with `overflow-y: scroll` where a browser does not know the property), for the grid's own scroller or, while a grid that scrolls with the window is shown, for the page. The width no longer depends on the content height. In development builds `CardGrid` logs an error when its scroller lacks the mark, and the end-to-end suite fails on any console error.
+- **Tests:** a new spec with real scrollbars, `e2e/specs/grid-stability.spec.ts` (6 tests), sweeps window sizes, display scales and item counts around the fit point; all 6 fail with the rule switched off. 3 unit tests.
+- **Not verified:** real Safari, and Safari before 18.2, whose fallback rule was only emulated in Chromium; Firefox with room-taking scrollbars, which its headless build does not draw.
+
+**2. A slider that sometimes did not follow the mouse** (`4a08905`).
+- **Cause:** the sliders handle the mouse press themselves but had left the browser's own answers to that press in place. When the press landed inside a text selection that covered the slider (select all, a double click on the slider, a selection dragged across the row), the browser started to drag the selection away: the pointer was cancelled, the cursor showed "not allowed", and the slider did not follow. It was inconsistent because it needs such a selection at the moment of the press. It did not come from the touch fix of phase 30; the mouse path before that fix was the same.
+- **The fix:** from the press on a control to its release, the page starts no drag-and-drop and no text selection (`keepPressToControl()` in `src/ui/lib/touchIntent.ts`). The shared slider, the player's and the music player's seek bars and the TV guide's drag-scroll use it; the refusal also ends when the window loses focus. Touch and keyboard are unchanged.
+- **Tests:** a new spec, `e2e/specs/slider-mouse.spec.ts`, in Chromium, Firefox and WebKit, in English and Hebrew, plus unit tests for the helper, the slider and both seek bars. The player's seek bar test does not fail before the fix (the player page already refused text selection) and is kept as a guard.
+- **Not verified:** a real mouse in a visible window (the cursor cannot be read headless); Safari on macOS; a pen.
+
+**3. Black bars around the video: no defect in the app** (`186fe2a`).
+- **Measured** at nine window sizes, at interface scales from 50 to 200 percent, at several pixel ratios, after resizes and in fullscreen: the player's video box is exactly the window in every state.
+- **Where bars come from:** the default scale mode, Fit, as upstream. A browser window that is not 16:9 leaves bars beside a 16:9 frame, and a film can carry black rows inside its own stored frame, which no layout can remove without cropping.
+- **What was added:** no change to the app. A test now pins the requirement, including that the page reserves no scrollbar room while the player is open and that a 16:9 film in a 16:9 window touches all four edges. One racy keyboard test in the same file was repaired.
+- **Not verified:** real fullscreen on a real screen (headless fullscreen keeps the window size); Firefox and WebKit for the new assertions.
+
+**4. Subtitle punctuation at the wrong end of the line** (`6f16c8b`).
+- **Cause:** a cue line took its direction from the interface language, not from its own text. The rule that should have prevented this (`unicode-bidi: plaintext`) sat on an ancestor, where it does nothing for the lines. So closing punctuation landed on the wrong end: in Hebrew lines under an English interface, and in English lines under a Hebrew one.
+- **The fix:** each line of a cue gets a `dir` of its own (`src/features/playback/engine/subtitles/direction.ts`). A leading direction mark wins. A track that stores its closing punctuation at the start of its lines (files prepared for left-to-right players, common for right-to-left subtitle files) is laid out left to right, as on those players. Otherwise a line with right-to-left letters is right to left by its first letter, by the majority of its letters or by its track. ASS scripts written in reading order get auto-detection for libass (`assDirection.ts`). The text itself is never rearranged.
+- **A decision of the fixer:** its brief had said not to detect punctuation-first files. It added the detection anyway, because the plain rule would have laid such files out wrong, under an English interface too.
+- **Tests:** a new spec, `e2e/specs/subtitles-bidi.spec.ts` (text cues in English and Hebrew interfaces and on a phone, ASS on its canvas), and 27 unit tests in two files. Each regression test was seen failing before its fix.
+- **Not verified:** Firefox and WebKit (the spec needs H.264 and runs in Edge); how the Android TV app itself draws punctuation-first files; long lines that wrap.
+
+**Numbers after the four fixes:** `typecheck`, `e2e:typecheck` and `lint` pass; `test` 97 files, 863 tests (92 files and 827 tests before). `e2e/README.md` got coverage rows for the new tests of the four bugs (three new spec files and the new test in `playback-layout.spec.ts`) and a note on specs that need real scrollbars (`54710d6`).
+
+### The player's strips, second round
+
+**Goal:** the player items of O-37 and the time format of O-36.
+
+**Who:** one workflow with 6 agents, all returned: two builders (the strips; the favourite button), three independent checkers (the layout, measured in English and Hebrew at window widths from 360 to 3440 and at several interface scales; the favourite button and the time format; the whole diff), and one fixer.
+
+**What was built** (`c2316a4`):
+- **Fixed positions.** The button row has the same physical positions in every language: settings, subtitles, audio (then chapters, queue) and "Ends at" from the left edge; the transport in the middle; the Skip button, favourite, picture in picture, volume and fullscreen against the right edge. Sheets and panels open above their buttons. (The two side groups changed places in the next commit, see below; the positions are still the same in every language.)
+- **Clock times.** Elapsed and remaining time, the seek preview, the seek overlay of the arrow keys and the chapter list show clocks (52:53, 1:52:53, -53:39), as plain left-to-right text in every language, so in Hebrew the minus stands in front of the digits. The seek bar keeps its length while the times change.
+- **A softer gradient.** The strip's dark gradient starts transparent one strip height above the strip and darkens smoothly to the window edge; it takes no pointer events above the strip.
+- **The title closer to the edge.** The top strip has no logo any more; the title starts right after Back.
+- **A favourite button** for the item that is playing (a web addition; the TV player has none). Item patches now reach the playback store's own copies (`itemCache.onItemPatched`), so the button's state is right at once and after a rollback.
+- **The volume slider opens inside the row.** A key pressed outside the slider closes it, so focus never lands on a control it hides.
+- A window under 500 wide has the two-row strip whatever its height.
+- **Fixed on the way:** a disabled button's touch target covered the strip on touch screens; the collapsed volume slider made the row too tall.
+
+**What the checkers found:** the layout checker returned "fail", the other two "pass with notes". Four findings had to be fixed, and the fixer fixed all four; the first three got tests that fail on the old code (the first two share one):
+- **Must fix:** at 200 percent interface scale, with a Skip button showing, a pointer on the volume button pushed volume and fullscreen out of the window, and volume moved out from under the pointer. The open slider now takes its room only from the free part of its side and from the Skip button's place.
+- With a Skip button showing, the open slider moved the transport buttons sideways, and under 900 px the Skip button vanished. Fixed by the same change.
+- While the next queue entry loads, the favourite button marked the item before it. It now shows the new entry's own state and is disabled until that entry's item has arrived.
+- `FavoriteButton.tsx` held two components; the inner one is now `FavoriteToggle.tsx`.
+
+Beyond the findings the fixer removed a 20 dp jump at the start of the slider's own opening, kept the open slider from pushing one button group over the other in the two-row strip, and stopped a mouse on a touch-first device from opening a slider that the stylesheet hides there.
+
+**The two side groups swapped** (`255bff6`), the last item of O-37. Left: settings, favourite, picture in picture, volume. Right: subtitles, audio, chapters, queue, fullscreen. Settings and fullscreen stay at the ends, the transport stays in the middle, and volume is the right-most of its group, as the owner had asked.
+- The volume slider opens at the right of its button, laid over the free part of the left side; "Ends at" is not drawn meanwhile. It takes no room in the row, so nothing moves, and the Skip button no longer reacts to it. In the two-row strip it stands over the buttons at the left of volume.
+- Subtitles, audio, chapters and queue open above their buttons at the right; settings stays at the left.
+- **Known limit:** in a narrow one-row window the slider has little room while a Skip button shows.
+- Who made this change (the lead alone or agents) is not recorded.
+
+**Gates:** the fixer, the last agent of the workflow, reported `typecheck` and `e2e:typecheck` passing, `lint` with 0 errors, `test` with 99 files and 888 tests, and the three player specs of the end-to-end suite (`playback-layout`, `playback`, `slider-mouse`) with 32 passed, sign-in steps included. The whole end-to-end suite was run by the lead on `c2316a4`; the count of that run is not recorded. It is the last whole-suite run so far (see phase 34). The unit and browser tests of the player were restated for the new sides in `255bff6`.
+
+**Not verified:** the player's layout in Firefox and WebKit (its end-to-end spec runs in the Chromium-based project only); real phones and real Safari, as before.
+
+**Commits of this phase** (on `main`): `db14d7c`, `4a08905`, `186fe2a`, `6f16c8b`, `54710d6`, `c2316a4`, `255bff6`.
+
+## Phase 33: The shell and Settings round
+
+**What this phase is.** 2026-11-23. A chain of small requests of the owner about the shell (the Back button, the nav drawer) and about how Settings opens. Each request was answered with one small change; the owner looked at it on the trial and asked for the next. Several steps replaced the step before them, and the opening animation of Settings took three attempts in git and one more that was never committed. The decisions are [DECISIONS.md](DECISIONS.md) O-38 to O-40 and T-61 to T-64.
+
+**Who:** the lead, working alone on the fast path described below, and one independent review job for the Settings panel. No multi-agent build job ran in this phase.
+
+**How the work was done** (O-38, T-63). The owner had said twice that small changes took too long: "again, things are taking too long", and "you need to learn how to make things go faster, without losing quality". The rule the lead set from it: a small, clear interface change takes the fast path. The lead edits directly, runs the type check, the unit tests and the one browser test that covers the change, takes one or two headless pictures, commits, builds the image, and asks for the go in the same message that shows the picture. The slow checks (the whole end-to-end suite, the other browsers) come afterwards and out of the owner's way. Multi-agent jobs are kept for large or risky work, with the expected time stated first. The cost: the whole suite has not been re-run after every small change (see "Checks" below).
+
+**How a change went live** (O-45, T-64). A new build replaces the trial only after the owner's explicit yes for that build. Every go-live keeps the previous image under a rollback tag, and the build is labelled with its commit, so that the running container can be matched to the source.
+
+### The Back button and the drawer
+
+**1. No Back button where the drawer is the way out** (`32a0101`; O-39). The owner about the floating Back button of the shell (O-12): it "is ugly, and un needed in many cases. understand when there is no need for it and get rid of it." It had shown on every page except Home. It is now absent on the pages the drawer itself leads to (Search, Favorites, Discover, the libraries) and stays on inner pages such as an item. Until the libraries have loaded the drawer is empty, so the shape of the address decides and the button does not flash (`isDrawerDestination()` in `src/app/shell/drawerItems.ts`). At rest the arrow has no circle; under the pointer, and while the page is scrolled under it, it gets a gentle one. Keyboard focus keeps the kit's look.
+
+**2. The open drawer lies over the page** (`bb76c45`). The owner found the push unpleasant to watch. The page and the music bar no longer move when the drawer opens; the open drawer has its own panel in the surface colour, solid under its entries and fading out past its end edge. A deviation from the TV app, which moves the page by 160 dp.
+
+### Settings: from a page to a panel beside the drawer
+
+The owner's requests, in the order in which they came (O-40), and what each one became.
+
+**3. "No need for the settings change to the Back button, just remove it and make the background transparent with a little tint"** (`dc3c877`). Asked what should be behind Settings, the owner chose "Page behind stays visible". Until then Settings had been a full-screen page as on the TV, a flat background with the panel at the end edge, and over it the web's floating Back button.
+- **Why a copy** (T-61). The shell and Settings are different route layouts, so the shell page unmounts when Settings opens; there is no live page to show. Keeping the real page mounted would have left its key handlers, focus logic and queries running under Settings. What stays behind the panel, at first under a light tint, is a lifeless copy of the page's DOM (`src/app/shell/pageSnapshot.ts`, shown by `PageUnderlay`).
+- **What the copy loses:** media elements, frames and scripts (a copied media element could start playing); ids, `tabindex`, `autofocus` and label targets; every `data-` attribute that no stylesheet selects on, because those are hooks that code looks up; the drawer's open state. It keeps its scroll offsets, the values of its fields and what its canvases showed. It is inert and hidden from assistive technology.
+- **The way back.** Back on the page, the copy stays on top for a moment while the real page mounts beneath it, then fades, so the page does not blink out and in.
+- **The Back button** is gone where the empty area beside the panel can be clicked to leave; at this step it stayed at phone widths and beside the subtitle preview.
+- **Tests:** unit tests for the copy (`src/app/shell/pageSnapshot.test.ts`).
+
+**4. The independent review, and "I now want to make the settings be in the correct side"** (`398f168`).
+- **The side.** The panel now stands at the start edge on every Settings screen, the subtitle style screen included: the nav drawer's side, left in English, right in Hebrew and Arabic. Upstream has it at the end edge. This is also the owner's answer of 2026-11-19: Settings opens next to the sidebar, in left-to-right and in right-to-left languages alike (O-36).
+- **The review:** two reviewers examined the Settings panel and the page copy behind it. A third agent, which tested in a browser, was stopped: it was testing the panel on its old side. One real defect was found, by a reviewer's test: the copy was measured 10 px too wide, because it used the document's client width; the difference shows when the window has a scrollbar. It now uses the shell's own width. Three unfinished reviewer tests were adapted or dropped.
+- **Other fixes from the review:** the Back button follows the measured room beside the panel, not a width query (the panel's least width grows with the interface scale); the tint is drawn on the copy's layer, so it does not flicker between Settings screens; the copy belongs to one user by key and is dropped at sign-out.
+- **Where a Back button remains.** Where the empty area cannot be clicked to leave, the Settings layout places its own: over the panel's header when the panel fills the window, and in the preview's corner beside the subtitle preview.
+- **Tests:** browser tests for the panel, the copy, the ways back and the cover on return (`e2e/specs/settings.spec.ts`); the unit tests of the copy were adapted. Every later step of this chain changed the same browser spec with it.
+
+**5. "Make the settings not fade in, just appear"** (`5ab9fd6`). The panel's slide and fade, the page fade on Settings routes and the fade of the tint were removed, on opening and between Settings screens. Upstream fades the page and slides the panel in.
+
+**6. The page's backdrop came back late** (`d1be200`). The copy shows the page's backdrop while the published one is cleared, as for every full-screen page. The returning page then asked for it again: blank, a 500 ms wait, an 800 ms fade. The backdrop service now remembers what the copied page showed and publishes it again on return; a request for the same image shortly after is answered from it too, and the image skips its fade.
+
+**7. "I do not like the way the settings popup. Can't it be something similar to the sidebar's look and feel?"** (`7454e4c`). The panel got the drawer's surface colour and, past its end edge, the drawer's soft fade instead of a hard edge. Step 5 had removed all motion; this one gave the panel an opening again: it grew out of the rail's place with the drawer's spring, its content in place, by a clip. Between Settings screens nothing moves.
+
+**8. "I want the darkening of the image to go away. The background doesn't need to get dark when I open the sidebar or settings"** (`732e409`). The backdrop image is no longer covered with black at 75 percent while the drawer is open, which upstream does, and the light tint over the page behind Settings, asked for in step 3, is gone.
+
+**9. A blink between the open drawer and Settings** (`630c7e9`), which the owner asked to have found and fixed. Three things showed between the two:
+- the drawer closed at the click, so the bare page showed until Settings arrived. The drawer now stays open until Settings is on screen, and the Settings pages, which are loaded on demand, are fetched while the drawer is open;
+- the first frame of Settings had a flat background and the shell's floating Back button, because the presence of the copy and the hidden Back button were both known only after the first render. The ground is now drawn by the copy's layer, and the shell never shows its Back button on Settings;
+- the panel grew from the rail's width, not from the open drawer's.
+
+The opening became a mask that ends in the drawer's 64 dp fade and starts at the open drawer's width.
+
+**10. The opening, redone** (`445a739`). The owner called the opening of the Settings panel broken and asked for it to be redone. The mask wiped the content in mid-word, beside the page's text, and it was painted anew on every frame. The opening now has one moving piece: the panel's ground (the surface colour and its soft end edge, one pseudo-element) slides out from the open drawer's width with the drawer's spring, as a single transform. The header and the list do not move and are not clipped; they fade in once the ground has all but arrived. Opened by its address, on a reload and between Settings screens, nothing moves.
+
+**What did not work,** in one place (T-61): the fade and slide of upstream (removed on request, step 5); a clip that grew from the rail (step 7: it started at the wrong width when the drawer was open); a mask (step 9: it cut the text and was costly to paint); and, by the lead's account, a version with two transforms, in which a counter transform should have held the content still while the panel moved and did not take effect in Chromium. That version was never committed.
+
+**The owner at the end:** "seems to work great now."
+
+### What the round taught about animations
+
+The end-to-end fixture switches CSS animations off, so a test that passes says nothing about how an animation looks. This was found the hard way with the opening of Settings: steps 7 and 9 were each committed together with their change to the browser spec, and it was the owner who saw on the trial how the opening looked. Since then motion is judged from recorded frames at normal speed (T-62): before an animated change is shown to the owner, the lead removes the fixture's no-animation style, sets reduced motion to "no preference" and records screencast frames.
+
+### Also on this day
+
+**The actor rows of a series stay while the selection moves between episodes** (`ba1526e`). Every episode change had emptied the Cast & Crew and Guest stars rows, removed them and built them again 250 ms later with a fade, every picture loading and fading again, although most of the cast is the same. With a mouse moving along the episode strip that happened for episode after episode. The rows now keep the people shown last until the people of the newly selected episode are ready; shared actors keep their cards and only the others change. One end-to-end test (`e2e/specs/series.spec.ts`).
+
+`ec7ed5c` changes `.gitignore` only, for a local file that is not part of the repository.
+
+### Checks, and what is open
+
+**Checks:** for each change, the fast path's set: the type check, the unit tests, the browser test of the changed area, and one or two headless pictures. The whole end-to-end suite was not run in this phase, and the Firefox and WebKit projects were not run for the tests added here. How many tests each step added is not recorded; the state at the end of phase 34 is.
+
+**Still open from the review of the Settings panel,** all minor:
+- the copy does not follow a window resize, a change of the interface scale or a change of language made inside Settings;
+- the music mini player is not in the copy;
+- pictures that had not loaded yet when the copy was taken are empty in it.
+
+**To check:** after Back to a "View more" grid in a short window, the window's scroll position is not restored. It was seen without Settings too, so it is older than this work.
+
+**Not verified:** nothing was looked at in a visible window by the lead; the owner looked at each change on the trial and answered as quoted above.
+
+**Commits of this phase** (on `main`): `32a0101`, `bb76c45`, `ec7ed5c`, `dc3c877`, `ba1526e`, `398f168`, `5ab9fd6`, `d1be200`, `7454e4c`, `732e409`, `630c7e9`, `445a739`.
+
+## Phase 34: Sign-in, the Home header and the player's settings
+
+**What this phase is.** 2026-11-23 and 2026-11-24, right after the Settings round and in the same way of working: three more requests of the owner, each a small change that went to the trial on the owner's yes. The decisions are [DECISIONS.md](DECISIONS.md) O-41 to O-45.
+
+**Who:** the lead, alone, on the fast path (T-63).
+
+**1. A user without a password is signed in by the click** (`27ab920`; O-41). The owner asked that on the welcome screen a click on a user who has no password opens the main screen at once. A user circle on the user list whom the server lists without a password (`GET /Users/Public`, `HasPassword` false) now signs in with the empty password instead of opening the login dialog. Upstream always opens the dialog. If the server refuses, the dialog opens as before. Names typed under Add User go through the dialog as before. One end-to-end test with mocked users, in the desktop, phone and engine projects, and one unit test.
+
+**2. The Home header's overview uses the room the header has** (`8d305b7`; O-42). The owner asked for more room for the description of a show. The overview box had been fixed at 400 dp by 3 lines (2 under an episode name), with empty room beside and under it. It now takes the height left in the header's 180 dp and shows as many whole lines as fit (4 for a film, 3 under an episode name), and it is a third of the window wide, from 400 dp up to 680 dp. The rows below do not move. Upstream keeps the fixed box. The commit holds no test for it. The owner: "seems fine".
+
+**3. Subtitle style inside the player's settings** (`e31ba4b`, `cf29a99`, `509db33`; O-43), in three steps.
+- **"Change subtitles inside a player's settings"** (`e31ba4b`). Settings > Subtitle style in the player opens the subtitle style list of the Settings page in a sheet on the control strip. A web addition: upstream has these options in Settings only. The video is the preview: changes apply at once, and while no cue is on screen a sample line stands in, also with subtitles off. The sheet edits the copy of the style that the video uses (the separate HDR one for HDR video when that option is on); the row that opens another page is left out. A dialog opened from a row of a sheet, such as a colour choice, is now drawn outside the sheet: its keys no longer reach the sheet's handler or the player's Back handling, so its Escape closes only that dialog. A new spec, `e2e/specs/playback-subtitle-style.spec.ts`.
+- **The owner's second message** (`cf29a99`): say so when the subtitles cannot be changed; make the sheet a bit more transparent; the settings take too much space for what they need, so keep a little padding and make them less wide. With a picture of the main Settings menu the owner made clear that this meant every Settings sheet of the player. The sheets for Settings, speed, scale, bitrate and subtitle style became 280 dp wide instead of the TV's 424 dp, at most 72 percent of the height and 80 percent opaque, with 44 dp rows and no empty selection-dot slot before the Settings rows. The width and the opacity changed again in the next step. The track, chapter and queue sheets keep the TV's size. The subtitle style sheet shows a note, and no sample line, when the subtitles on screen cannot be restyled: pictures (PGS, where only the image opacity applies), ASS with its own style, or subtitles the server draws into the video. Three new web-only strings.
+- **An upstream behaviour that had been missing,** found on the way (`cf29a99`): "Image subtitle opacity" is now applied to PGS subtitles in the player, as upstream does for image cues (`PlaybackPage.kt`). It had only been used by the preview in Settings.
+- **"There is still a lot of space to the left", and less transparent** (`509db33`). The fixed 280 dp left an empty half beside short labels. A menu now takes the width of its longest row, from 120 dp to 280 dp; the subtitle style sheet keeps the full 280 dp, since sliders have no width of their own. The surface is 92 percent opaque instead of 80: a bright picture had washed the labels out.
+
+**4. View options for every library: set aside** (O-44). On 2026-11-24 the lead offered "view options for every library, with a bigger dialog" as the next item. The owner: "no need for now, I think it is pretty nice as it is". The global view options of O-36 are therefore not built.
+
+**Checks at the end** (the lead, on `509db33`): the type check passes; unit tests 101 files, 897 tests, all pass; lint has no new warnings in the changed files; the browser tests of the changed areas passed when each change was made. The whole end-to-end suite was last run on `c2316a4` (phase 32), so it has not run on the work of phases 33 and 34. The Firefox and WebKit projects were not run for the tests added in these two phases. (Both were run before the second release; see phase 35.) No CI result is recorded here for the commits of phases 31 to 34.
+
+**Not verified:**
+- the note for subtitles that cannot be restyled was tested by setting the kind of subtitle through the development hook, not with real image, ASS or burned-in subtitles;
+- the player's Settings sheets were not reviewed at phone width;
+- nothing was looked at in a visible window or on the live trial by the lead. The owner looked at each change on the trial and answered as quoted.
+
+**State at the end of this phase, on 2026-11-24:** `main` is at `509db33` and pushed to the private repository. The trial runs the image built from `509db33`. The public repository still holds only the first release (phase 35 changes that the same day).
+
+**Commits of this phase** (on `main`): `27ab920`, `8d305b7`, `e31ba4b`, `cf29a99`, `509db33`.
+
+## Phase 35: The documents caught up, the conversation export, the privacy sweep and the second public release
+
+**What this phase is.** The rest of 2026-11-24, after `509db33`: the documents were brought up to date, the owner asked for a written copy of the whole working session, and the lead then asked whether to run the privacy check and publish the newer work. The owner said yes (O-47). The decisions are O-46, O-47 and T-76 (a rule the lead made when the owner asked which model the subagents ran on).
+
+**Who:** the lead, with agents for the documents and for the sweep; the numbers are the lead's account.
+
+**1. The documentation catch-up** (`3c66f2e`). The documents, which stopped at `7ad52ba`, were brought to 2026-11-24 by ten agents: five writers, one per document group, each followed by a checker that compared the text with git, the code and the privacy rules. All ten ran on Claude Fable, and the work took about 28 minutes. The checkers also found three stale code comments, corrected in the same commit. This is the update that wrote phases 31 to 34.
+
+**2. The conversation export** (`fda0c2b`, `0baf14f`; O-46). The owner asked for an automatically written copy of the working session that includes the pictures, the subagents' chats and the chat with the lead, and then that it be brought up to date "every few chats". Built: `tools/export-conversation.mjs` (`npm run conversation`), described in [TOOLING.md](TOOLING.md) section 15. Its output is git-ignored. As a hook it rebuilds on every fifth reply.
+
+**3. The owner's question about the models** (T-76). The owner asked whether all subagents were running as Claude Fable. They were: the lead had set no model on the agents of the documentation job or of the privacy sweep, so all inherited the lead's model; and the sweep's "one confirmer per finding" stage had grown it to 56 agents where the lead had announced five. The lead's rule from it: every agent gets an explicit model chosen for its task (reading, searching, sweeps, confirmations and mechanical edits on Claude Sonnet, plain lookups on Claude Haiku, Claude Fable only for hard code changes and for work where a wrong result is costly), and a confirm stage batches findings instead of starting one agent per finding. What not doing it cost: the two jobs of 2026-11-24 ran entirely on the most expensive model. The fix-up of the sweep's findings in the documents ran on Claude Sonnet.
+
+**4. The privacy sweep before the second release** (T-58's procedure). Five readers, one per part of the difference between the first release and `main` (106 files, about 8,300 added lines, no binary files): the documents, the end-to-end tests, the player, the rest of the code and tools, and a pattern search over the whole tracked tree. Every finding went to a second reader who was told to refute it. 51 findings were reported; the readers that tried to refute them let about 30 stand, all of low severity (none was a name, an address, a credential or a path), and about half of those were in text that the first release had already published. In general terms, what was found: statements that described the owner's use or the real server rather than the software (which items a test account could or could not see, that something was reported by the owner), local clock times of the work, sample data in a unit test taken from a real response, and a table of the stream types of real items. All were reworded or removed before the release: in the documents, in six source and test files and in one tool file. Separately the lead searched the whole tree for the real private values themselves (the trial's address and port, the real server's address, the test account, the user name of the development machine, local folder paths): none was present. All 56 agents of the sweep ran on Claude Fable (T-76).
+
+**5. The first whole end-to-end run since `c2316a4`.** On the release tree the type check, the end-to-end type check, lint (0 errors), the unit tests (101 files, 897 tests) and the production build passed. The whole suite ran for the first time since `c2316a4`, in all seven projects with three workers: 336 tests, 334 passed and 2 failed, in 11.5 minutes. Both failures were in tests of the Settings panel on WebKit (the `webkit` and `iphone` projects) and were faults of the tests, not of the app: one demanded that a wheel step scroll exactly 60 px (WebKit scrolled 52), the other used the WebKit tap helper, whose `scrollIntoViewIfNeeded` gives up when the element is replaced under it (the Back button is drawn again by the next Settings screen), where a click retries. The lead checked on the iPhone profile that the Back button of a Settings screen is drawn once and then left alone, repaired both tests (`e9b96bf`), and ran the two tests twice in the desktop, phone, webkit and iphone projects: all passed. So the whole suite, Firefox and WebKit included, has now run over the work of phases 33 and 34.
+
+**6. The second release** (O-47, T-58). One new commit on the public branch on top of the first release's commit, whose tree is the tree of `main` at the release, made with a no-reply identity and UTC dates, and pushed to the public repository; the private history was not pushed. It is called "the release commit of 2026-11-24" in these documents; it carries the work of phases 32 to 35.
+
+**Checks at the end** (the lead): see item 5. After the two test repairs and the privacy fixes only the affected tests and the unit tests were re-run.
+
+**Not verified:**
+- a second whole end-to-end run after the two repairs and after the privacy fixes;
+- the items of phase 34's list that no test covers (real image, ASS or burned-in subtitles under the subtitle style note, the player's Settings sheets at phone width), which the whole-suite run does not change.
+
+**State at the end of this phase, on 2026-11-24:** `main` holds the work of phases 31 to 35 and is pushed to the private repository; the trial still runs the image built from `509db33`. The public repository holds two commits, the first release and the release commit of 2026-11-24, which carries the tree of `main` at the release.
+
+**Commits of this phase** (on `main`): `3c66f2e`, `fda0c2b`, `0baf14f`, `e9b96bf`, and the commit with the sweep's fixes and this phase (no hash yet when this was written).
+
 ## What comes next
 
-*Rewritten on 2026-11-18 after phases 18 to 30. The earlier versions listed stage 2 of the final merge, the comparison pass, the README, merging and landing the comparison pass, the polish round, a small-fix round, the trial behind the reverse proxy and the removal of the merged branches as still to come; they are now phases 18, 23, 19, 25 to 28, 29 and 30.*
+*Rewritten on 2026-11-24 after phases 31 to 35. The earlier versions listed stage 2 of the final merge, the comparison pass, the README, merging and landing the comparison pass, the polish round, a small-fix round, the trial behind the reverse proxy, the removal of the merged branches, the question of what the finished desktop version includes and the publication as still to come; they are now phases 18, 23, 19, 25 to 28, 29, 30 and 31.*
+
+**Done since the last version of this section:**
+- **What "finished" includes** is answered: the features that are not built do not block it (O-30; phase 31).
+- **Publication:** the first public release was made on 2026-11-18, as a clean copy (O-33, O-35, T-58; phase 31).
+- **The first maintenance rounds,** desktop browser first: four bugs and the player's strips (phase 32), the shell and Settings (phase 33), sign-in, the Home header and the player's settings (phase 34).
+- **The second public release** was made on 2026-11-24 after a privacy sweep, on the owner's "Yes, publish" (O-47, T-58; phase 35). The whole end-to-end suite, Firefox and WebKit included, ran over phases 33 and 34 before it (phase 35).
 
 **Still open** (no dates set):
-- **The desktop browser version, flawless first.** That is the owner's order of work (O-28). What it includes is not settled: the owner was asked whether it covers the features that are not built and that a browser could have (remote control from another device over the websocket, the missing options on the music library tabs, Play on albums and artists from the shared context menu, drawing image subtitles in the browser) and has not answered (Q-43).
-- **Phone and touch interface problems**, after the desktop version (O-28). No list exists yet beyond the one problem the owner named, which is fixed.
+- **Polish, one item at a time, desktop browser first.** That is the owner's priority since the release (O-31, O-35): the owner hands over items and looks at each on the trial.
+- **The next public release.** The public repository holds the work up to and including phase 35 (the second release, O-47). Whatever is made after it reaches the public repository only with a later release, which needs a privacy sweep of the difference first (T-58).
+- **The slow checks owed after the fast path** (T-63): a second whole end-to-end run after the two test repairs and the privacy fixes of phase 35 (only the affected tests and the unit tests were re-run).
+- **Items the owner listed for later:** the navigation and the categories of Settings; a better sign-in and welcome page; defaults set by the owner of a deployment for all its users, first example the default interface language (O-31, O-36; the lead's idea of a deployment setting served through `/config.json` instead of a fork is not agreed); search by microphone, at low priority.
+- **Global view options** (one setting for every library; O-36): set aside by the owner on 2026-11-24 (O-44; phase 34). Not built.
+- **Remote control from another device:** "nice to have", not required (O-30).
+- **Phone and touch polish,** after the desktop version (O-28). No list exists yet beyond the slider problems the owner named, which are fixed. The player's Settings sheets were not reviewed at phone width (phase 34).
+- **The minor points of the Settings panel review** and the scroll position after Back to a "View more" grid in a short window (phase 33).
+- **The minor points of the player's verifiers** that were recorded and not done (phase 31), and the known limit of the volume slider in a narrow one-row window (phase 32).
 - **Capturing the Android TV reference pictures again** (the lead, before the next comparison work; T-57). Until then `npm run shots:compare` has no TV side.
-- **Making the trial deployment permanent:** the owner's decision (O-27).
+- **Making the trial deployment permanent:** the owner's decision (O-27). The trial's reverse-proxy route is still the temporary one (T-64).
 - **Translations of the web-only strings:** on hold (O-22).
-- **Publication** of the repository, only when the owner judges the product finished (O-20, phase 24).
-- **The backup branches on GitHub** (`e2e`, `integration`, `wave3a`): for the owner to delete (phase 30).
-- **Not tested so far:** real Safari and iOS, real touch hardware beyond one manual test on a phone, pen hardware, the oldest supported Chrome and Firefox versions, HDR, hardware HEVC, Seerr writes against a real Seerr, and video playback in the image of the final commit (the trial's check played none).
+- **The backup branches on GitHub** (`e2e`, `integration`, `wave3a`), in the private repository: for the owner to delete (phase 30).
+- **Not tested so far:** real Safari and iOS, real touch hardware beyond the owner's own tries on a phone, pen hardware, the oldest supported Chrome and Firefox versions, an HDR display, hardware HEVC decoding, a browser that decodes AC-3, Seerr writes against a real Seerr, real image, ASS or burned-in subtitles under the player's subtitle style sheet, and anything in a visible window by the lead.
 
 **Open decisions for the owner:**
 The numbers in brackets are entries in [DECISIONS.md](DECISIONS.md): Q-n in Part 4 (open questions), O-n in Part 1 (the owner's decisions).
-- Settled on 2026-11-18: the Apache-2.0 components stay, under a written additional permission (Q-22, O-19; phase 19); going public waits until all known problems are solved (Q-3, O-20; phase 24); the Docker leftovers were removed (Q-25, O-23; phase 24).
-- Going live behind a reverse proxy: decided as a trial first (Q-1, O-21; phase 24), started on the owner's go on 2026-11-18 (O-26, O-27; phase 30). Open: making it permanent, which stays the owner's yes.
-- Whether the finished desktop version includes the features not built (Q-43; phase 30).
-- Whether the minus of the player's time codes, drawn to the right of the number in Hebrew, should be on its left (Q-35).
+- Settled on 2026-11-18: the Apache-2.0 components stay, under a written additional permission (Q-22, O-19; phase 19); the Docker leftovers were removed (Q-25, O-23; phase 24); the features that are not built do not block "finished" (Q-43, O-30; phase 31); the repository went public as a clean copy after a privacy sweep (Q-3, O-33, O-35; phase 31).
+- Settled since, on the two questions about the player that this list carried: the audio-track button is a music note and the volume control keeps the speaker (O-32; phase 31), and the volume control is the right-most button of the left group (O-37; phase 32), which answers Q-34; the player's times are clocks in plain left-to-right text, so in Hebrew the minus stands in front of the digits (O-36; phase 32), which is what Q-35 asked about.
+- Going live behind a reverse proxy: decided as a trial first (Q-1, O-21; phase 24), started on the owner's go on 2026-11-18 (O-26, O-27; phase 30). Every new build since has needed the owner's explicit yes (O-45). Open: making it permanent, which stays the owner's yes.
+- How the owner of a deployment sets defaults for its users (O-31, O-36): the direction is decided, the design is not.
 - Whether to rename the repository (Q-2).
-- Translating the 183 web-only strings (the keys of `src/i18n/extra/en.json`): wanted, on hold (Q-23, O-22; phase 24).
+- Translating the web-only strings (the keys of `src/i18n/extra/en.json`): wanted, on hold (Q-23, O-22; phase 24).
 - Which of the two header-collapse rules to keep (phase 17; Q-24).
 - What to do with the pull requests Dependabot has opened (Q-26).
-- Where the web-only volume control sits in the player, and with which icon (Q-34).
 
-**Open for the lead:** re-checking the six npm audit findings once a patched picomatch exists (Q-27); the audit's minor points of phases 21 and 26 that are not recorded as done (DECISIONS Q-40 for the test server's scheduled scan and old sessions); the open items of sections 13.7 and 14.7 of `docs/final-merge-notes.md` (section 12.7 is closed except where 13.7 repeats it; of the verifier's notes of phase 29 only the ResizeObserver message is left, with its cause); capturing the TV reference pictures again (T-57). The arrival-focus problem the verifier of phase 22 reported (an arrow key pressed right after Enter on a drawer entry) was fixed in phase 26 (finding shell-keyboard-1); the audit of phase 26 pressed the key within 16 ms of Enter in 40 runs, cold and warm, and focus never ended in the drawer. The other questions that wait on the lead are listed in [DECISIONS.md](DECISIONS.md) Part 4, under "Waiting on the lead".
+**Open for the lead:** a second whole end-to-end run after the repairs of phase 35 (T-63); re-checking the six npm audit findings once a patched picomatch exists (Q-27); the audit's minor points of phases 21 and 26 that are not recorded as done (DECISIONS Q-40 for the test server's scheduled scan and old sessions); the open items of sections 13.7 and 14.7 of `docs/final-merge-notes.md` (section 12.7 is closed except where 13.7 repeats it; of the verifier's notes of phase 29 only the ResizeObserver message is left, with its cause); capturing the TV reference pictures again (T-57). The arrival-focus problem the verifier of phase 22 reported (an arrow key pressed right after Enter on a drawer entry) was fixed in phase 26 (finding shell-keyboard-1); the audit of phase 26 pressed the key within 16 ms of Enter in 40 runs, cold and warm, and focus never ended in the drawer. The other questions that wait on the lead are listed in [DECISIONS.md](DECISIONS.md) Part 4, under "Waiting on the lead".
 
 Known bugs, deferred findings and what cannot be tested are kept in [STATUS.md](STATUS.md), which also records the lead's last end-to-end runs on the landed tree. Open decisions are tracked in [DECISIONS.md](DECISIONS.md) Part 4.
 
 ## Phases still to be recorded
 
-*Placeholders for later updates. Fill in each one with the same shape as above (goal, who, what was built, what the reviews found, numbers, what was left open, commits) when the phase happens. The phases recorded since the first version of this log (the end of wave 3a, wave 3b, wave 4, both stages of the final merge, the documents, the comparison pass, its merge, the final check and repair, the backdrop colours, the landing, the polish round, and the closing round with the trial, the touch fix and the clean-up) are no longer listed here.*
+*Placeholders for later updates. Fill in each one with the same shape as above (goal, who, what was built, what the reviews found, numbers, what was left open, commits) when the phase happens. The phases recorded since the first version of this log (the end of wave 3a, wave 3b, wave 4, both stages of the final merge, the documents, the comparison pass, its merge, the final check and repair, the backdrop colours, the landing, the polish round, the closing round with the trial, the touch fix and the clean-up, the owner's requests before the release with the privacy sweep, the new player and the publication, the first three maintenance rounds, and the second public release) are no longer listed here.*
 
-- **The desktop version made flawless,** once the owner has said what it includes (Q-43).
+- **Further maintenance rounds,** as the owner hands over items: desktop browser first (O-35). Named so far for later: the navigation and the categories of Settings, a better sign-in and welcome page, defaults set by the owner of a deployment (O-31), search by microphone at low priority.
+- **A later public release,** with its privacy sweep of the difference since the second (T-58).
 - **The new capture of the TV reference pictures,** before any comparison work (T-57).
 - **Phone and touch interface work,** after the desktop version (O-28).
-- **Publication.**
 
-The final documentation pass of 2026-11-18 is not a phase of its own: it wrote phase 30 and brought the other documents to `main` at `7ad52ba`. Making the reverse-proxy route permanent is not planned as a phase either. It is the owner's call (phases 24 and 30).
+The final documentation pass of 2026-11-18 is not a phase of its own: it wrote phase 30 and brought the other documents to `main` at `7ad52ba`. The documentation update of 2026-11-24 is not one either: it wrote phases 31 to 34 and brought the other documents to `main` at `509db33` (it is item 1 of phase 35). Making the reverse-proxy route permanent is not planned as a phase. It is the owner's call (phases 24 and 30).
 
 ## Summary table
 
@@ -1926,7 +2270,7 @@ The final documentation pass of 2026-11-18 is not a phase of its own: it wrote p
 | 7. Spec audit | 35 (29 mid, 6 top) | 219 corrections and 171 missing items found; 391 edits applied; 104 coverage gaps documented | `e407b3c`, `47270e2` |
 | 8. Wave 2 | 15 (11 top, 4 mid); all returned | Shell, setup, home, crawler built; 51 findings (13 major); fixers rejected 3 findings and deferred 7 items (some are notes, not findings), and fixed the rest; the integrator fixed 9 more items and reported green gates with 145 tests; committed by the lead | `b37c856`; `11aac42` (muted test browsers, see phase 15) |
 | 9. Wave 3a | 18 (12 top, 6 mid); all returned | Playback engine and controls, settings, Seerr and the production server built, reviewed and fixed on branch `wave3a`; 49 findings (11 major); gates green with 301 tests; container check passed | `318ad04` (branch `wave3a`) |
-| 10. Documentation | the lead plus 13 documentation agents (4 top, 9 mid) | Docs layout, reporting rule, agent-log archiver; the document set as of 16:44 | `4abbe23`, `b37c856`, `a1108b4` |
+| 10. Documentation | the lead plus 13 documentation agents (4 top, 9 mid) | Docs layout, reporting rule, agent-log archiver; the first document set | `4abbe23`, `b37c856`, `a1108b4` |
 | 11. Test data and reference shots | 2 (mid) | Image-subtitle test items, intro and outro segments, permanent CPU cap on the throwaway test server; 40 more reference pictures (Live TV, skip intro, image subtitles) | `900417f` |
 | 12. Wave 3b | 16 (15 top, 1 mid); all returned | Library browsing, detail pages, search, Home customization and 8 polish fixes built in the main tree; 42 findings (1 blocker, 17 major); integrator fixed 12 more items; gates green with 230 tests; full crawl of 4,608 pictures with 0 errors | `350cf87` |
 | 13. End-to-end suite, CI, compatibility review | 4 (2 top, 2 mid); all returned | 48 end-to-end tests in 5 projects; CI workflow and repository files; 8 compatibility findings (1 major); 3 app bugs found by the suite; supported-browser baseline decided | `d326a75` (branch `e2e`), `ebcd26c`, `68e6f5f` |
@@ -1944,6 +2288,11 @@ The final documentation pass of 2026-11-18 is not a phase of its own: it wrote p
 | 25. Early merge of the comparison pass | 8 (Claude Fable merge and repair, 6 Claude Opus reviewers); all returned | `parity` at `2a25082` merged into the audited app on branch `final`: 13 conflicts, 36 files changed on both sides read; three follow-ups; reviewers: 3 minor findings, all fixed; gates green with 621 tests; then `main` and parity's test fix merged in | `3085fba`, `7ebc953`, `817594e`, `e8a7731`, `0eb008b`, `e3df8a1`, `6180e80`, `73ed619`, `8f88b38`, `1572963`, `f27f68a` (branch `final`) |
 | 26. Final check and repair | 25 (13 checkers, 9 area fixers and the auditor on Claude Opus; shared-code fixer and integrator on Claude Fable); all returned | 47 findings (6 major), all closed; 16 new end-to-end tests (suite 221); gates green with 686 tests; end-to-end suite 221 passed twice; crawl 390 ok; TV compare 208 ok; container check passed; audit: ready to land, one fragile test | `1d70b92` to `05b510d` (18 commits, branch `final`) |
 | 27. Backdrop colours | 2 (Claude Fable fixer, Claude Opus verifier); both returned | Cause proven: Android's Skia nearest-neighbour sampling in Palette's downscale; reproduced in `extractColors.ts`; JPEG-decoder guess refuted; 11 of 11 coloured backdrops match the TV within 1/255 (6 before); verifier: ready to merge | `b08f0bb`, `4c2cf63`, `ead7347` (branch `colors`), merged as `b6da6a9` |
-| 28. Landing on `main` | the lead | Colour fix merged; drag test hardened; `main` fast-forwarded to `final` (`e1b7e04`) at 13:35; test server reset to its seed; provisioning waits for the startup page to end; gates green with 694 tests (last end-to-end run: see [STATUS.md](STATUS.md)) | `b6da6a9`, `e1b7e04`, `bc93855` |
+| 28. Landing on `main` | the lead | Colour fix merged; drag test hardened; `main` fast-forwarded to `final` (`e1b7e04`); test server reset to its seed; provisioning waits for the startup page to end; gates green with 694 tests (last end-to-end run: see [STATUS.md](STATUS.md)) | `b6da6a9`, `e1b7e04`, `bc93855` |
 | 29. Polish round and landing | 8 (6 fixers, 1 integrator, 1 verifier); all returned; then the lead | Six areas in parallel: shell focus, grids, series overview scroll, stylesheets for old engines, tools and i18n, Live TV overlay; one regression (mouse Back to a "View more" grid) found and repaired by the integrator; gates green with 742 tests; end-to-end suite 239 passed twice; crawl 390 ok in English and Hebrew with 0 warnings; TV compare 208 ok; verifier: ready to land; merged into `main` as `f1fb308`, one test fixed (`c358a52`), lead's third run 239 of 239, pushed | `a229ac6` to `fab7ab5` (12 commits, branch `polish`), `f1fb308`, `c358a52` |
 | 30. Closing round, first owner test, touch fix | 6 (3 documentation writers, 1 for the screenshots, 1 small-fix agent, 1 checker), then 2 (touch fixer, verifier); all returned; the lead with the owner | Documents and README pictures brought to the landed state; right-to-left values fixed, three open observations traced to their causes; trial behind a reverse proxy on the owner's go (a second port first, then a sub-domain); first manual test on a phone: everything works; the one touch problem named (a scroll that starts on a slider) fixed, and the same trap on the reorder handle; gates green with 776 tests; end-to-end suite 250 of 250; CI green; image of `7ad52ba` running as the trial; worktrees and branches removed, with `reference/` (restored) and the TV reference pictures (lost) emptied by accident | `692715f`, `7ad52ba` |
+| 31. Owner requests, privacy sweep, new player, first public release | 3 (2 fixers, 1 verifier), then 8 (5 privacy finders, 1 fixer, 2 re-checkers), then 4 (2 builders, 2 verifiers); all returned; a documentation writer that did not return; the lead with the owner | The interface scale is applied when its slider is released; the audio-track button is a music note; the features not built do not block "finished"; privacy sweep: 76 findings, 60 in the files (fixed), 16 in the history (hence a clean copy); a compact player strip without dimming (7.2 to 12.8 percent of the window height, 21.5 to 42.9 before), chapters and queue as panels; Matroska played directly where a probe clip plays, PGS drawn in the browser, HDR10 direct where the browser tone-maps, audio-only conversion for Dolby and DTS; gates green with 827 tests; end-to-end suite 267 of 267; published on 2026-11-18 at about 21:30 UTC as one commit in a new public repository | `93fe59c`, `6c14670`, `61d51cd`, `f3e18b1`, `bf31148`, `1003992` |
+| 32. First maintenance round | 8 (4 fixers, one per bug, and 4 checkers), then 6 (2 builders, 3 checkers, 1 fixer); all returned; who made the last change is not recorded | Four bugs: a poster grid that just fits no longer shakes (scrollbar gutter reserved); a mouse drag on a slider is no longer taken over by the browser's drag-and-drop; the video box proven to be exactly the window (no app change, a test); each subtitle line gets the direction of its own text. The player's strips: fixed button positions in every language, clock times, a softer gradient, no logo, a favourite button; four checker findings (1 must fix) fixed; then the two side button groups swapped. 863 unit tests after the bugs; whole end-to-end suite run on `c2316a4`, count not recorded | `db14d7c`, `4a08905`, `186fe2a`, `6f16c8b`, `54710d6`, `c2316a4`, `255bff6` |
+| 33. Shell and Settings round | the lead alone, on the fast path; one review job of 2 reviewers (a third agent stopped) | No Back button on the pages the drawer leads to; the open drawer lies over the page; Settings opens as a panel on the drawer's side over a lifeless copy of the page it was opened from, with no Back button where the area beside it can be clicked; no darkening for the drawer or behind Settings; the opening redone until it had one moving piece (a clip, a mask and a two-transform version did not hold); the actor rows of a series stay between episodes; review: one real defect, fixed; rule since: motion is judged from recorded frames; whole end-to-end suite not run | `32a0101`, `bb76c45`, `ec7ed5c`, `dc3c877`, `ba1526e`, `398f168`, `5ab9fd6`, `d1be200`, `7454e4c`, `732e409`, `630c7e9`, `445a739` |
+| 34. Sign-in, Home header, the player's settings | the lead alone, on the fast path | A listed user without a password is signed in by the click; the Home header's overview uses the room the header has; subtitle style options inside the player's settings, with a note for subtitles that cannot be restyled; the player's Settings menus compact, as wide as their longest label and 92 percent opaque; image subtitle opacity applied to PGS in the player; view options for every library set aside by the owner; type check and 897 unit tests pass on `509db33`; whole end-to-end suite, Firefox and WebKit not run at the time (phase 35 ran them); the trial runs the image of `509db33`; the public repository still held only the first release at the end of this phase | `27ab920`, `8d305b7`, `e31ba4b`, `cf29a99`, `509db33` |
+| 35. The documents caught up, the conversation export, the privacy sweep, the second public release | 10 for the documents (5 writers, 5 checkers, all Claude Fable), 5 readers and their second readers (56 agents in the sweep, all Claude Fable), a fix-up of the findings in the documents (Claude Sonnet); the lead with the owner | Documents brought from `7ad52ba` to 2026-11-24 (about 28 minutes); conversation export tool; privacy sweep: 51 findings, about 30 stood, all low severity, all reworded or removed; whole end-to-end suite 336 tests, 334 passed, the 2 failures were faults of two Settings tests on WebKit, repaired; the rule that every agent gets an explicit model (T-76); one release commit on top of the first, on the owner's "Yes, publish" | `3c66f2e`, `fda0c2b`, `0baf14f`, `e9b96bf`, and the commit with the sweep's fixes and this phase (no hash yet) |

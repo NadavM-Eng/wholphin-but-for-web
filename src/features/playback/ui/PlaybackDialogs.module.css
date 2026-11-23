@@ -31,3 +31,68 @@
   border: 0;
   background: var(--fx-m3-outline-variant);
 }
+
+/*
+ * The Settings sheets of the player (Settings, speed, scale, bitrate, subtitle style). Owner requests: they took
+ * more room than they need and hid the video. They are narrower than the TV's 424dp list, a little see-through,
+ * and their rows keep a little padding instead of the TV's 64dp. (The track, chapter and queue sheets at the other
+ * side keep the TV's size.) The doubled class outranks the sheet's and the rows' own rules.
+ * A menu is as wide as its longest row (owner request: no empty half beside the labels), between a width a short
+ * list of values still reads at and the 280dp a long label wraps at.
+ */
+.compactSheet.compactSheet {
+  width: max-content;
+  min-width: min(120px, 100%);
+  max-width: min(280px, 100%);
+  /* not up to the top of the window: the title strip there would show through it */
+  max-height: 72%;
+  padding: 6px;
+  /* only a little see-through (owner: 0.8 let a bright picture wash the labels out) */
+  background: rgb(from var(--c-surface-1) r g b / 0.92);
+}
+
+.compactSheet.compactSheet .row {
+  min-height: 44px;
+  padding-block: 6px;
+}
+
+/* a sheet of sliders has no width of its own (a slider is as wide as its row): the full 280dp */
+.compactSheet.sliderSheet {
+  width: min(280px, 100%);
+}
+
+/*
+ * The subtitle style sheet (SubtitleStyleSheet): the Settings page's list inside such a sheet. The Settings page
+ * gives every row the TV's 64dp (72dp for a slider); here they are as tight as the other rows of the sheet.
+ * The rows are the settings feature's components, addressed by their place (the element inside a [data-pref-id]
+ * row) since their class names belong to that feature.
+ */
+
+/* a click, switch or choice row: the list item inside the row */
+.subtitleStyle.subtitleStyle [data-pref-id] > :is(button, a) {
+  min-height: 44px;
+  padding: 8px 12px;
+}
+
+/* a slider row is the row itself: its title, then the bar */
+.subtitleStyle.subtitleStyle [data-pref-id]:has([role='slider']) {
+  min-height: 0;
+  padding: 8px 12px 10px;
+  row-gap: 4px;
+}
+
+/* the group titles stand 20dp inside a padded list on the Settings page; here they get their own inset */
+.subtitleStyle h2 {
+  padding-inline: 12px;
+}
+
+/* subtitles the options cannot restyle (pictures, their own style, part of the server's picture) */
+.subtitleNote {
+  composes: t-bodySmall from global;
+  flex: none;
+  margin: 0 0 4px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: rgb(from var(--c-on-surface) r g b / 0.1);
+  color: var(--c-on-surface);
+}

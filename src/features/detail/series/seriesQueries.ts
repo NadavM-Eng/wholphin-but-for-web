@@ -2,7 +2,7 @@
 // the people of the focused episode and the episode the series Play button starts. Every read is a TanStack
 // query, so the shared item actions (useItemActions) patch watched / favorite marks in place.
 import type { Api } from '@jellyfin/sdk'
-import type { BaseItemDto, BaseItemDtoQueryResult, ItemFields } from '@jellyfin/sdk/lib/generated-client/models'
+import type { BaseItemDto, BaseItemDtoQueryResult, ItemFields, BaseItemPerson } from '@jellyfin/sdk/lib/generated-client/models'
 import { getLibraryApi } from '@jellyfin/sdk/lib/utils/api/library-api'
 import { getShowApi } from '@jellyfin/sdk/lib/utils/api/show-api'
 import { useQueries, useQuery, type QueryClient } from '@tanstack/react-query'
@@ -174,7 +174,12 @@ export function episodeAccess(qc: QueryClient, api: Api, userId: string | undefi
 /**
  * `lookupPeopleInEpisode` (SeriesViewModel.kt:599-623): the episode's people (`GET /Items/{id}`, shared with the
  * detail-item cache and kept 5 minutes, upstream caches 25 episodes). The fetch starts at once; the rows show
- * the result only after the episode has stayed focused for 250 ms, and are empty right after a change.
+ * the result only after the episode has stayed focused for 250 ms.
+ *
+ * Web: until then the rows keep the people shown last instead of emptying (upstream clears them on every focus
+ * change). A mouse moving along the strip selects episode after episode: emptied rows were torn down and built
+ * again each time, pictures included, although most of the cast is the same. Without an episode (a season
+ * loading) or when the lookup fails there is nothing to keep.
  */
 export function usePeopleInEpisode(episodeId: string | null) {
   const api = useApi()
@@ -191,7 +196,11 @@ export function usePeopleInEpisode(episodeId: string | null) {
     const timer = setTimeout(() => setShownFor(episodeId), PEOPLE_DELAY_MS)
     return () => clearTimeout(timer)
   }, [episodeId])
-  return shownFor === episodeId && q.data?.Id === episodeId ? (q.data.People ?? []) : EMPTY
+  const settled = shownFor === episodeId
+  const next = episodeId == null || (settled && q.isError) ? EMPTY : settled && q.data?.Id === episodeId ? (q.data.People ?? EMPTY) : null
+  const [held, setHeld] = useState<BaseItemPerson[]>(EMPTY)
+  if (next && next !== held) setHeld(next)
+  return next ?? held
 }
 
 const PEOPLE_DELAY_MS = 250

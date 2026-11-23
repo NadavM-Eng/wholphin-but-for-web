@@ -77,7 +77,11 @@ export class App {
    */
   async tap(target: Locator) {
     if (this.info.project.use.browserName !== 'webkit') return target.tap()
-    await target.scrollIntoViewIfNeeded()
+    // retried: unlike a click, scrollIntoViewIfNeeded gives up when the element is replaced under it (a control that
+    // the next screen draws again, such as the Back button between two Settings screens)
+    await expect(async () => {
+      await target.scrollIntoViewIfNeeded({ timeout: 2_000 })
+    }).toPass({ timeout: 10_000 })
     await expect(target).toBeVisible()
     await target.evaluate((el) => {
       const r = el.getBoundingClientRect()

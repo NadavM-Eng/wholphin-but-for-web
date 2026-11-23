@@ -44,6 +44,7 @@ import { loadSubtitle } from './subtitles/loader'
 import { createTrackSelections } from './trackSelection'
 import { pickTrickplayInfo, trickplayImageAt, trickplaySheetCount, type TrickplayImage } from './trickplay'
 import { trickplayTileUrl } from '../../../api/playback/urls'
+import { onItemPatched } from '../../common/itemCache'
 import { episodeLine, itemTitle } from '../ui/text'
 import type { Chapter, ExitReason, PlaybackDestination, PlaybackEngineState, PlaybackError } from './types'
 import { FrameWatchdog, type WatchdogReason } from './watchdog'
@@ -90,6 +91,7 @@ const initialState: PlaybackEngineState = {
   subtitle: null,
   subtitleLoading: false,
   subtitleDelayMs: 0,
+  subtitleSample: false,
   positionMs: 0,
   durationMs: 0,
   bufferedMs: 0,
@@ -117,6 +119,20 @@ const set = (patch: Partial<PlaybackEngineState>) => usePlaybackStore.setState(p
 const get = () => usePlaybackStore.getState()
 const t = (key: string, opts: Record<string, unknown> = {}) => i18next.t(key, opts)
 const norm = (id: string | null | undefined) => id?.replace(/-/g, '').toLowerCase() ?? null
+
+// The store keeps its own copies of items (the playing item, the queue entries, next up) that the query caches do
+// not reach: a favourite or watched change made anywhere (the player's own favourite button, a web addition) is
+// applied to them as well, so the state shown is right at once, after a rollback, and when the queue comes back
+// to the entry and its reload fails.
+onItemPatched((itemId, fn) => {
+  const st = get()
+  const same = (item: BaseItemDto | null | undefined): item is BaseItemDto => !!item?.Id && norm(item.Id) === norm(itemId)
+  const patch: Partial<PlaybackEngineState> = {}
+  if (same(st.item)) patch.item = fn(st.item)
+  if (st.queue.some((e) => same(e.item))) patch.queue = st.queue.map((e) => (same(e.item) ? { ...e, item: fn(e.item) } : e))
+  if (st.nextUp && same(st.nextUp.item)) patch.nextUp = { ...st.nextUp, item: fn(st.nextUp.item) }
+  if (patch.item || patch.queue || patch.nextUp) set(patch)
+})
 
 interface StreamRequest {
   item: BaseItemDto

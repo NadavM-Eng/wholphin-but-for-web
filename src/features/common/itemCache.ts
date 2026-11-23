@@ -73,13 +73,30 @@ export function mapItemsDeep(data: unknown, itemId: string, fn: (item: BaseItemD
   return changed ? out : data
 }
 
-/** Applies `fn` to every cached copy of the item (all queries of the current user). */
+export type ItemPatchListener = (itemId: string, fn: (item: BaseItemDto) => BaseItemDto) => void
+
+const patchListeners = new Set<ItemPatchListener>()
+
+/**
+ * For a holder of item copies outside the query caches (the playback store: the playing item and its queue).
+ * It receives every `patchItemInCaches`, so an optimistic change, the server's answer and a rollback reach its
+ * copies as they reach the cached ones. Returns the unsubscribe.
+ */
+export function onItemPatched(listener: ItemPatchListener): () => void {
+  patchListeners.add(listener)
+  return () => {
+    patchListeners.delete(listener)
+  }
+}
+
+/** Applies `fn` to every cached copy of the item (all queries of the current user) and to the `onItemPatched` holders. */
 export function patchItemInCaches(qc: QueryClient, itemId: string, fn: (item: BaseItemDto) => BaseItemDto): void {
   for (const q of qc.getQueryCache().getAll()) {
     if (!isCurrentUser(q) || q.state.data === undefined) continue
     const next = mapItemsDeep(q.state.data, itemId, fn)
     if (next !== q.state.data) qc.setQueryData(q.queryKey, next)
   }
+  for (const listener of patchListeners) listener(itemId, fn)
 }
 
 /**

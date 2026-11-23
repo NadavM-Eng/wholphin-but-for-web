@@ -1,12 +1,29 @@
+/* As high as the strip's buttons: the slider (28dp, more than a button of a low strip at a large interface
+   scale) is centred on the button and does not make the row taller. */
 .root {
+  position: relative;
   display: inline-flex;
   align-items: center;
+  height: var(--pb-size, auto);
 }
 
-/* Collapsed until the group is hovered. */
+/*
+ * The slider's place at the right of the button: laid over the free part of the strip's left side (it takes no
+ * room in the row, so nothing moves) and cut where that side ends (Controller.module.css `.start`). No width until
+ * the pointer is on the control, then --volume-w (set by the strip); only the width changes while it opens, and
+ * the slider inside keeps its size and is uncovered from the button's side. Clipped sideways only; the slider is
+ * higher than a low strip's button.
+ */
 .slider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   width: 0;
-  overflow: hidden;
+  overflow-x: clip;
   opacity: 0;
   transition:
     width 200ms ease,
@@ -14,10 +31,33 @@
 }
 
 .root[data-open] .slider {
-  width: 112px;
-  overflow: visible;
+  width: var(--volume-w, 112px);
   opacity: 1;
+}
+
+.sliderBox {
+  box-sizing: border-box;
+  flex: none;
+  width: var(--volume-w, 112px);
   padding-inline: 10px;
+}
+
+/* the strip's row is left to right in every language; the kit Slider follows the language */
+:global([dir='rtl']) .sliderBox {
+  direction: rtl;
+}
+
+/*
+ * The two-row strip of a narrow, tall window (Controller.module.css, the same limits): its second line can be
+ * full, so the slider is laid over the places at the left of the button, whose buttons are not drawn meanwhile.
+ * Physical side: the row is left to right in every language.
+ */
+@media (max-width: 699px) and (min-height: 500px), (max-width: 499px) {
+  .slider {
+    right: 100%;
+    left: auto;
+    justify-content: flex-end;
+  }
 }
 
 @media (pointer: coarse) {

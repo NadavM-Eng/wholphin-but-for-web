@@ -427,6 +427,7 @@ function GridView({
           <div
             ref={scroller}
             className={styles.scroller}
+            data-grid-scroller
             onKeyDown={onKeyDown}
             onFocus={(e) => trackPosition(e.target)}
             onPointerOver={(e) => {

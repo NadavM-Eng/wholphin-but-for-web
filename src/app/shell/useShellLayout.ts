@@ -62,16 +62,31 @@ export function usePublishShellLayout(clockOverlay: boolean, backOverlay: boolea
 /** NavDisplay's default transition, which Wholphin does not override: fade (tween 700, FastOutSlowIn). */
 const FADE_MS = 700
 let firstPageShown = false
+let skipFade = false
 
-/** Fades the routed page in on every path change (and when a layout mounts after the first page). */
-export function usePageFade(ref: RefObject<HTMLElement | null>) {
+/** The next page arrival shows without the fade (the page comes back from under the Settings panel). */
+export function skipNextPageFade() {
+  skipFade = true
+}
+
+/**
+ * Fades the routed page in on every path change (and when a layout mounts after the first page).
+ * `enabled` false: this page just appears (Settings, owner request).
+ */
+export function usePageFade(ref: RefObject<HTMLElement | null>, enabled = true) {
   const { pathname } = useLocation()
   const last = useRef<string | null>(null)
   useEffect(() => {
     const el = ref.current
     const prev = last.current
     last.current = pathname
-    if (!el) return
+    const skip = skipFade
+    skipFade = false
+    if (!el || skip) return
+    if (!enabled) {
+      firstPageShown = true
+      return
+    }
     if (!firstPageShown) {
       firstPageShown = true
       return
@@ -79,5 +94,5 @@ export function usePageFade(ref: RefObject<HTMLElement | null>) {
     if (prev === pathname) return
     if (typeof el.animate !== 'function' || matchMedia('(prefers-reduced-motion: reduce)').matches) return
     el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: FADE_MS, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' })
-  }, [pathname, ref])
+  }, [pathname, ref, enabled])
 }

@@ -79,6 +79,11 @@ export function NavDrawer({ mode, open, state, selection, onNavigateFromDrawer, 
     })
   }
 
+  // The Settings pages are loaded on demand: fetch them while the drawer is open, so the click opens them at once
+  useEffect(() => {
+    if (open) void import('../../features/settings/SettingsPage')
+  }, [open])
+
   const activate = (fn: () => void) => {
     const keyboard = isKeyboardModality()
     fn()
@@ -260,7 +265,10 @@ export function NavDrawer({ mode, open, state, selection, onNavigateFromDrawer, 
             drawerOpen={open}
             href={nav.settings()}
             leading={<MaterialIcon name="settings" className={styles.icon} />}
-            onActivate={() => activate(() => void navigate(nav.settings()))}
+            // Not through activate(): the drawer stays open until Settings is on screen (the shell closes it when it
+            // unmounts). Closing it at the click showed the bare page between the drawer and the Settings panel,
+            // which grows out of the open drawer.
+            onActivate={() => void navigate(nav.settings())}
           />
         </div>
       </div>

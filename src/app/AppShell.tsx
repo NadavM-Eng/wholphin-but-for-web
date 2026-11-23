@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Outlet, useLocation } from 'react-router'
 import { usePrefs } from '../stores/preferences'
@@ -8,8 +8,9 @@ import { BackButton } from './shell/BackButton'
 import { Backdrop } from './shell/Backdrop'
 import { startBackdropService } from './shell/backdropService'
 import { Clock } from './shell/Clock'
-import { selectionForStack, type DrawerSelection } from './shell/drawerItems'
+import { isDrawerDestination, selectionForStack, type DrawerSelection } from './shell/drawerItems'
 import { NavDrawer } from './shell/NavDrawer'
+import { capturePageSnapshot, isPanelPath, pageOwner, returnFromPanel } from './shell/pageSnapshot'
 import styles from './shell/AppShell.module.css'
 import {
   contentEl,
@@ -31,7 +32,7 @@ import { drawerNavSettling, drawerVisitOf, useAppStack, useStackPaths } from './
 import { useBackKey } from './shell/useBackKey'
 import { useDrawerItems } from './shell/useDrawerItems'
 import { PAGE_ROOT_ATTR } from './shell/useFocusRestore'
-import { useCompactLayout, usePageFade, usePublishShellLayout } from './shell/useShellLayout'
+import { skipNextPageFade, useCompactLayout, usePageFade, usePublishShellLayout } from './shell/useShellLayout'
 import { setBeamEdge } from './spatialNav'
 
 function isTyping(el: Element | null) {
@@ -43,7 +44,7 @@ function isTyping(el: Element | null) {
 /**
  * App shell for drawer pages (W/ui/nav/ApplicationContent.kt + NavDrawer.kt): backdrop behind everything,
  * the nav drawer (64dp rail that expands on hover / keyboard focus / tap; an overlay sheet on phones),
- * the page area shifted while the drawer is open, the clock at the top-end and a Back button.
+ * the page area (the open drawer lies over it; upstream pushes it aside), the clock at the top-end and a Back button.
  */
 export function AppShell() {
   const { i18n, t } = useTranslation()
@@ -60,7 +61,8 @@ export function AppShell() {
   const backHidden = useShellStore((s) => s.backHidden > 0)
   const homeReload = useShellStore((s) => s.homeReload)
   const isHome = location.pathname === '/'
-  const showBack = !isHome && !backHidden
+  // no Back button on the pages the drawer leads to: the drawer is beside them (owner request)
+  const showBack = !backHidden && !isDrawerDestination(location.pathname, state)
   const pageRef = useRef<HTMLElement | null>(null)
   const menuRef = useRef<HTMLElement | null>(null)
   const pendingPageFocus = useRef(false)
@@ -73,6 +75,20 @@ export function AppShell() {
   const visit = drawerVisitOf(location.state)
   const [drawerVisit, setDrawerVisit] = useState(visit)
   if (visit != null && visit !== drawerVisit) setDrawerVisit(visit)
+
+  // Settings opens as a panel over this page: a copy of the page stays behind it (pageSnapshot.ts). The copy is
+  // taken in a layout cleanup, while the page is still in the document, and only when the shell leaves for it.
+  const shellRef = useRef<HTMLDivElement>(null)
+  const appPath = location.pathname + location.search
+  useLayoutEffect(() => {
+    const el = shellRef.current
+    // back on the copied page: the copy covers the arrival (a no-op on every later path change)
+    if (returnFromPanel(appPath, pageOwner())) skipNextPageFade()
+    return () => {
+      // the address is already the next page's when the shell is torn down
+      if (el && isPanelPath(window.location.pathname)) capturePageSnapshot(el, appPath, pageOwner())
+    }
+  }, [appPath])
 
   useEffect(() => {
     installModalityTracking()
@@ -213,10 +229,11 @@ export function AppShell() {
 
   return (
     <div
+      ref={shellRef}
       className={clsx(styles.shell, compact && styles.compact, rtl && styles.rtl, !compact && showClock && styles.clockOn, showBack && styles.backOn)}
       data-shell
     >
-      <Backdrop drawerOpen={open && !compact} rtl={rtl} />
+      <Backdrop rtl={rtl} />
       {compact && pinned && <div className={styles.scrim} onClick={closeDrawer} aria-hidden="true" />}
       {!compact && pinned && (
         <div
@@ -258,7 +275,7 @@ export function AppShell() {
               icon={<MaterialIcon name="menu" />}
               onClick={openSheet}
             />
-            {showBack && <BackButton />}
+            {showBack && <BackButton className={styles.barBack} />}
             <span className={styles.spacer} />
             {showClock && <Clock placement="inline" />}
           </header>

@@ -32,9 +32,14 @@ test('desktop rail: collapsed, expands while hovered, lists the server libraries
   expect(await drawerLibraryIds(app)).toEqual(views.map((v) => v.Id.replace(/-/g, '').toLowerCase()))
   for (const v of views) await expect(app.drawer.locator(`[data-drawer-id="s_${v.Id}"]`)).toContainText(v.Name!)
 
+  const pageX = async () => (await app.pageRoot.boundingBox())!.x
+  const closedX = await pageX()
   await app.drawer.hover()
   await expect(app.drawer).toHaveAttribute('data-open', /.*/)
   await expect.poll(() => width(app)).toBeGreaterThan(rail + 100)
+  // the open drawer lies over the page: the page does not move aside (owner request; the TV pushes it)
+  await page.waitForTimeout(400)
+  expect(await pageX()).toBe(closedX)
   // moving away collapses it
   await page.mouse.move(900, 450)
   await expect(app.drawer).not.toHaveAttribute('data-open')

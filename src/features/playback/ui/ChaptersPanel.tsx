@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { getChapterImageUrl, imagePx } from '../../../api/images'
-import { formatDuration } from '../../../lib/format'
+import { formatClock } from '../../../lib/format'
 import { useSessionStore } from '../../../stores/session'
 import { ListItem } from '../../../ui'
 import { getPlaybackEngine, usePlaybackStore } from '../engine'
@@ -11,7 +11,8 @@ import { currentChapterIndex, plainT } from './text'
 const THUMB_HEIGHT = 36
 
 /**
- * The chapters of the playing item, one row each: picture (when the server has one), name, start time. The
+ * The chapters of the playing item, one row each: picture (when the server has one), name, start time (a clock,
+ * "1:02:03", like the control strip's times). The
  * chapter being played is marked and takes focus; choosing a row seeks there and hides the controls, as a click
  * on a chapter card does on the TV (overlay/ChapterRowOverlay.kt, which lays the chapters out as a row of cards
  * under the controller: web layout, owner request).
@@ -27,7 +28,7 @@ export function ChaptersPanel({ onClose, onPicked }: { onClose: () => void; onPi
   return (
     <PlayerPanel name="chapters" title={t('chapters')} onClose={onClose} shortcut="h" initialFocus="[data-current]">
       {chapters.map((c, i) => {
-        const time = formatDuration(t, c.startMs)
+        const time = formatClock(c.startMs)
         const src = itemId && c.imageTag ? getChapterImageUrl(baseUrl, itemId, c.index, c.imageTag, imagePx(THUMB_HEIGHT)) : null
         return (
           <div key={c.index} data-chapter={i} data-current={i === current || undefined}>
@@ -41,7 +42,7 @@ export function ChaptersPanel({ onClose, onPicked }: { onClose: () => void; onPi
                   <bdi>{c.name || time}</bdi>
                 </span>
               }
-              trailing={c.name ? <bdi>{time}</bdi> : undefined}
+              trailing={c.name ? <span className={styles.clock} dir="ltr">{time}</span> : undefined}
               onClick={() => {
                 getPlaybackEngine().seekTo(c.startMs)
                 onPicked()

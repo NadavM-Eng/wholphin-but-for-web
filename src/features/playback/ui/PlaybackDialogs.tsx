@@ -7,6 +7,7 @@ import { BITRATE_VALUES, getPlaybackEngine, PLAYBACK_SPEEDS, TrackIndex, usePlay
 import styles from './PlaybackDialogs.module.css'
 import { PlayerSheet } from './PlayerSheet'
 import { SubtitleDelayDialog } from './SubtitleDelayDialog'
+import { SubtitleStyleSheet } from './SubtitleStyleSheet'
 import { kotlinDuration, speedLabel, streamLabels, plainT } from './text'
 import { CONTENT_SCALE_LABELS, CONTENT_SCALES, type ContentScale, type PlayerDialog } from './types'
 
@@ -34,7 +35,8 @@ function canDownloadSubtitles(): boolean {
  * `PlaybackDialog` (W/ui/playback/PlaybackDialog.kt): Settings / Speed / Scale / Bitrate on elevation 1, Captions /
  * Audio on elevation 3, the subtitle delay centered. Choosing a speed or scale returns to Settings, like upstream's
  * dismiss handler. Upstream opens the Settings group bottom-start, above its Settings button at the start of the
- * controller; in the web strip every button is at the end side, so every sheet opens bottom-end, above them.
+ * controller, and the track lists bottom-end; in the web strip the settings, subtitles and audio buttons are at the
+ * physical left in every language, so every sheet opens at the left, above them.
  */
 export function PlaybackDialogs({ dialog, setDialog, showDebug, onToggleDebug, scale, onScale, onSearchSubtitles }: PlaybackDialogsProps) {
   const t = plainT(useTranslation().t)
@@ -49,18 +51,20 @@ export function PlaybackDialogs({ dialog, setDialog, showDebug, onToggleDebug, s
         { key: 'scale', headline: t('video_scale'), supporting: t(CONTENT_SCALE_LABELS[scale]) },
         // upstream offers the delay only with MPV; the web renderer supports it everywhere (spec 05 §B4)
         { key: 'delay', headline: t('subtitle_delay'), supporting: kotlinDuration(st.subtitleDelayMs) },
+        // web addition (owner request): the Settings page's subtitle style options, with the video as the preview
+        { key: 'subtitleStyle', headline: t('subtitle_style') },
         { key: 'bitrate', headline: t('max_bitrate'), supporting: formatMaxBitrate(st.maxBitrate) },
         { key: 'debug', headline: t(showDebug ? 'hide_debug_info' : 'show_debug_info') },
         { key: 'help', headline: t('web_shortcut_title') },
       ]
       return (
-        <PlayerSheet label={t('settings')} placement="bottom-end" surface={1} onClose={close}>
+        <PlayerSheet label={t('settings')} placement="bottom-left" className={styles.compactSheet} surface={1} onClose={close}>
           {rows.map((r) => (
             <ListItem
               key={r.key}
               headline={<Line>{r.headline}</Line>}
               supporting={r.supporting ? <Line>{r.supporting}</Line> : null}
-              leading={<SelectedDot selected={false} />}
+              // no leading slot: upstream keeps an empty selection dot here, which only made the menu wider
               className={styles.row}
               disabled={r.key === 'delay' && st.subtitleIndex == null}
               onClick={() => {
@@ -77,7 +81,7 @@ export function PlaybackDialogs({ dialog, setDialog, showDebug, onToggleDebug, s
 
     case 'speed':
       return (
-        <PlayerSheet label={t('playback_speed')} placement="bottom-end" onClose={() => setDialog('settings')} initialFocus="[data-current]">
+        <PlayerSheet label={t('playback_speed')} placement="bottom-left" className={styles.compactSheet} onClose={() => setDialog('settings')} initialFocus="[data-current]">
           {PLAYBACK_SPEEDS.map((r) => (
             <Choice
               key={r}
@@ -94,7 +98,7 @@ export function PlaybackDialogs({ dialog, setDialog, showDebug, onToggleDebug, s
 
     case 'scale':
       return (
-        <PlayerSheet label={t('video_scale')} placement="bottom-end" onClose={() => setDialog('settings')} initialFocus="[data-current]">
+        <PlayerSheet label={t('video_scale')} placement="bottom-left" className={styles.compactSheet} onClose={() => setDialog('settings')} initialFocus="[data-current]">
           {CONTENT_SCALES.map((s) => (
             <Choice
               key={s}
@@ -109,9 +113,12 @@ export function PlaybackDialogs({ dialog, setDialog, showDebug, onToggleDebug, s
         </PlayerSheet>
       )
 
+    case 'subtitleStyle':
+      return <SubtitleStyleSheet onClose={() => setDialog('settings')} />
+
     case 'bitrate':
       return (
-        <PlayerSheet label={t('max_bitrate')} placement="bottom-end" onClose={close} initialFocus="[data-current]">
+        <PlayerSheet label={t('max_bitrate')} placement="bottom-left" className={styles.compactSheet} onClose={close} initialFocus="[data-current]">
           {BITRATE_VALUES.map((b) => (
             <Choice
               key={b}
@@ -131,7 +138,7 @@ export function PlaybackDialogs({ dialog, setDialog, showDebug, onToggleDebug, s
 
     case 'audio':
       return (
-        <PlayerSheet label={t('audio')} placement="bottom-end" surface={3} onClose={close} initialFocus="[data-current]">
+        <PlayerSheet label={t('audio')} placement="bottom-right" surface={3} onClose={close} initialFocus="[data-current]">
           {st.audioStreams.map((s) => {
             const l = streamLabels(t, s)
             return (
@@ -159,7 +166,7 @@ export function PlaybackDialogs({ dialog, setDialog, showDebug, onToggleDebug, s
       }
       const focusCurrent = current >= 0 ? '[data-current]' : '[data-none]'
       return (
-        <PlayerSheet label={t('subtitles')} placement="bottom-end" surface={3} onClose={close} initialFocus={focusCurrent} wrap>
+        <PlayerSheet label={t('subtitles')} placement="bottom-right" surface={3} onClose={close} initialFocus={focusCurrent} wrap>
           <Choice headline={t('none')} selected={current === TrackIndex.DISABLED} onClick={() => pick(TrackIndex.DISABLED)} attr="data-none" />
           <Choice headline={t('only_forced_subtitles')} selected={current === TrackIndex.ONLY_FORCED} onClick={() => pick(TrackIndex.ONLY_FORCED)} />
           {st.subtitleStreams.length > 0 && <hr className={styles.divider} />}

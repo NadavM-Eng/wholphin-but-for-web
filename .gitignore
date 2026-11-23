@@ -52,5 +52,15 @@ dev/caddy-trial/
 # local-only launchers: never committed
 dev/local/
 
+# local-only progress page: never committed
+/progress.html
+
+# local-only copy of the working session (tools/export-conversation.mjs): never committed
+/conversation.md
+/conversation/
+
+# personal Claude Code settings of this checkout (hooks, permissions): never committed
+.claude/settings.local.json
+
 # crash dumps of shell tools
 *.stackdump

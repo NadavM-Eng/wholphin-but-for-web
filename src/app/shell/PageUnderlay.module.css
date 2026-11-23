@@ -1,0 +1,33 @@
+/* The copy of the page Settings was opened from (pageSnapshot.ts). It scrolls to the page's old window offset
+   inside this box; the copy's own fixed layers (backdrop, rail) keep to the window as they did.
+   `left`, not a logical property: the box is as wide as the page was laid out, and the window's scrollbar is on
+   the right in both directions. */
+.underlay {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
+  width: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  /* The ground under the copy, and the whole background when there is none (Settings opened by its address).
+     Drawn here and not by the Settings page, which would have to know about the copy while it renders: the copy
+     is taken a moment later, and the first frame showed a flat background before the page behind appeared. */
+  background: var(--c-background);
+}
+
+/* A copy is in its final state: nothing in it fades or slides in again. */
+.underlay *,
+.underlay *::before,
+.underlay *::after {
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  transition: none !important;
+}
+
+/* Back on the page: the copy covers the real page while it mounts, then fades (returnFromPanel). */
+.returning {
+  z-index: 30;
+  background: var(--c-background);
+}

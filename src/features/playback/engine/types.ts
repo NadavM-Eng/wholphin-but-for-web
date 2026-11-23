@@ -157,6 +157,8 @@ export interface PlaybackEngineState {
   subtitle: SubtitleData | null
   subtitleLoading: boolean
   subtitleDelayMs: number
+  /** the subtitle style sheet is open: a sample line stands in while no cue is on screen (SubtitleLayer) */
+  subtitleSample: boolean
 
   positionMs: number
   durationMs: number

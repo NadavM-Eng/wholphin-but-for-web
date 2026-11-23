@@ -2,13 +2,25 @@
 
 This document lists every tool, script, command and environment key that a developer or a reviewer of Wholphin Web needs: what each one is for, how to run it, and what is known to work.
 
-Last updated: 2026-11-18
+Last updated: 2026-11-24
 
 Related documents: [README.md](README.md) (index), [PROJECT-LOG.md](PROJECT-LOG.md) (chronology), [DECISIONS.md](DECISIONS.md) (decisions), [ARCHITECTURE.md](ARCHITECTURE.md) (structure), [DEVIATIONS.md](DEVIATIONS.md) (differences from upstream), [STATUS.md](STATUS.md) (current state), [deploy.md](deploy.md) (deployment guide), [spec/](spec/) (behavior specs extracted from upstream), [CLAUDE.md](../CLAUDE.md) (working agreement). Tool-level READMEs: [e2e/README.md](../e2e/README.md), [tools/shots/README.md](../tools/shots/README.md), [tools/testserver/README.md](../tools/testserver/README.md), [tools/refshots/README.md](../tools/refshots/README.md).
 
 **How this document was checked.** Every command and flag below was read against `package.json` and the argument parsing of the script it runs. Nothing was started while writing it: no dev server, browser, test run, build, container or emulator. The only things executed were read-only counts (a short script that imports the crawler's scene table and reference table, file counts and folder sizes on disk) and, for the last update, read-only git commands and one listing of the CI runs on GitHub (`gh run list`). Statements about how a tool behaves therefore come from its source, its README and the recorded agent reports, not from a fresh run. Where something was never verified, the text says so, and section 19 collects those points.
 
-**Which tree.** This version describes `main` at `7ad52ba` (2026-11-18): the merged app, the TV-comparison pass, the final check and repair, the backdrop color fix, the two test-server commits `bc93855` (the stricter start-up wait) and `3b1dd7b` (pre-made recordings, section 7), the polish round (merge `f1fb308`), and the two commits after it, `692715f` and `7ad52ba`, which added two helpers to the end-to-end fixtures (section 12). Two things outside the tree changed the same day and are described where they belong: the Android TV reference pictures were lost (sections 8, 9 and 14), and every worktree was removed (section 14). The tool changes of those passes (the TV-canvas reference scenes and the compare sheet, the crawler's `--channel` flag, the license generator's author names, the stricter start-up wait, and the polish round's crawler changes: scenes that find controls in the run's language and Home scenes that wait for their rows) are described in the sections below. Counts are snapshots.
+**Which tree.** This document was written for `main` at `7ad52ba` (2026-11-18) and brought to `509db33` on 2026-11-24 (next paragraph). The version of 2026-11-18 covers the merged app, the TV-comparison pass, the final check and repair, the backdrop color fix, the two test-server commits `bc93855` (the stricter start-up wait) and `3b1dd7b` (pre-made recordings, section 7), the polish round (merge `f1fb308`), and the two commits after it, `692715f` and `7ad52ba`, which added two helpers to the end-to-end fixtures (section 12). Two things outside the tree changed the same day and are described where they belong: the Android TV reference pictures were lost (sections 8, 9 and 14), and every worktree was removed (section 14). The tool changes of those passes (the TV-canvas reference scenes and the compare sheet, the crawler's `--channel` flag, the license generator's author names, the stricter start-up wait, and the polish round's crawler changes: scenes that find controls in the run's language and Home scenes that wait for their rows) are described in the sections below. Counts are snapshots.
+
+**The update of 2026-11-24.** `main` is at `509db33`. Between `7ad52ba` and it, no npm script, no tool under `tools/` and no environment key was added (`package.json` gained one production dependency, `libpgs`, and nothing else). What did change for tools and commands, each in its section:
+
+- the generators' inputs: a second web-only preference, three more web-only strings on balance, and the license list with `libpgs` (section 3);
+- the throwaway test server: a sixteenth Codec Zoo clip, and what the playback engine now does with the Matroska and PGS clips (section 7);
+- the crawler's TV-canvas player scenes, changed for the new player layout (section 9);
+- the unit tests' last recorded run (section 11);
+- the end-to-end suite: six more spec files, a development-only hook for the player tests, a spec that starts a browser with real scrollbars, and how motion is judged (section 12);
+- the production image: the commit label and the rollback tags of a go-live (section 16);
+- two procedures that are the lead's and have no script in the repository: releases from the private to the public repository (section 20) and the fast path for small changes (section 21).
+
+Nothing was run for this update either: it was written from the commits `7ad52ba..509db33`, the source and the lead's record of the checks.
 
 **Shell.** Commands are written for a POSIX shell (Git Bash works on Windows). Where a command sets an environment variable inline, the PowerShell form is given as well.
 
@@ -29,13 +41,14 @@ Related documents: [README.md](README.md) (index), [PROJECT-LOG.md](PROJECT-LOG.
 | Quiet test browsers | `tools/quiet-playwright.mjs` | Patches the installed Playwright so every browser it launches is headless (no window) and muted | runs on `npm install` |
 | Low-priority keeper | `tools/low-priority.ps1` | Keeps the processes of the project's tooling at below-normal priority on a Windows machine that someone is using | Windows PowerShell |
 | Agent-log archiver | `tools/archive-agent-logs.mjs` | Copies agent briefs and reports into a readable local archive for documentation | a Claude Code session folder |
+| Conversation export | `tools/export-conversation.mjs` | Writes the whole working session (the chat, every subagent's chat, workflow runs, pictures) as local Markdown pages | a Claude Code session of this project |
 | Production server and Docker image | `server/`, `Dockerfile`, `docker-compose.example.yml` | Serve the built app, publish runtime configuration, proxy Seerr | Node 24 or Docker |
 
 Software the tools assume:
 
 - **Node 24 and npm.** `.nvmrc` contains `24`; CI reads the Node version from that file.
 - **Docker** for the throwaway test server and for the production image.
-- **Playwright's browsers** for the crawler and the end-to-end suite (section 12 has the install command). One end-to-end spec also needs Microsoft Edge installed.
+- **Playwright's browsers** for the crawler and the end-to-end suite (section 12 has the install command). The end-to-end specs that play video also need Microsoft Edge installed (five spec files on `main` at `509db33`, section 12).
 - **The Android SDK**, only for the reference capture.
 
 Ports used by the tools on the local machine:
@@ -56,7 +69,7 @@ Repository housekeeping files:
 | `.nvmrc` | Names the Node version (24). |
 | `.editorconfig` | UTF-8, Unix line endings, a final newline, two-space indentation, trailing spaces trimmed (kept in Markdown); Windows script files (`.bat`, `.cmd`, `.ps1`) use Windows line endings. |
 | `.gitattributes` | Stores text files with Unix line endings in the repository and in working copies, marks images, fonts, media and archives as binary, and keeps Windows line endings for `.bat`, `.cmd` and `.ps1`. |
-| `.gitignore` | Keeps local material out of the repository: `node_modules`, `dist`, `dist-server`, `.env` and `.env.*`, `reference/`, `shots/out/`, `refshots/out/`, `e2e/.output/`, `dev/testserver/data/`, `.worktrees/`, `.agent-logs/`. |
+| `.gitignore` | Keeps local material out of the repository: `node_modules`, `dist`, `dist-server`, `.env` and `.env.*`, `reference/`, `shots/out/`, `refshots/out/`, `e2e/.output/`, `dev/testserver/data/`, `.worktrees/`, `.agent-logs/`; since 2026-11-18 also local-only working folders under `dev/` (experiments and launchers) and the crash dumps of shell tools (`*.stackdump`). |
 | `.oxlintrc.json` | Lint configuration. It ignores `.worktrees/`, `reference/`, `dist/`, `shots/`, `refshots/` and `dev/testserver/data/`. |
 | `.dockerignore` | Keeps `node_modules`, build output, environment files, the upstream copy, screenshots and the test server's data out of the Docker build. |
 
@@ -114,9 +127,9 @@ Each generator reads data extracted from upstream, or the dependency list, and w
 Details worth knowing:
 
 - **Tokens.** Eight themes, dark scheme only (upstream's light schemes are not reachable in the app). The generator also computes two elevated surface colors per theme (`--c-surface-1`, `--c-surface-3`) with the Material formula, in which the primary color is blended over the surface color more strongly as elevation grows. Fixed colors are written as `--fx-*`; some of them (white, gray, black, red, green, blue and the log-level colors) are defined in the generator and not in the token file. Components must use the variables and never a color value ([CLAUDE.md](../CLAUDE.md)).
-- **Strings.** Keys are the Android string names. Positional arguments such as `%1$s` become `{{p1}}`; plural quantities become i18next suffix keys; Android escapes, CDATA and XML entities are decoded; strings marked non-translatable stay in the base locale; the icon-font file `fa_strings.xml` is skipped. The rules are in the header comment of `tools/gen-strings.ts`. If the upstream checkout is missing, the generator prints a warning and keeps the committed files. Strings that upstream does not have go by hand into `src/i18n/extra/en.json` with a `web_` prefix, not into the generated files. That file holds 183 keys on `main` at `7ad52ba` (counted with `node -e "console.log(Object.keys(require('./src/i18n/extra/en.json')).length)"`); they exist only in English.
-- **Preferences.** Keys are the upstream ids in lower camel case with a trailing `Pref` or `Preference` removed. Values are stored in the unit the code uses (milliseconds for durations); the settings screens convert. Web-only preferences such as the interface scale are defined in the generator.
-- **Licenses.** `licenses.gen.json` lists every production npm dependency with its version, license, project page, author and license text, plus two bundled assets that do not come from npm (the Font Awesome font and the Material icon paths). The app's License page shows this list. The root file [THIRD-PARTY-NOTICES.md](../THIRD-PARTY-NOTICES.md) repeats it (name, version, license, project page) but is not written by the generator: when `licenses.gen.json` changes, update that file by hand. The generator skips packages that are links into `vendor/`, which are the project's own code. `upstream.gen.json` records which upstream commit the port tracks; it is refreshed only when `reference/wholphin` exists, and is otherwise left as committed.
+- **Strings.** Keys are the Android string names. Positional arguments such as `%1$s` become `{{p1}}`; plural quantities become i18next suffix keys; Android escapes, CDATA and XML entities are decoded; strings marked non-translatable stay in the base locale; the icon-font file `fa_strings.xml` is skipped. The rules are in the header comment of `tools/gen-strings.ts`. If the upstream checkout is missing, the generator prints a warning and keeps the committed files. Strings that upstream does not have go by hand into `src/i18n/extra/en.json` with a `web_` prefix, not into the generated files. That file held 183 keys on `main` at `7ad52ba` (counted with `node -e "console.log(Object.keys(require('./src/i18n/extra/en.json')).length)"`) and holds 186 at `509db33` (counted for this update by its `"web_` lines); they exist only in English.
+- **Preferences.** Keys are the upstream ids in lower camel case with a trailing `Pref` or `Preference` removed. Values are stored in the unit the code uses (milliseconds for durations); the settings screens convert. Web-only preferences are defined in the generator (the `WEB_ONLY` list): the interface scale and, since `bf31148`, `WebPlayerDimVideo`, the switch "Dim the video while the controls are shown" of the Advanced screen. The generator's test covers the new entry.
+- **Licenses.** `licenses.gen.json` lists every production npm dependency with its version, license, project page, author and license text, plus two bundled assets that do not come from npm (the Font Awesome font and the Material icon paths). The app's License page shows this list. The root file [THIRD-PARTY-NOTICES.md](../THIRD-PARTY-NOTICES.md) repeats it (name, version, license, project page) but is not written by the generator: when `licenses.gen.json` changes, update that file by hand. That was last done in `bf31148`, which added `libpgs` 0.9.0 (MIT), the renderer for PGS subtitles: `npm run gen:licenses` wrote the new entry, and the notices file was edited to match (54 components, 47 of them MIT). The generator skips packages that are links into `vendor/`, which are the project's own code. `upstream.gen.json` records which upstream commit the port tracks; it is refreshed only when `reference/wholphin` exists, and is otherwise left as committed.
 - **Licenses, author names.** The author column keeps the developer's name only: the e-mail address and web address of npm's `Name <email> (url)` form are dropped, as the TV app's licence list shows it.
 - `tools/gen-strings.test.ts` and `tools/gen-preferences.test.ts` test their generators, and `tools/gen-licenses.test.ts` tests the license generator's author-name rule; they run with `npm run test`. The token generator has no test, and the rest of the license generator has none.
 
@@ -244,7 +257,7 @@ What provisioning does, in order: starts the container; completes Jellyfin's set
 | Library | Type | Content |
 |---|---|---|
 | Movies | movies, online metadata (TMDb) on | 12 folders of Blender open movies: Big Buck Bunny (with a local trailer and an `extras` folder), Sintel, Tears of Steel, Elephants Dream (a 720p and a 480p file that Jellyfin merges into one movie with two versions), Cosmos Laundromat, Spring, Agent 327, Coffee Run, Sprite Fright, Charge, Wing It!, Caminandes 2. The Spring folder carries a TMDb id because TMDb had matched it to the wrong film. |
-| Codec Zoo | movies, local metadata files (NFO) only | 15 synthetic clips, listed in the next table |
+| Codec Zoo | movies, local metadata files (NFO) only | 16 synthetic clips, listed in the next table (15 until `bf31148` added "Dual Audio Second Default") |
 | Shows | TV shows, NFO only | Four synthetic series with 56 episode files: Orbital Drift (theme song, Specials, a missing S02E03, a future-dated S03E05, media segments on all of season 1), The Bakery on Elm Street, Detective Moth (rated TV-MA), Pixel Garden (rated TV-Y, Specials) |
 | Music | music, tags only | 3 artists, 6 albums, 42 tracks in MP3, FLAC and M4A with embedded covers; one two-disc album; an `.lrc` lyrics file |
 | Photos | home videos and photos | Two photo albums with mixed aspect ratios (camera data on about two thirds of the pictures) and two short clips |
@@ -258,25 +271,28 @@ The Live TV guide is a generated file of dated programs (`tools/testserver/guide
 
 ### Codec Zoo: which file exercises which playback path
 
-The right-hand column is what the playback builder recorded when it played each file in headless Microsoft Edge (frames advancing, audio decoded, seek working, server session cleared on stop). The full record, including runs on a real library, is [PLAYBACK_MATRIX.md](../src/features/playback/engine/PLAYBACK_MATRIX.md). The results were not repeated for this document.
+The right-hand column is what the server answers for the profile the app builds in headless Microsoft Edge, since the direct-play work of `bf31148` ([DECISIONS.md](DECISIONS.md) T-59): taken from the part "Playing without the server converting" of [PLAYBACK_MATRIX.md](../src/features/playback/engine/PLAYBACK_MATRIX.md), which gives each answer before and after that commit, for the other browsers too, and a read-only run on a real library. Where the answer changed, the earlier one is named. The results were not repeated for this document.
 
-| File | What it is | Path the playback engine took (Edge) |
+| File | What it is | What happens in Edge since `bf31148` |
 |---|---|---|
 | H.264 AAC Baseline (MP4) | The browser direct-play baseline | Direct play |
 | AV1 Opus (WebM) | AV1 video, Opus audio | Direct play |
 | VP9 Vorbis (WebM) | VP9 video, Vorbis audio | Direct play |
-| Chapter Marathon (MKV, H.264/AAC) | Ten named chapters in two minutes | Remux: the server repackages the file without re-encoding |
-| HEVC 10-bit EAC3 5.1 (MKV) | HEVC Main10 with E-AC-3 audio | Remux |
-| 4K UHD Demo (MKV) | 3840x2160 HEVC | Remux |
-| Multi Track Showcase (MKV) | Three audio tracks (AAC, AC-3, DTS), embedded SRT, a styled ASS with an attached font, a forced track, external English, French and forced subtitle files | Remux |
-| HEVC HDR10 (MKV) | HEVC flagged BT.2020 / PQ with mastering metadata | Video transcode (the test display was not HDR) |
+| Chapter Marathon (MKV, H.264/AAC) | Ten named chapters in two minutes | Direct play (before: a remux, the server repackaging the file without re-encoding) |
+| HEVC 10-bit EAC3 5.1 (MKV) | HEVC Main10 with E-AC-3 audio | The audio is converted and the video copied, before and after (Edge had no E-AC-3 decoder in that run) |
+| 4K UHD Demo (MKV) | 3840x2160 HEVC | Direct play (before: remux) |
+| Multi Track Showcase (MKV) | Three audio tracks (AAC, AC-3, DTS), embedded SRT, a styled ASS with an attached font, a forced track, external English, French and forced subtitle files | Direct play with the first audio track, also with a text or ASS subtitle drawn in the browser (before: remux); with the AC-3 or the DTS track the audio is converted and the video copied |
+| Dual Audio Second Default (MKV) | Two AAC tracks, English first and Japanese second with the default flag, plus a PGS and an ASS subtitle track. New in `bf31148`: a browser plays only the first audio track of a file it plays directly | The first track: direct play. The second (the file's default): a remux with video and audio copied |
+| HEVC HDR10 (MKV) | HEVC flagged BT.2020 / PQ with mastering metadata | Direct play: desktop Chromium converts HDR for an ordinary display itself (before: a video transcode, the test display not being HDR) |
 | MPEG-2 Program Stream (MPG) | MPEG-2 video, AC-3 audio | Video transcode |
 | MPEG-4 ASP AVI | MPEG-4 Part 2 with MP3 | Video transcode |
 | Very long title, Hebrew title, Japanese title (MP4) | Layout, right-to-left and CJK text tests | Direct play |
-| PGS Image Subtitles (MKV) | Two PGS subtitle tracks (English, Spanish). PGS stores pictures, not text, so a browser cannot draw it. | Selecting a track makes the server burn the subtitle into the video. `ts:verify` checks that the server chooses this. Playing these two items in the web player is not in the matrix. |
-| VobSub Image Subtitles (MKV) | Two VobSub (DVD) subtitle tracks, also pictures | As for PGS |
+| PGS Image Subtitles (MKV) | Two PGS subtitle tracks (English, Spanish). PGS stores pictures, not text. | Direct play; with a track selected the server hands the track out as a `.sup` file and the app draws it on a canvas (before: a video transcode with the subtitle burned in). `ts:verify` still checks the burn-in answer, with a profile that lists PGS only as burn-in. |
+| VobSub Image Subtitles (MKV) | Two VobSub (DVD) subtitle tracks, also pictures | Direct play without a subtitle; with a track selected, a video transcode with the subtitle burned in, as before |
 
 How the image-subtitle files are made: the ffmpeg in the Jellyfin image has no PGS encoder, so `tools/testserver/imgsubs.mjs` renders each subtitle line to a bitmap with ffmpeg and writes the PGS stream itself. `gen-media.mjs zoo` then puts the streams into a 24-second 720p file; for VobSub the same streams are converted with ffmpeg's DVD subtitle encoder. Nothing is downloaded and each item is about 1 MB. To regenerate, delete the item's folder, run `node tools/testserver/gen-media.mjs zoo`, then `node tools/testserver/setup.mjs` (it rescans when the items are missing).
+
+A test server that was seeded before `bf31148` gets the sixteenth clip the same way: `node tools/testserver/gen-media.mjs zoo` generates the missing file (the PGS track with the same `imgsubs.mjs`, the two audio tracks as tones of 440 and 880 Hz), and provisioning rescans the library when it does not find the item "Dual Audio Second Default". The PGS clips end at 24 s, before the display set that would end their fourth cue: a client that draws nothing after a stream's last display set never shows that cue (`tools/testserver/README.md`).
 
 ### Media segments (Skip Intro, Skip Outro, Next Up)
 
@@ -472,7 +488,7 @@ The app's own scenes are defined in `tools/shots/scenes.ts`; every route in `src
 |---|---|---|
 | Setup | 8 | Server list (empty and filled), add-server dialog, user list, login, login error, Quick Connect. They run signed out, or with a remembered server and user but no token. |
 | Home | 24 | Home, a hovered card, the drawer in its states, context menu, rows 2 to 6, a "View more" page, Home customization and its dialogs |
-| Search | 11 | Empty, results, typed, focused, scrolled, context menu, view options, no results; two searches in non-Latin scripts that run on a real server only |
+| Search | 11 | Empty, results, typed, focused, scrolled, context menu, view options, no results; two searches in non-Latin scripts that match the test server's Hebrew and Japanese seed titles and run on the test server only |
 | Browse | 3 | Favorites, the generic grid |
 | Detail | 52 | Movie (tracks, versions, chapters, extras, menus), series and the series overview, season, episode, box set, playlist, person, album, artist, song, photo album, photo |
 | Library | 26 | Each library type; tabs; sort, filter and view options; letter jump; list views; genre and studio pages |
@@ -517,6 +533,7 @@ The crawler does not wait a fixed time for a page to load. A picture is taken af
 
 - **The web side is a TV canvas.** `tools/shots/tvScenes.ts` holds one scene per reference state, named `tv-<reference file name>` and marked `compareOnly`. Each runs in a 1920x1080 window with the interface-scale preference at 160 %, which makes the root scale 2: the page is laid out on the TV's 960x540 dp canvas and 1 dp is 2 picture pixels on both sides, so the two pictures can be laid over each other. The scenes use the keyboard the way the reference run used the remote, starting from the page's own arrival focus, and look up the throwaway test server's items by name. 31 of them are limited to the test server.
 - **Codecs.** The player scenes play a few seconds of video each and need H.264, hence headless Edge. A run of reference states started with `npm run shots -- --scene 'tv-*'` uses the bundled Chromium unless `--channel msedge` is given.
+- **The player scenes since `bf31148`.** The web player no longer has the TV's layout ([DECISIONS.md](DECISIONS.md) O-34, T-60), so the player scenes of `tvScenes.ts` were changed with it: they find a button in the control strip (`[data-player-strip]`, Settings by its `data-player-button` name), and the chapters and queue scenes open the panels with the H and Q keys, where the TV reaches rows of cards with Down. Those web pictures differ from the TV's by design. No compare run is recorded since the change.
 - **Duration.** The tool's README estimates about 20 minutes with `--workers 1`. The last recorded compare run (208 scenes, headless Edge, one worker, on the polish round's final tree) reported 208 ok, 0 warnings and 0 errors ([final-merge-notes.md](final-merge-notes.md), section 13.6). In that round the series overview scenes were changed to wait as the reference run did (900 ms after Right, 500 ms between Downs).
 - `refmap.ts` is a plain table of `{ ref, scene, note }`: 244 lines when this was written, one per reference picture, served by the 208 web scenes. A note records what cannot match on purpose: data that changed since the references were taken (watched marks, resume points, Home rows), the clock, and the recorded web-only parts (Back button, mini player, web-only player buttons). Add a line when a new reference picture appears.
 - The reference pictures are read from `refshots/out/` in the same checkout. A pair whose reference file is missing, or whose web scene did not run, shows a "missing" box. **Since 2026-11-18 that folder is empty** (section 8), so a compare run now shows the web side only, until the pictures are captured again. The results of the earlier compare runs are recorded in the documents, and some earlier compare output is still under the git-ignored `shots/out/`.
@@ -562,7 +579,7 @@ The standalone gallery page and its own screenshot script, which earlier version
 
 - The tests cover logic: formatting, stores, navigation helpers, the playback engine's decisions, the Seerr client, the generators, the crawler's argument parsing and string lookup, and the production server (`server/server.test.ts` starts the server against a fake upstream).
 - `tools/css-engine-baseline.test.ts` is a guard over every stylesheet in `src`: no `:dir()` pseudo-class (unknown to Chrome 119) and no `text-box` outside the kit helper (unknown to Firefox 128). It came with the polish round.
-- The last recorded run, by the lead on `main` at `7ad52ba`: 87 test files, 776 tests, all passing (84 files and 742 tests after the polish round, 85 and 748 after the closing round's fix; [final-merge-notes.md](final-merge-notes.md), sections 13.5 and 14.5). The count was not re-measured for this document.
+- The last recorded run, by the lead on `main` at `509db33` and again on the release tree of 2026-11-24: 101 test files, 897 tests, all passing. Earlier: 87 files and 776 tests at `7ad52ba` (84 files and 742 tests after the polish round, 85 and 748 after the closing round's fix; [final-merge-notes.md](final-merge-notes.md), sections 13.5 and 14.5). The count was not re-measured for this document.
 - The three newest files show the two ways a component is tested here without a browser: `src/features/playback/ui/rtlValues.test.tsx` renders components and asserts their markup; `src/ui/inputs/Slider.test.tsx` and `src/ui/lib/touchIntent.test.ts` drive the slider with pointer events of type `mouse`, `touch` and `pen`.
 - `src/app/shell/extractColors.test.ts` pins the backdrop color extraction to the Android TV result: the nearest-neighbour index tables that reproduce Android's bitmap scaling, and two real backdrops (fixtures in `extractColors.fixtures.ts`) against the colors the TV shows.
 - No unit test needs a Jellyfin server, a browser or Docker.
@@ -579,7 +596,7 @@ npx playwright install chromium firefox webkit   # Playwright's own browser buil
 npm run ts:up                                    # the test server must be up and seeded
 ```
 
-One spec (`e2e/specs/playback.spec.ts`) launches the installed Microsoft Edge, headless, because Playwright's own Chromium lacks the licensed codecs. What happens on a machine without Edge was not checked.
+The specs that play video launch the installed Microsoft Edge, headless (`channel: 'msedge'`), because Playwright's own Chromium lacks the licensed codecs: `playback.spec.ts` and, since `bf31148`, `playback-direct.spec.ts`, `playback-layout.spec.ts`, `subtitles-bidi.spec.ts` and `playback-subtitle-style.spec.ts`. What happens on a machine without Edge was not checked.
 
 ### Running
 
@@ -627,7 +644,7 @@ A project is one browser configuration. Every test names the projects it runs in
 | `iphone` | `@iphone` | WebKit, 390x844, touch, iPhone browser identity | A touch subset; with `E2E_ENGINES_ALL`, every `@phone` test |
 | `setup` | none | | Creates the signed-in states; every project depends on it |
 
-The suite has 21 spec files in `e2e/specs/`, roughly one per area of the app: sign-in, accounts, Home, navigation, context menu, drawer, preferences, settings, browse, detail, series, search, Home customization, playback (two files), music, photos, Live TV, Discover, layout and engines. The coverage table in the e2e README lists each behavior and its projects.
+The suite has 27 spec files in `e2e/specs/` on `main` at `509db33` (21 at `7ad52ba`), roughly one per area of the app: sign-in, accounts, Home, navigation, context menu, drawer, preferences, settings, browse, detail, series, search, Home customization, playback (two files), music, photos, Live TV, Discover, layout and engines, and the six added since: playback without server conversion (`playback-direct`), the player's layout (`playback-layout`), the subtitle style sheet of the player (`playback-subtitle-style`), the direction of subtitle lines (`subtitles-bidi`), grids that just fit their scroller (`grid-stability`) and sliders under a mouse (`slider-mouse`). The coverage table in the e2e README lists each behavior and its projects.
 
 ### Defaults that apply to every test
 
@@ -651,6 +668,21 @@ Two fixture helpers in `e2e/fixtures/app.ts` came with the commits `692715f` and
 - **A timed gesture is a fixed wait.** The reorder handle picks a row up after a rest, so its test rests longer than the pick-up time (`holdMs: 650` against 400 ms). That is one of the few fixed waits in the suite, because the wait is the gesture.
 - **`app.drawnText(locator)`** returns an element's characters in the order they are drawn, left to right, with spaces dropped. A right-to-left line can draw ".25" as "25." while the element's text still says ".25"; this helper is how the right-to-left value tests see the difference.
 
+### Judging motion
+
+Every test runs with reduced motion and with a stylesheet that removes every animation and transition (`style[data-e2e="no-animation"]`, injected by the fixture; "Defaults that apply to every test" above). A test that passes therefore says nothing about how an animation looks. That was found the hard way on 2026-11-23 with the opening of the Settings panel, which the owner sent back to be redone. The rule since then ([DECISIONS.md](DECISIONS.md) T-62): before an animated change is shown to the owner, the lead looks at it in motion, from recorded frames at normal speed.
+
+- In a headless page of the suite, remove the fixture's stylesheet and set reduced motion to no-preference, then record: `await page.evaluate(() => document.querySelectorAll('style[data-e2e="no-animation"]').forEach((el) => el.remove()))` and `await page.emulateMedia({ reducedMotion: 'no-preference' })`. Two tests in the suite do exactly this for their own assertions (`context-menu.spec.ts` removes the stylesheet; the volume slider's transition test in `playback-layout.spec.ts` does both).
+- The frames are screencast frames of the headless browser; no window is opened. There is no script for it in the repository, and the lead's own recording commands were not recorded.
+- `test.use({ reducedMotion: 'no-preference' })` alone, as the "with animations on" group of `settings.spec.ts` uses it, leaves the stylesheet in place: those tests assert which animations start and what covers the page, not how the motion looks.
+
+### Real scrollbars and the player's dev hook
+
+Two things the tests added after `7ad52ba` rely on:
+
+- **Real scrollbars.** Every browser of the suite runs with Playwright's default hidden scrollbars, where layout that depends on the room a scrollbar takes cannot be tested. `grid-stability.spec.ts` therefore starts its own browser with `ignoreDefaultArgs: ['--hide-scrollbars']`, still headless and muted.
+- **`window.__playback`.** In a development build the playback engine publishes itself and its store under that name (`src/features/playback/engine/engine.ts`). `playback-layout.spec.ts` and `playback-subtitle-style.spec.ts` use it to put the player into states a test item does not have (a queue, chapters, a Skip button, an hour-long duration, a subtitle kind). It is not part of a production build. A state set this way is a stand-in: the note for subtitles that cannot be restyled, for example, has not been seen with real image, ASS or burned-in subtitles.
+
 ### Running two suites at once
 
 Two runs on one machine must not share a port, and must not share device ids, because a second sign-in with the same device id revokes the first run's token. Give each run its own port:
@@ -673,7 +705,7 @@ A port other than 5601, or an explicit `E2E_RUN_ID`, gives the run its own outpu
 
 ### Recorded results
 
-The suite's size changed with each merge, and it was not run for this document. It now has 250 tests across the seven projects. The last two additions: the closing round's two right-to-left tests, each in three engines (239 to 245), and the touch fix's three tests in five runs (245 to 250); [final-merge-notes.md](final-merge-notes.md), section 14.5. Before them the polish round added ten (18 runs across projects, [final-merge-notes.md](final-merge-notes.md), section 13.5), and the final check and repair before it added sixteen (30 runs across projects), and each of the sixteen failed on the tree before its fix ([final-merge-notes.md](final-merge-notes.md), section 12.5). The recorded runs are: 154 tests passing twice on the main line after its fix pass, and 63 passing twice on the merged app after its repair, before the fix pass's tests were merged in ([PROJECT-LOG.md](PROJECT-LOG.md), phases 16 and 17); 188 passing twice in a row for the combined suite ([final-merge-notes.md](final-merge-notes.md), section 8.7); and 221 passing twice in a row, with none failed, flaky or skipped, in 3.9 minutes each, by the final repair's integrator on the tree just before its last e2e-only commit (section 12.6). The independent audit after it ran 213 tests (without the `writes` project and the Discover spec) and had 3 failures, all the Home row drag test in three engines: it depended on which Home rows the shared server showed, and the lead hardened it in `e1b7e04`. The polish round's integrator ran the suite three times: 238 passed on the tree before its last repair, then 239 of 239 twice in a row (section 13.6). After merging that round the lead ran it three times on `main`: 236 of 239 right after a reset of the test server (three tests failed on the page guard because the server answered 500 to five poster requests while it filled its image cache; see section 7, "Known wrinkles"), 238 of 239 (a WebKit test that assumed a Home row with two cards, corrected in `c358a52`), and 239 of 239 in 4.3 minutes on `c358a52`. After the two later commits the lead ran the whole suite once more, alone, on `7ad52ba`: 250 of 250 in 4.4 minutes. [STATUS.md](STATUS.md) keeps these results. `npm run e2e:list` prints the current list.
+The suite's size changed with each merge, and it was not run for this document. At `7ad52ba` it had 250 tests across the seven projects (the later numbers are at the end of this paragraph). The last two additions up to that commit: the closing round's two right-to-left tests, each in three engines (239 to 245), and the touch fix's three tests in five runs (245 to 250); [final-merge-notes.md](final-merge-notes.md), section 14.5. Before them the polish round added ten (18 runs across projects, [final-merge-notes.md](final-merge-notes.md), section 13.5), and the final check and repair before it added sixteen (30 runs across projects), and each of the sixteen failed on the tree before its fix ([final-merge-notes.md](final-merge-notes.md), section 12.5). The recorded runs are: 154 tests passing twice on the main line after its fix pass, and 63 passing twice on the merged app after its repair, before the fix pass's tests were merged in ([PROJECT-LOG.md](PROJECT-LOG.md), phases 16 and 17); 188 passing twice in a row for the combined suite ([final-merge-notes.md](final-merge-notes.md), section 8.7); and 221 passing twice in a row, with none failed, flaky or skipped, in 3.9 minutes each, by the final repair's integrator on the tree just before its last e2e-only commit (section 12.6). The independent audit after it ran 213 tests (without the `writes` project and the Discover spec) and had 3 failures, all the Home row drag test in three engines: it depended on which Home rows the shared server showed, and the lead hardened it in `e1b7e04`. The polish round's integrator ran the suite three times: 238 passed on the tree before its last repair, then 239 of 239 twice in a row (section 13.6). After merging that round the lead ran it three times on `main`: 236 of 239 right after a reset of the test server (three tests failed on the page guard because the server answered 500 to five poster requests while it filled its image cache; see section 7, "Known wrinkles"), 238 of 239 (a WebKit test that assumed a Home row with two cards, corrected in `c358a52`), and 239 of 239 in 4.3 minutes on `c358a52`. After the two later commits the lead ran the whole suite once more, alone, on `7ad52ba`: 250 of 250 in 4.4 minutes. The release round then brought the suite to 267 tests (the interface-scale tests, six tests of the player layout and four of direct play), and the lead's last run on `bf31148`, alone, had 267 of 267 in 5.0 minutes. Since then the suite has grown with the specs and tests of 2026-11-22 to 24 (section 12, "Projects and tags"); its size at `509db33` was not counted for this document. After each change of 2026-11-22 to 24 only the browser tests of the changed area were run (section 21). Before the second public release the lead ran the whole suite on the release tree, in all seven projects with three workers: 336 tests, 334 passed and 2 failed in 11.5 minutes; both failures were in tests of the Settings panel on WebKit (the `webkit` and `iphone` projects) and were faults of the tests, repaired in `e9b96bf` and re-run twice in four projects, all passing ([PROJECT-LOG.md](PROJECT-LOG.md) phase 35). A second whole-suite run after those repairs was not made. [STATUS.md](STATUS.md) keeps these results. `npm run e2e:list` prints the current list.
 
 ## 13. CI and Dependabot
 
@@ -691,7 +723,7 @@ Before opening a pull request, run the same checks locally: `npm run typecheck`,
 
 Dependabot is GitHub's service that opens pull requests when a dependency has a newer version. `.github/dependabot.yml` checks npm packages weekly (minor and patch updates grouped into one pull request, at most five open at a time), and GitHub Actions and the Docker base image monthly.
 
-The workflow has run on GitHub and passed. When the files were written it had only been read by hand ([DECISIONS.md](DECISIONS.md), A-91); it runs on every push to `main`. The three most recent runs, read with `gh run list --limit 3` on 2026-11-18, all succeeded: the documents commit `3d1ea68` (1 min 42 s), `c358a52` (1 min 51 s) and `7ad52ba` (1 min 30 s). The listing shows the result of a run as a whole; the jobs were not looked at one by one for this document, so the image build job is known only as part of a successful run.
+The workflow has run on GitHub and passed. When the files were written it had only been read by hand ([DECISIONS.md](DECISIONS.md), A-91); it runs on every push to `main`. The three most recent runs, read with `gh run list --limit 3` on 2026-11-18, all succeeded: the documents commit `3d1ea68` (1 min 42 s), `c358a52` (1 min 51 s) and `7ad52ba` (1 min 30 s). The listing shows the result of a run as a whole; the jobs were not looked at one by one for this document, so the image build job is known only as part of a successful run. The runs on the commits after `7ad52ba` were not looked up for the update of 2026-11-24.
 
 To see the runs: `gh run list --limit 3` (the GitHub command-line tool, signed in to the repository). CI does not replace the local end-to-end run: a push whose CI is green has not been driven in a browser.
 
@@ -842,6 +874,20 @@ Why it exists: so that the project history in `docs/` can be written from primar
 
 The archive is rebuilt by running the command again; it overwrites its own files. The script exits with a usage message if the folder argument is missing or does not exist. When this was written, the archive held 11 directly started agents and 10 workflow runs.
 
+**The whole conversation** (added 2026-11-24 on the owner's request, O-46; commits `fda0c2b`, `0baf14f`). `npm run conversation` (`node tools/export-conversation.mjs`) writes a readable copy of the newest Claude Code session of this project, or of the session given as an argument (its `.jsonl` file, its folder or its id):
+
+| Output | Content |
+|---|---|
+| `conversation.md` | The chat between the owner and the lead in order, with the pictures of both sides; tool calls are folded to one line each, and every start of a subagent or a workflow links to its page |
+| `conversation/agents/<id>.md` | One subagent's whole chat: its brief, its replies, its tool calls and their results |
+| `conversation/workflows/<run>.md` | One workflow run: its agents, what each returned, and its script |
+| `conversation/index.md` | Every subagent chat and workflow run, in order of start |
+| `conversation/images/` | The pictures, each stored once under the hash of its content |
+
+Options: `--limit <n>` sets how many characters of each tool input and output are kept (2000; 0 keeps everything; the messages themselves are never cut), `--no-agent-images` leaves the pictures out of the subagents' chats (they are most of the size), `--force` rewrites the subagent chats that have not changed (by default only changed ones are written again). `--every <n> --quiet` is for a Claude Code "Stop" hook: the script counts the replies in `conversation/.replies`, does the work on every nth only, and takes the session's transcript path from the hook's input; the hook itself lives in the personal `.claude/settings.local.json`, which is git-ignored.
+
+It differs from the archiver above in what it keeps: the archiver stores each agent's brief and final report for writing the history, this one stores everything that was said. Like `.agent-logs/`, `conversation.md` and `conversation/` are git-ignored, for the same reason. The model's hidden reasoning is not in the copy: the stored session does not hold its text.
+
 ## 16. Production server and Docker image
 
 The app is a static single-page app. A small server in `server/`, built on Hono (a minimal web framework for Node), serves it, publishes runtime configuration and proxies Seerr, so that one image can be pointed at any Jellyfin without a rebuild. The server does not carry video or images: the browser talks to Jellyfin directly. [deploy.md](deploy.md) is the deployment guide, with reverse-proxy examples; this section describes the tooling.
@@ -925,7 +971,8 @@ Verified, from the recorded reports ([final-merge-notes.md](final-merge-notes.md
 Not verified:
 
 - `npm ci` and a build from a clean checkout of the merged tree (the image build of section 12.6 took its `npm ci` layer from the build cache).
-- Video playback in the image built from `main` as it stands (`7ad52ba`): the smoke test of that image, below, played nothing, to keep transcodes off a real server. The last container that played a clip was built from the tree of section 12.6.
+- Video playback in the image built from `main` at `7ad52ba`: the smoke test of that image, below, played nothing, to keep transcodes off a real server. The last container that played a clip was built from the tree of section 12.6.
+- The images built since then, up to the one of `509db33` that the trial runs: no check by the lead inside the container or through the reverse proxy is recorded for them; the owner looked at each change on the trial ([DECISIONS.md](DECISIONS.md) O-39 to O-43). Among other things no check of the project has run the worker of the PGS renderer (libpgs, a script from the app's own origin) under the production Content-Security-Policy; as the code reads, the policy's `worker-src 'self' blob:` (`server/security.ts`) allows it.
 - The Caddy and nginx examples of the deployment guide as written. The trial's route was added to an already running Caddy, not from a site block in a configuration file; nginx was never run.
 - `npm start` on Windows.
 - The Docker image build job in CI, looked at by itself (section 13: the runs succeeded as a whole).
@@ -963,6 +1010,25 @@ A rebuild replaces the image; a running container keeps the old one until it is 
 
 No video was played in this check: the trial used a real server that other people use. For a check that plays, build the image and run it against the throwaway test server on the local address with `HSTS=false`, as the final check's integrator did ([final-merge-notes.md](final-merge-notes.md), section 12.6); remove that container afterwards.
 
+### A go-live: the owner's yes, a commit label and a rollback tag
+
+Since the first public release the trial is updated one change at a time. Three rules hold for every such update ([DECISIONS.md](DECISIONS.md) O-45, T-64):
+
+1. **The owner's yes for that build.** A new build replaces the trial only after the owner's explicit go for it. A go for one build is not a go for the next.
+2. **The previous image is kept under a rollback tag** before the new one takes the name the container runs. Going back is then a matter of starting the container from that tag again; nothing has to be rebuilt.
+3. **The build is labelled with its commit**, so the running container can be matched to the source it was built from.
+
+Neither the label nor the tag is written in the `Dockerfile`, in `package.json` or in a script of this repository: the lead sets them by hand at each go-live. The lead's exact commands, label key and tag names were not recorded; with standard Docker commands the steps can be written like this (a sketch from the rules, not run for this document; the names in angle brackets are placeholders):
+
+```bash
+docker tag wholphin-web:latest wholphin-web:<rollback tag>                       # keep the image that is running now
+docker build -t wholphin-web --label <label key>=$(git rev-parse --short HEAD) .  # npm run docker:build takes no label
+docker image inspect wholphin-web:latest --format '{{json .Config.Labels}}'       # which commit an image was built from
+docker inspect <container> --format '{{.Image}}'                                  # which image a container runs
+```
+
+Then the container is replaced as above. State on 2026-11-24: the trial runs the image built from `509db33`. Its route in the reverse proxy is still the temporary one of the trial ([DECISIONS.md](DECISIONS.md) O-27, T-53). The smoke test in the table above was the one of `7ad52ba`; for the later builds the lead's record names the checks made before each go (section 21), not a new smoke test through the reverse proxy.
+
 ## 17. npm audit state
 
 `npm audit` reports six findings of high severity. All six come from one advisory about `picomatch`, a file-pattern library that a crafted pattern can make very slow. The project gets it only through development tools (the build tool, the test runner and their helpers), not through anything shipped to users.
@@ -987,7 +1053,7 @@ One related licensing point: the subtitle renderer JASSUB depends on a package n
 8. **Look at the components:** `http://localhost:5173/dev/gallery`.
 9. **Run the checks:** `npm run typecheck`, `npm run e2e:typecheck`, `npm run test`, `npm run lint`.
 10. **Stop the dev server**, then run a quick crawl: `npm run shots:quick`. Open `shots/out/<run>/index.html` (pictures) and `report.html` (health).
-11. **Run the end-to-end suite:** `npm run e2e`. Without the real-server keys the Discover spec is skipped; without Microsoft Edge the Chromium playback spec cannot run.
+11. **Run the end-to-end suite:** `npm run e2e`. Without the real-server keys the Discover spec is skipped; without Microsoft Edge the specs that play video in Chromium cannot run (section 12).
 12. **On a shared machine**, start the low-priority keeper first (section 14), never set `WW_ALLOW_HEADED`, and never create a Live TV recording.
 13. **Optional, reference pictures.** Only when you need to compare against the TV app: the emulator steps in section 8, then `npm run shots:compare`. On the build machine the pictures have to be captured again first (section 8).
 14. **Optional, production image:** `npm run docker:build`, then the `docker:run` command in section 16.
@@ -999,7 +1065,9 @@ Tooling gaps:
 
 - `VITE_DEV_JELLYFIN_URL` is named in [CLAUDE.md](../CLAUDE.md) but nothing reads it (section 4).
 - There is no script for creating or removing a worktree, and running the test server commands from a worktree would detach the container from its data (section 14). Removing a worktree that still holds a directory link deletes the folder the link points at; the rule and the commands are in section 14.
-- The Android TV reference pictures are gone from the build machine since 2026-11-18 and have to be captured again before `npm run shots:compare` is of use (sections 8 and 9).
+- The Android TV reference pictures are gone from the build machine since 2026-11-18 and have to be captured again before `npm run shots:compare` is of use (sections 8 and 9). The new capture is still owed on 2026-11-24 ([DECISIONS.md](DECISIONS.md) T-57).
+- Three procedures of the lead have no script in the repository, and their exact commands were not recorded: a release to the public repository (section 20), the labelled image build with its rollback tag (section 16), and the recording of frames to judge motion (section 12).
+- The public repository holds two releases; the second, of 2026-11-24, came after a privacy sweep (section 20).
 - `app.touchDrag` works in Chromium only; no engine other than Chromium can be sent a moving touch (section 12).
 - The low-priority keeper is Windows only and does not match Playwright's WebKit processes (section 14).
 - `npm run e2e:flaky` repeats the Firefox and WebKit playback spec, which the e2e README says not to repeat (section 12).
@@ -1021,4 +1089,64 @@ Never verified, or not verified for the merged app:
 - The first-time order of the test server commands as written in section 7 (derived from the scripts), and how Jellyfin picks up a regenerated Live TV guide.
 - Real Safari, iOS devices and the oldest supported browser versions (Chrome 119, Firefox 128): none was available. Playwright's WebKit build stands in for Safari; the stylesheet guard test stands in for the old engines.
 - Hardware HEVC decoding: not testable headless, and therefore not tested.
-- Playback of the PGS and VobSub test items in the web player is not in the playback matrix; the server-side choice of burn-in is checked by `ts:verify`.
+- Playback of the VobSub test item with a subtitle track in the web player: the playback matrix has the server's answer for it (burn-in, section 7), no recorded playback. For the PGS item this point is closed since `bf31148`: the matrix has its answers, and `playback-direct.spec.ts` plays it with its subtitles drawn in the browser. The server-side choice of burn-in is still checked by `ts:verify`.
+- The full end-to-end suite after each of the small changes of 2026-11-22 to 24: it was run once, over all of them, before the second release (section 12), and not again after the two test repairs and the privacy fixes; only the affected tests and the unit tests were re-run (sections 12 and 21).
+- The image builds after `7ad52ba`, inside the container or through the reverse proxy, by the lead (section 16).
+- A compare run with the changed player scenes (section 9).
+
+## 20. Releases to the public repository
+
+The project lives in two repositories ([DECISIONS.md](DECISIONS.md) O-33, O-35, T-58):
+
+| Repository | Holds | Who pushes what |
+|---|---|---|
+| The private repository | The full history: every commit of the project, including the ones from before the privacy pass. It is the archive and the place of work. | The lead pushes `main` there after each landing. |
+| The public repository | The cleaned tree, as one commit per release. | Only a release goes there. |
+
+**Why a clean copy and not a cleaned history.** The owner chose it ("Yes, clean copy", O-35). Rewriting the existing repository's history in place would not have removed the old commits: the host keeps them reachable through the refs of pull requests. So the existing repository stays private with its history, and a new public repository holds the tree only.
+
+**The procedure of a release** (T-58):
+
+1. **A privacy sweep of the tree.** For the first release the owner asked for five concurrent agents, each on a different part of the tree, to find and fix (O-33); the documents were cleaned in `f3e18b1` and the remaining wording in comments and tool READMEs in `bf31148`. The second release (2026-11-24) had a sweep of its own: five readers, one per part of the difference between the first release and `main`, and a second reader for every finding who was told to refute it (phase 35; O-47). The bar: decisions the owner made may be told; nothing that describes the owner, a home, a machine or a server may, and no picture of a real server. For the documents the working agreement spells it out: no credentials, account names, e-mail addresses, real server addresses or machine-specific absolute paths ([CLAUDE.md](../CLAUDE.md), "Documentation").
+2. **One commit on the public branch whose tree is the tree of `main`.** Its dates are in UTC and its author and committer are a no-reply identity. The commit carries the tree, not the history: none of `main`'s commits is an ancestor of it.
+3. **Push that commit to the public repository.**
+
+**The rule that must never be broken: the private history is never pushed to the public remote.** A plain `git push` of `main` to the wrong remote would publish every old commit. Only the release commit of step 2 goes there.
+
+There is no script for a release, and the lead's commands were not recorded. With standard git commands, step 2 can be written like this (a sketch from the rule, not run for this document; the names in angle brackets are placeholders). The first release was one fresh commit; the second (2026-11-24) was one more commit on top of it, with the tree of `main`. The sketch is the same for both:
+
+```bash
+git rev-parse 'main^{tree}'                      # the tree to publish
+# a commit with that tree on top of the public branch (the first release had no parent)
+TZ=UTC git -c user.name='<no-reply name>' -c user.email='<no-reply address>' \
+  commit-tree '<tree>' -p '<tip of the public branch>' -m '<release message>'
+git push '<public remote>' '<new commit>:refs/heads/<public branch>'
+```
+
+**State on 2026-11-24.** The first release was published on 2026-11-18 at about 21:30 UTC (O-35); `1003992` is the README commit made for it. A second release was made on 2026-11-24 ([PROJECT-LOG.md](PROJECT-LOG.md) phase 35; O-47): one new commit on the public branch on top of the first release's commit, with the tree of `main` at that day, made with a no-reply identity and UTC dates, and pushed to the public repository; the private history was not pushed. The public repository now holds the work of phases 32 to 35.
+
+Commit hashes in the documents are those of the private repository; a reader of the public repository will not find them there.
+
+## 21. The fast path for small changes
+
+Since the first release the owner hands over items one at a time, and asked for small changes to go faster without losing quality (O-38; the rule the lead set from it is T-63). A small, clear interface change takes the fast path; a large or risky one takes a multi-agent job, with the expected time stated first.
+
+**Before the change is shown**, all on the lead's own checkout, no job with several agents:
+
+| Step | Command |
+|---|---|
+| The lead edits directly | none |
+| Type check | `npm run typecheck` |
+| Unit tests | `npm run test` |
+| The one browser test that covers the change | `npx playwright test e2e/specs/<area>.spec.ts -g "<part of the title>"` (section 12) |
+| One or two headless pictures of the changed screen | a headless browser, as every browser on the machine (section 14); for an animated change, recorded frames at normal speed (section 12, "Judging motion") |
+| Commit | by the lead |
+| Build the image | `npm run docker:build` or the labelled build of section 16 |
+
+The lead then asks for the go in the same message that shows the picture. The trial is replaced only after the owner's yes for that build (section 16).
+
+**After, and out of the owner's way:** the slow checks, which are the full end-to-end suite (`npm run e2e`) and the other browsers (`--project=firefox --project=webkit --project=iphone`).
+
+**What it costs.** The full suite has not been run after every small change. It ran once over the work of phases 33 and 34 before the second release (section 12, "Recorded results"). At `509db33` the record is: the type check passes; the unit tests pass (101 files, 897 tests); lint shows no new warning in the changed files; the browser tests of the changed areas passed when each change was made. [STATUS.md](STATUS.md) carries this as an open check.
+
+**How the rounds of the maintenance period were run.** The four bugs of 2026-11-22 (`db14d7c`, `4a08905`, `186fe2a`, `6f16c8b`) went one agent per bug, on the owner's instruction (O-37). The work of 2026-11-23 and 24 was the lead alone on the fast path, plus one independent review of the Settings panel on 2026-11-23: two reviewers, and a third agent that tested in a browser and was stopped because it was testing the panel on its old side. The review found one real defect, through a reviewer's test: the copy of the page behind Settings was measured 10 px too wide (fixed in `398f168`). Three unfinished reviewer tests were adapted or dropped. For the other work after `7ad52ba`, agent counts were not recorded.

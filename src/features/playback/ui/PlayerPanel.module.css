@@ -59,6 +59,12 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* a chapter's start time: a clock, left to right in every language, digits of equal width */
+.clock {
+  font-variant-numeric: tabular-nums;
+  unicode-bidi: isolate;
+}
+
 .trailing {
   display: inline-flex;
   align-items: center;

@@ -4,11 +4,18 @@
  * its proportions when a short window makes it lower:
  *   one row of buttons:  4 top + 16 seek line + 1 + 38 buttons + 3 bottom = 62dp
  *   two rows (portrait): 4 top + 16 seek line + 2.5 + 36 + 2.5 + 36 + 3 bottom = 100dp
+ * A button is never wider than its share of the window's width (fourteen in one row beside the Skip button's
+ * 150dp, nine in the second row of the portrait strip), so a narrow window or a large interface scale cannot push
+ * one out of the window: in one row the buttons are below 38dp only in windows under 752dp.
  */
 .root {
   --strip: var(--player-strip-h, 62px);
-  --pb-size: calc(var(--strip) * 0.613);
+  /* 24 side padding + 8 column gaps + 4 before "Ends at" + 22 between buttons + 10 beside the Skip button's place
+     + its 150 + 2 to spare */
+  --pb-size: min(calc(var(--strip) * 0.613), calc((100vw - 220px) / 14));
   --seek-h: calc(var(--strip) * 0.258);
+  /* the open volume slider (VolumeControl.module.css); narrower in a narrow window */
+  --volume-w: min(112px, 12vw);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -35,30 +42,32 @@
   min-width: 0;
 }
 
-/* SeekTimecodes: labelMedium here (labelLarge on TV), never taller than the line; digits of equal width, so the
-   bar does not change its length every second */
+/*
+ * The two times, as a clock ("52:53", "-1:07:20"): labelMedium (labelLarge on TV), never taller than the line.
+ * Plain left-to-right text in every locale, so the minus stays in front of the digits in Hebrew. Digits of equal
+ * width and room for the longest text of the item (--time-ch characters, set by Controller.tsx; ":" and "-" are
+ * narrower than a digit, which pays for the letter spacing): the bar keeps its length from second to second and
+ * when a time gains or loses a character.
+ */
 .time,
 .timeEnd {
   composes: t-labelMedium from global;
   flex: none;
-  min-width: 7ch;
+  min-width: calc(var(--time-ch, 4) * 1ch);
   font-size: min(12px, calc(var(--seek-h) * 0.8));
   line-height: 1;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
+  direction: ltr;
+  unicode-bidi: isolate;
   /* the row is left to right in every locale: these are its physical ends */
   text-align: left;
 }
 
+/* one character more: the minus */
 .timeEnd {
+  min-width: calc((var(--time-ch, 4) + 1) * 1ch);
   text-align: right;
-}
-
-/* PlaybackControls.kt:297-322: only the Row is left-to-right; each time Text gets the locale's direction back
-   (a Hebrew "-1 min 28 s" is otherwise reordered as left-to-right text). */
-:global([dir='rtl']) :is(.time, .timeEnd) {
-  direction: rtl;
-  unicode-bidi: isolate;
 }
 
 .live {
@@ -73,22 +82,45 @@
 }
 
 /*
- * Three columns: "Ends at" at the start, the transport buttons in the middle of the strip (owner request), the
- * Skip button and the option buttons at the end. The side columns are equal while there is room, so the middle
- * one is centred; when the end column needs more, the start column gives way first.
+ * The button row. Physical positions, the same in every language (owner request), so the row is left to right
+ * whatever the page's direction: settings, favourite, picture in picture, volume and "Ends at" from the left
+ * edge; the transport buttons in the middle of the strip; the Skip button and subtitles, audio track, chapters,
+ * queue, fullscreen against the right edge. The side columns are equal while there is room, so the middle one is
+ * centred; a side that needs more than its half (many buttons in a narrow window) takes it from the other.
  */
 .row {
   display: grid;
   flex: none;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: minmax(min-content, 1fr) auto minmax(min-content, 1fr);
   align-items: center;
   column-gap: 4px;
   min-width: 0;
+  direction: ltr;
 }
 
-.info {
+/* The open volume slider lies over this side's free part and is cut where the side ends (it never reaches the
+   transport buttons). The clip edge is 4dp outside the box, so a button's hover and focus look is not cut. */
+.start {
+  display: flex;
   grid-column: 1;
   grid-row: 1;
+  align-items: center;
+  column-gap: 4px;
+  margin-inline: -4px;
+  padding-inline: 4px;
+  overflow-x: clip;
+}
+
+/* "Ends at" stands where the slider opens */
+.endsAt {
+  transition: opacity 200ms ease;
+}
+
+/* not drawn, and no pointer target either: a box with an opacity is stacked over the slider's place (also at
+   opacity 0), so the pointer on the slider met this text, left the volume control and closed the slider */
+.start:has([data-volume-open]) .endsAt {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .transport {
@@ -102,37 +134,34 @@
   grid-row: 1;
   align-items: center;
   justify-content: flex-end;
-  column-gap: 4px;
-  min-width: 0;
+  column-gap: 10px;
 }
 
 .transport,
-.options {
+.group {
   display: flex;
   flex: none;
   align-items: center;
   gap: 2px;
 }
 
-/* the transport buttons stay left to right in RTL, like upstream */
-.transport {
-  direction: ltr;
-}
-
-/* the list icon has its bullets at the start edge */
-:global([dir='rtl']) .options :global([data-player-button='chapters']) > svg {
+/* the list icon has its bullets at the start edge of the language (the button itself does not move) */
+:global([dir='rtl']) .group :global([data-player-button='chapters']) > svg {
   transform: scaleX(-1);
 }
 
 /*
- * "Ends at": shown when the row has room. The line box is one button high and clips; a text wider than the room
- * left wraps to a second line (the zero-width first item keeps the first line) and is cut off whole.
+ * "Ends at": shown when the row has room. The box takes what the left column has left and asks for none itself
+ * (width 0, so the column is as narrow as its buttons when the right side needs the room). Its line box is one
+ * button high and clips; a text wider than the room left wraps to a second line (the zero-width first item keeps
+ * the first line) and is cut off whole.
  */
 .info {
   display: flex;
   flex: 1 1 0;
   flex-wrap: wrap;
   align-content: flex-start;
+  width: 0;
   min-width: 0;
   height: var(--pb-size);
   overflow: hidden;
@@ -155,20 +184,53 @@
   white-space: nowrap;
 }
 
-/* TextButton, as low as the strip's buttons. Doubled class: wins over the kit's 40dp minimum. */
+/*
+ * The Skip button's place, against the right group. It asks for 150dp whatever the label (the room the button
+ * sizes above leave in the narrowest one-row window) and takes what the right half of the row has left (width 0:
+ * the label never widens the column), so the transport buttons stand at the same place in every language while a
+ * Skip button shows, as they do without one. The button stands at its right end; a label longer than the place
+ * ends in an ellipsis.
+ */
+.skipSlot {
+  display: flex;
+  flex: 1 1 0;
+  justify-content: flex-end;
+  width: 0;
+  min-width: 150px;
+}
+
+/* TextButton, as low as the strip's buttons. Doubled class: wins over the kit's 40dp minimum. A label longer
+   than the place ends in an ellipsis. */
 .segmentButton.segmentButton {
-  flex: none;
+  flex: 0 1 auto;
+  min-width: 0;
   min-height: 0;
   height: calc(var(--pb-size) * 0.8);
-  margin-inline-end: 6px;
   padding: 0 12px;
   /* the label shrinks with the strip */
   font-size: min(14px, calc(var(--pb-size) * 0.37));
 }
 
+.segmentLabel {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* the two texts of the row read in the language's own direction inside their boxes */
+:global([dir='rtl']) :is(.endsAt, .segmentButton) {
+  direction: rtl;
+}
+
 /* Touch: the buttons keep the strip's size (it must stay inside the letterbox bar); the finger's target reaches
-   into the paddings around them. */
+   into the paddings around them. Each button holds its own target: a disabled one has no transform to hold it,
+   and its target then covered the whole strip (a tap on Play did nothing while Next was disabled). */
 @media (pointer: coarse) {
+  .row :global([data-player-button]) {
+    position: relative;
+  }
+
   .row :global([data-player-button])::after {
     content: '';
     position: absolute;
@@ -177,42 +239,71 @@
 }
 
 /*
- * Narrow and tall (phones in portrait): the thirteen buttons do not fit one line, and the picture leaves room
- * above and below. Transport, "Ends at" and the Skip button on one line, the other buttons on a second.
+ * Narrow and tall (phones in portrait): the fourteen buttons do not fit one line, and the picture leaves room
+ * above and below. First line: "Ends at", the transport buttons, the Skip button. Second line: the left group at
+ * the left edge, the right group at the right edge.
  */
-@media (max-width: 699px) and (min-height: 500px) {
+@media (max-width: 699px) and (min-height: 500px), (max-width: 499px) {
   .root {
     --strip: var(--player-strip-h, 100px);
-    --pb-size: calc(var(--strip) * 0.36);
+    --pb-size: min(calc(var(--strip) * 0.36), calc((96vw - 16PX) / 9));
     --seek-h: calc(var(--strip) * 0.16);
+    /* the open volume slider stands over two buttons (below) */
+    --volume-w: calc(var(--pb-size) * 2 + min(1px, 0.25vw));
     gap: calc(var(--strip) * 0.025);
-    padding: calc(var(--strip) * 0.04) 8px calc(var(--strip) * 0.03);
+    padding: calc(var(--strip) * 0.04) min(8px, 2vw) calc(var(--strip) * 0.03);
   }
 
   .row {
+    grid-template-columns: minmax(0, 1fr) auto minmax(auto, 1fr);
     row-gap: calc(var(--strip) * 0.025);
   }
 
-  /* the end group dissolves: the Skip button stays on the first line, the option buttons take the second */
+  /* the side columns dissolve: their parts are placed one by one */
+  .start,
   .end {
     display: contents;
   }
 
-  .segmentButton.segmentButton {
+  .info {
+    grid-column: 1;
+    grid-row: 1;
+    width: auto;
+  }
+
+  /* a fixed share of the first line, whatever the label: the transport moves aside by the same amount in every
+     language */
+  .skipSlot {
     grid-column: 3;
     grid-row: 1;
     justify-self: end;
+    width: min(150px, 34vw);
+    min-width: 0;
   }
 
-  .options {
+  .group {
     grid-column: 1 / -1;
     grid-row: 2;
-    justify-content: space-between;
+    gap: min(1px, 0.25vw);
   }
 
-  /* the seek line gets the width: the times are as wide as their text */
-  .time,
-  .timeEnd {
-    min-width: 0;
+  .left {
+    justify-self: start;
+  }
+
+  .right {
+    justify-self: end;
+  }
+
+  /*
+   * The second line has no room to give (its nine buttons fill a 360dp window), so the open volume slider takes
+   * none: it stands over the two places at the left of the volume button (VolumeControl.module.css), and the
+   * buttons there are not drawn and take no click meanwhile: favourite and picture in picture, and settings too
+   * when one of those two is absent and the slider reaches it.
+   */
+  .left:has([data-volume-open]) > :global([data-player-button]:not([data-player-button='settings'])),
+  .left:has([data-volume-open]):not(:has([data-player-button='pip']):has([data-player-button='favorite'])) > :global([data-player-button='settings']) {
+    opacity: 0;
+    pointer-events: none;
   }
 }

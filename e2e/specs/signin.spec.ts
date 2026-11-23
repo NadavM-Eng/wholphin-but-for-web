@@ -2,7 +2,7 @@
 // session restore on reload.
 import { E2E_BASE_URL, testServerEnv } from '../fixtures/env'
 import { SIGNED_OUT, TAG, expect, test } from '../fixtures'
-import { addServer, addServerDialog, loginDialog, openPasswordLogin, serverList, submitPassword, userList } from '../flows/setup'
+import { addServer, addServerDialog, loginDialog, openPasswordLogin, serverList, submitPassword, userCircle, userList } from '../flows/setup'
 
 test.describe('signed out', () => {
   test.use(SIGNED_OUT)
@@ -54,6 +54,45 @@ test.describe('signed out', () => {
     await submitPassword(app, env.user, env.password)
     await app.expectHome()
     await expect(app.shell).toBeVisible()
+  })
+
+  test('a user the server lists without a password is signed in by the click, with no dialog; one with a password gets the dialog (users mocked)', { tag: [TAG.desktop, TAG.phone, TAG.engines] }, async ({ page, app, api }) => {
+    const env = testServerEnv()
+    // The test server hides its users and every account has a password: the list is mocked, and the sign-in the
+    // app sends without a password is passed on with the account's real one.
+    await page.route(/\/Users\/Public(\?|$)/, (r) =>
+      r.fulfill({
+        json: [
+          { Id: api.userId, Name: env.user, HasPassword: false, HasConfiguredPassword: false },
+          { Id: 'f'.repeat(32), Name: 'Locked', HasPassword: true, HasConfiguredPassword: true },
+        ],
+      }),
+    )
+    const sent: string[] = []
+    await page.route(/\/Users\/AuthenticateByName$/, async (r) => {
+      const body = r.request().postDataJSON() as { Username: string; Pw: string }
+      sent.push(`${body.Username}|${body.Pw}`)
+      await r.continue({ postData: JSON.stringify({ ...body, Pw: env.password }) })
+    })
+    const visited: string[] = []
+    page.on('framenavigated', (f) => f === page.mainFrame() && visited.push(new URL(f.url()).pathname))
+
+    await app.goto('/')
+    await addServer(app)
+    // with a password: the login dialog, as before
+    await app.activate(userCircle(page, 'Locked'))
+    await expect(loginDialog(page)).toBeVisible()
+    await page.keyboard.press('Escape')
+    await expect(loginDialog(page)).toHaveCount(0)
+    await expect(page).toHaveURL(/\/setup\/users/)
+    expect(sent).toEqual([])
+
+    // without one: Home at once
+    const from = visited.length
+    await app.activate(userCircle(page, env.user))
+    await app.expectHome()
+    expect(sent).toEqual([`${env.user}|`])
+    expect(visited.slice(from).filter((p) => p.startsWith('/setup/login'))).toEqual([])
   })
 
   test('a deep link opened while signed out reopens after sign-in', { tag: [TAG.desktop] }, async ({ page, app, api }) => {
@@ -128,7 +167,8 @@ test.describe('signed in', () => {
     // the page records its tab in the URL once it loaded (?tab=Movie)
     await expect(page).toHaveURL(/\/favorites(\?tab=\w+)?$/)
     await expect(app.gridCards.first()).toBeVisible()
-    await expect(app.backButton).toBeVisible()
+    // a page the drawer leads to has no Back button
+    await expect(app.backButton).toHaveCount(0)
     await expect(favorites).toHaveAttribute('aria-current', 'page')
   })
 })

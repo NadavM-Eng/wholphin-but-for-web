@@ -92,6 +92,8 @@
   flex: 1 1 auto;
   min-width: 0;
   overflow-x: hidden;
+  /* the scrollbar's room is always reserved (data-grid-scroller, global.css): the card width must not depend on
+     whether the grid overflows */
   overflow-y: auto;
   overscroll-behavior: contain;
   /* The focused card scales 1.1 past the grid's edges (a Compose lazy grid does not clip across its scroll

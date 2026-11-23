@@ -115,6 +115,7 @@ function Grid({ s, q, p }: { s: ItemGridState; q: GridQuery; p: GridRequestParam
           <div
             ref={scroller}
             className={styles.scroller}
+            data-grid-scroller
             onKeyDown={onKeyDown}
             onFocus={(e) => {
               const cell = (e.target as HTMLElement).closest<HTMLElement>('[data-grid-index]')

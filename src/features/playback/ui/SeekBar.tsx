@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { plainT } from './text'
 import { formatDuration } from '../../../lib/format'
+import { keepPressToControl } from '../../../ui/lib/touchIntent'
 import { HoldSeek } from './holdSeek'
 import styles from './SeekBar.module.css'
 import { TrickplayPreview } from './TrickplayPreview'
@@ -67,6 +68,8 @@ export function SeekBar({
     },
     [],
   )
+  // the press and the drag are the bar's: no text selection, no drag-and-drop of a selection that covers it
+  useEffect(() => keepPressToControl(root.current!), [])
 
   const clamp = (ms: number) => Math.min(durationMs > 0 ? durationMs : ms, Math.max(startMs, ms))
   const shown = dragMs ?? keyPending ?? positionMs

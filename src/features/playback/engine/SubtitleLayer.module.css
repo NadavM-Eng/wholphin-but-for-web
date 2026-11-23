@@ -25,7 +25,6 @@
   max-width: 90%;
   text-align: center;
   font-family: Roboto, 'Roboto Variable', system-ui, sans-serif;
-  unicode-bidi: plaintext;
 }
 
 .cue {
@@ -34,6 +33,11 @@
   align-items: center;
 }
 
+/*
+ * One line of a cue: a block, so a bidi paragraph of its own. Its base direction comes from the `dir` attribute
+ * SubtitleLayer sets per line (subtitles/direction.ts), not from the page. `unicode-bidi: plaintext` on an ancestor
+ * does nothing for it: the property is not inherited and a block's direction is its own `direction`.
+ */
 .line {
   display: block;
   white-space: pre-wrap;

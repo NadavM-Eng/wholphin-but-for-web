@@ -54,9 +54,10 @@ const DOUBLE_TAP_MS = 300
  * button, the Next Up panel, the dialogs and the error screen. Mouse, touch and keyboard are layered on the TV
  * focus model (spec 05 §B7).
  *
- * The controls overlay is the web layout the owner asked for, not the TV's: a slim strip at the top (Back, logo,
- * title, clock: PlayerTopBar) and a compact strip at the bottom edge (seek line and one row of flat buttons:
- * Controller), each with its own dark gradient, and nothing over the picture between them. The TV's scrim over
+ * The controls overlay is the web layout the owner asked for, not the TV's: a slim strip at the top (Back, title,
+ * clock: PlayerTopBar) and a compact strip at the bottom edge (seek line and one row of flat buttons: Controller),
+ * each with its own dark gradient (the bottom one fades in from above its strip), and nothing over the picture
+ * between them. The TV's scrim over
  * the whole screen (PlaybackOverlay.kt:133-151) is the web-only preference "Dim the video while the controls
  * are shown", off by default. Chapters and queue are panels opened from the strip (ChaptersPanel, QueuePanel)
  * instead of the overlay states CHAPTERS / QUEUE.

@@ -1,7 +1,7 @@
 import clsx from 'clsx'
-import { useRef, useState, type KeyboardEvent, type PointerEvent } from 'react'
+import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react'
 import { dp } from '../../theme/scale'
-import { TOUCH_SLOP_DP, pansByDragging, touchIntent } from '../lib/touchIntent'
+import { TOUCH_SLOP_DP, keepPressToControl, pansByDragging, touchIntent } from '../lib/touchIntent'
 import styles from './Slider.module.css'
 
 export type SliderProps = {
@@ -31,7 +31,8 @@ export type SliderProps = {
 /**
  * Upstream `SliderBar` (`ui/components/SliderBar.kt`): a 6dp round track that grows to 12dp when
  * focused, white thumb circle, fill and track colors per theme (see the CSS). Keyboard: left/right by
- * `step` (mirrored in RTL), Home/End; mouse: press or drag.
+ * `step` (mirrored in RTL), Home/End; mouse: press or drag. The press is the slider's alone: it starts no text
+ * selection and no drag-and-drop of a selection that covers the slider (`keepPressToControl`).
  *
  * Touch and pen (web only): sliders sit in pages that scroll, so a finger that lands on one changes nothing. Up
  * or down is the page's scroll (`touch-action: pan-y` in the CSS). Only a sideways drag past the slop takes the
@@ -43,7 +44,9 @@ export type SliderProps = {
  * when the pointer is released.
  */
 export function Slider({ value, min, max, onChange, onDragValue, step = 1, wrapAround, label, valueText, disabled, className }: SliderProps) {
+  const root = useRef<HTMLDivElement>(null)
   const rail = useRef<HTMLDivElement>(null)
+  useEffect(() => keepPressToControl(root.current!), [])
   // the value under the pointer of a drag that applies at its release (`onDragValue`); null outside such a drag.
   // The ref is what the handlers read: moves can come faster than renders.
   const [pending, setPending] = useState<number | null>(null)
@@ -173,6 +176,7 @@ export function Slider({ value, min, max, onChange, onDragValue, step = 1, wrapA
 
   return (
     <div
+      ref={root}
       role="slider"
       tabIndex={0}
       data-focusable

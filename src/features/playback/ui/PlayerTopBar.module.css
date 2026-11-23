@@ -1,16 +1,18 @@
 /*
  * 52dp: the 40dp Back button with 6dp above and below. Its dark gradient is the wrapper's (PlayerView.module.css
- * .top), which also carries the safe-area insets.
+ * .top), which also carries the safe-area insets. Owner request: the title stands close to the start edge, so
+ * the Back button is 6dp from the edge and the title 4dp after it (the arrow has 7dp of the button's own room on
+ * each side): the title starts 50dp from the edge.
  */
 .root {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 4px;
   box-sizing: border-box;
   min-height: 52px;
   padding: 6px 16px;
-  padding-inline-start: 12px;
+  padding-inline-start: 6px;
   color: var(--c-on-surface);
   /* a click beside the Back button is a click on the picture (play / pause) */
   pointer-events: none;
@@ -27,15 +29,6 @@
 /* the arrow points to the start edge, as the shell's Back button does */
 :global([dir='rtl']) .back svg {
   transform: scaleX(-1);
-}
-
-/* the TV's logo box is 240 x 120dp; here the logo is as low as the strip */
-.logo {
-  display: block;
-  flex: none;
-  max-width: 128px;
-  max-height: 36px;
-  object-fit: contain;
 }
 
 .titles {
@@ -64,18 +57,14 @@
 .clock {
   composes: t-bodyLarge from global;
   flex: none;
+  margin-inline-start: 8px;
   line-height: var(--t-font-height);
   white-space: nowrap;
 }
 
 @media (max-width: 599px) {
   .root {
-    gap: 8px;
-    padding-inline: 8px 12px;
-  }
-
-  .logo {
-    display: none;
+    padding-inline: 4px 12px;
   }
 }
 
@@ -84,9 +73,5 @@
   .root {
     min-height: 44px;
     padding-block: 2px;
-  }
-
-  .logo {
-    max-height: 28px;
   }
 }

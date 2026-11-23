@@ -2,6 +2,14 @@ import type { TFunction } from 'i18next'
 import { SessionError } from '../../api/session'
 
 /** Only same-app relative paths are accepted as post-login redirect targets. */
+/**
+ * True for a user the server lists as having no password (`GET /Users/Public`: `HasPassword` false).
+ * Only an explicit `false` counts: a server that does not say is treated as asking for one.
+ */
+export function hasNoPassword(user: { HasPassword?: boolean | null }): boolean {
+  return user.HasPassword === false
+}
+
 export function safeNext(raw: string | null | undefined): string | null {
   if (!raw || !raw.startsWith('/') || raw.startsWith('//') || raw.startsWith('/setup')) return null
   // Browsers read "/\host" as "//host": a backslash in the path, or anything off this origin, is refused.

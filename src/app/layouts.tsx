@@ -10,6 +10,8 @@ import { BackButton } from './shell/BackButton'
 import { Backdrop } from './shell/Backdrop'
 import { startBackdropService } from './shell/backdropService'
 import styles from './shell/FullScreenLayout.module.css'
+import { PageUnderlay } from './shell/PageUnderlay'
+import { dropPageSnapshot, isPanelPath } from './shell/pageSnapshot'
 import { installModalityTracking } from './shell/shellFocus'
 import { setDiscoverEnabled } from './shell/shellFlags'
 import { useShellStore } from './shell/shellStore'
@@ -55,6 +57,12 @@ export function RequireSession() {
     const to = target === 'users' ? nav.users(next === '/' ? null : next) : nav.servers(next === '/' ? null : next)
     return <Navigate to={to} replace />
   }
+  return <SignedIn />
+}
+
+function SignedIn() {
+  // signed out (also from Settings): the copy of the page behind Settings goes with the session
+  useEffect(() => () => dropPageSnapshot(), [])
   return (
     <>
       <DiscoverDrawerFlag />
@@ -93,23 +101,28 @@ export function SetupLayout() {
  * Clears the backdrop on entry (DestinationContent.kt:68-70); the Backdrop layer is still drawn underneath,
  * as ApplicationContent draws it under every destination, so a full-screen page may submit one. Shows a
  * floating Back button that a page can hide with useHideBackButton() (e.g. the player, which has its own
- * controls).
+ * controls). Settings opens as a panel: the page it was opened from shows behind it (PageUnderlay).
  */
 export function FullScreenLayout() {
   const { i18n } = useTranslation()
+  const panel = isPanelPath(useLocation().pathname)
   const backHidden = useShellStore((s) => s.backHidden > 0)
+  // Settings places its own Back button where it needs one (SettingsLayout); this one would lie on its panel,
+  // and a page can only hide it after it has shown for a frame
+  const showBack = !backHidden && !panel
   const pageRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     startBackdropService()
     clearBackdrop()
   }, [])
   useBackKey()
-  usePageFade(pageRef)
-  usePublishShellLayout(false, !backHidden)
+  usePageFade(pageRef, !panel)
+  usePublishShellLayout(false, showBack)
   return (
-    <div data-fullscreen className={styles.root} data-back={backHidden ? undefined : ''}>
-      <Backdrop drawerOpen={false} rtl={i18n.dir() === 'rtl'} />
-      {!backHidden && (
+    <div data-fullscreen className={styles.root} data-back={showBack ? '' : undefined}>
+      <Backdrop rtl={i18n.dir() === 'rtl'} />
+      {panel && <PageUnderlay />}
+      {showBack && (
         <div className={styles.backSlot}>
           <BackButton className={styles.back} />
         </div>

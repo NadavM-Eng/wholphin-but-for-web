@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next'
 import { nav } from '../../app/nav'
 import { focusFirst } from '../../app/spatialNav'
 import { useShellFlags } from '../../app/shell/shellFlags'
-import { useDrawerOpen } from '../../app/shell/shellStore'
 import { useCompactLayout } from '../../app/shell/useShellLayout'
 import { useMusicQueue } from '../../stores/musicQueue'
 import { DrawableIcon, FaIcon } from '../../ui'
@@ -24,7 +23,6 @@ export const MINI_PLAYER_HEIGHT = 64
 export function MiniPlayer() {
   const { t } = useTranslation()
   const compact = useCompactLayout()
-  const drawerOpen = useDrawerOpen()
   const linkClick = useLinkClick()
   const status = useMusicQueue((s) => s.status)
   const entry = useMusicQueue((s) => s.entries[s.currentIndex] ?? null)
@@ -96,7 +94,7 @@ export function MiniPlayer() {
   }
   return (
     <aside
-      className={clsx(styles.bar, compact && styles.compact, drawerOpen && !compact && styles.drawerOpen)}
+      className={clsx(styles.bar, compact && styles.compact)}
       ref={barRef}
       aria-label={t('now_playing')}
       data-mini-player

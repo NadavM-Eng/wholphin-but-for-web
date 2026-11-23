@@ -15,9 +15,8 @@ export const AUDIO_TRACK_ICON = 'audiotrack' satisfies MaterialIconName
 export const CHAPTERS_ICON = 'format_list_bulleted' satisfies MaterialIconName
 
 /**
- * The Queue button: stacked cards with a play mark (Material `video_library`), the standard icon nearest to the
- * stacked-cards button of the Jellyfin web player the owner showed (stock Jellyfin web has no queue button in
- * its video controls).
+ * The Queue button: stacked cards with a play mark (Material `video_library`). Jellyfin's web player has no queue
+ * button in its video controls, so this is the standard Material icon for a stack of videos.
  */
 export const QUEUE_ICON = 'video_library' satisfies MaterialIconName
 

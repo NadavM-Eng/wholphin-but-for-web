@@ -17,6 +17,7 @@ import { useTranslate } from '../common/useTranslate'
 import { focusDrawerEntry, isKeyboardModality, mayTakeInitialFocus } from '../../app/shell/shellFocus'
 import { useDp } from '../../theme/scale'
 import { CircularProgress, observeResize } from '../../ui'
+import { keepPressToControl } from '../../ui/lib/touchIntent'
 import { ChannelCell } from './ChannelCell'
 import styles from './GuideGrid.module.css'
 import {
@@ -336,6 +337,8 @@ export function GuideGrid({
   // ---- mouse drag-scroll ------------------------------------------------------------------------------------
   const drag = useRef<{ x: number; y: number; left: number; top: number; active: boolean; id: number } | null>(null)
   const suppressClick = useRef(false)
+  // the press belongs to the guide: no text selection, and no drag-and-drop of a selection that covers a cell
+  useEffect(() => (box.current ? keepPressToControl(box.current) : undefined), [])
   const onPointerDown = (e: PointerEvent<HTMLDivElement>) => {
     if (e.pointerType !== 'mouse' || e.button !== 0 || !box.current) return
     drag.current = { x: e.clientX, y: e.clientY, left: box.current.scrollLeft, top: box.current.scrollTop, active: false, id: e.pointerId }

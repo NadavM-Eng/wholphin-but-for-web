@@ -2,7 +2,7 @@ import type { TFunction } from 'i18next'
 import { describe, expect, it } from 'vitest'
 import { SessionError } from '../../api/session'
 import { isPinLongEnough, pinKeyFor, profileProtectionOf } from './pin'
-import { addServerErrorMessage, errorDetail, safeNext } from './setupHelpers'
+import { addServerErrorMessage, errorDetail, hasNoPassword, safeNext } from './setupHelpers'
 
 // Echo translator: "key" or "key(p1)".
 const t = ((key: string, opts?: { p1?: string }) => (opts?.p1 != null ? `${key}(${opts.p1})` : key)) as unknown as TFunction
@@ -31,6 +31,14 @@ describe('pin', () => {
 })
 
 describe('setup helpers', () => {
+  it('a user has no password only when the server says so', () => {
+    expect(hasNoPassword({ HasPassword: false })).toBe(true)
+    expect(hasNoPassword({ HasPassword: true })).toBe(false)
+    // an older or stripped-down answer: assume a password, the login dialog opens
+    expect(hasNoPassword({})).toBe(false)
+    expect(hasNoPassword({ HasPassword: null })).toBe(false)
+  })
+
   it('accepts only in-app next targets', () => {
     expect(safeNext('/item/1?x=2')).toBe('/item/1?x=2')
     expect(safeNext('//evil.example')).toBeNull()

@@ -706,8 +706,9 @@ const BASE_SCENES: Scene[] = [
     },
   },
   { name: 'search-no-results', group: 'search', path: '/search?q=zzqxjv' },
-  { name: 'search-hebrew', group: 'search', path: `/search?q=${q('אהבה')}`, servers: ['real'] },
-  { name: 'search-japanese', group: 'search', path: `/search?q=${q('の')}`, servers: ['real'] },
+  // words from the titles of the test server's own Hebrew and Japanese seed films (tools/testserver/gen-media.mjs)
+  { name: 'search-hebrew', group: 'search', path: `/search?q=${q('שלום')}`, servers: ['test'] },
+  { name: 'search-japanese', group: 'search', path: `/search?q=${q('の')}`, servers: ['test'] },
   { name: 'favorites', group: 'browse', path: '/favorites' },
   {
     // ItemGridState contract of src/features/browse/data/gridRequestKinds.ts ("View more" of a Recently added row)

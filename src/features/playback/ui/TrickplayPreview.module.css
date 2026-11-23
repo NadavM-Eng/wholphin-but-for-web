@@ -23,4 +23,5 @@
   background: rgb(from var(--fx-black) r g b / 0.6);
   color: var(--c-on-surface);
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }

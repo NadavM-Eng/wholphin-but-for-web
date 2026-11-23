@@ -2,6 +2,7 @@
 // entry points of the drawer and the sub-screens the other features read from.
 import type { Locator, Page } from '@playwright/test'
 import { TAG, expect, test } from '../fixtures'
+import type { App } from '../fixtures/app'
 
 /** scrollTop of the list the element scrolls in */
 const listTop = (el: Locator) =>
@@ -367,5 +368,443 @@ test.describe('Hebrew interface', () => {
     // number is drawn to the right of the word
     const translated = page.locator('[data-pref-id="ControllerTimeout"]').getByText(/\d [\u0590-\u05ff]/).last()
     expect(await app.drawnText(translated)).toMatch(/^[\u0590-\u05ff]+\d+\.\d+$/)
+  })
+})
+
+// ---- Settings as a panel over the page it was opened from (src/app/shell/pageSnapshot.ts) -------------------------
+// The shell page unmounts when Settings opens; a lifeless copy of it stays behind the panel under a light tint.
+// Where the area beside the panel can be clicked there is no Back button: a click there, Escape and the browser's
+// Back go one step back.
+
+/** The place of the page's copy behind the panel (`PageUnderlay`): empty when Settings was opened by its address. */
+const underlay = (page: Page) => page.locator('[data-page-underlay]')
+/** Settings' floating Back button. By role: the copy is hidden from the accessibility tree, a Back button in it does not count. */
+const settingsBack = (page: Page) => page.getByRole('button', { name: 'Back', exact: true })
+/** The copy that covers the arriving page for a moment after Settings closes (`returnFromPanel`; it has no hook of its own). */
+const RETURN_COVER = 'body > div[inert][aria-hidden="true"]'
+/** Titles of the Home rows inside `root`. */
+const rowTitles = (root: Locator) => root.locator('section[aria-label]').evaluateAll((els) => els.map((el) => el.getAttribute('aria-label')))
+/** Where each card in view is drawn ("label @ x,y wxh"): the page and its copy must agree. */
+const cardBoxes = (root: Locator) =>
+  root.locator('[data-card-surface]').evaluateAll((els) =>
+    els
+      .map((el) => ({ label: el.getAttribute('aria-label') ?? el.textContent?.trim() ?? '', r: el.getBoundingClientRect() }))
+      .filter(({ r }) => r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth)
+      .map(({ label, r }) => `${label} @ ${Math.round(r.left)},${Math.round(r.top)} ${Math.round(r.width)}x${Math.round(r.height)}`)
+      .sort(),
+  )
+const focusInPanel = (page: Page) => page.evaluate(() => !!document.activeElement?.closest('[data-settings-list]'))
+/** Alpha of anything drawn over the page's copy (`PageUnderlay`): 0, the page behind keeps its brightness. */
+const tintAlpha = (page: Page) =>
+  underlay(page).evaluate((el) => {
+    const after = getComputedStyle(el, '::after')
+    if (after.content === 'none') return 0
+    const m = /^rgba\(.*,\s*([\d.]+)\)$/.exec(after.backgroundColor) ?? /\/\s*([\d.]+)\)$/.exec(after.backgroundColor)
+    return m ? Number(m[1]) : 1
+  })
+/** Alpha of the Settings page's own background: 1 is the flat background, 0 lets the page behind show through. */
+const backgroundAlpha = (page: Page) =>
+  page.locator('[data-settings-list]').evaluate((list) => {
+    const color = getComputedStyle(list.closest('section')!.parentElement!).backgroundColor
+    // "rgb(r, g, b)", "rgba(r, g, b, a)" or "color(srgb r g b / a)", depending on the engine
+    const m = /^rgba\(.*,\s*([\d.]+)\)$/.exec(color) ?? /\/\s*([\d.]+)\)$/.exec(color)
+    return m ? Number(m[1]) : 1
+  })
+/** Width of the copy's nav rail. */
+const copiedRailWidth = async (page: Page) => (await underlay(page).locator('nav').first().boundingBox())!.width
+/** A click on the empty area beside the panel (the panel stands at the start edge; the suite's pages are left to right). */
+const clickBesidePanel = async (page: Page) => {
+  const { w, h } = await page.evaluate(() => ({ w: innerWidth, h: innerHeight }))
+  await page.mouse.click(w * 0.8, h / 2)
+}
+const hoverDrawer = async (app: App) => {
+  await app.drawer.hover()
+  await expect(app.drawer).toHaveAttribute('data-open', /.*/)
+}
+/** Settings chosen from the hovered drawer of the page that shows. */
+const openSettingsFromDrawer = async (page: Page, app: App) => {
+  await hoverDrawer(app)
+  await app.drawer.getByRole('link', { name: 'Settings' }).click()
+  await expect(page).toHaveURL(/\/settings$/)
+  await expect(page.locator('[data-pref-id="ThemeColors"]')).toBeVisible()
+}
+/** No copy is left anywhere and the shell page is the one that answers: `card` is what a pointer meets. */
+const expectPageUsable = async (page: Page, app: App, card: Locator) => {
+  await expect(app.shell).toHaveCount(1)
+  await expect(underlay(page)).toHaveCount(0)
+  await expect(page.locator(RETURN_COVER)).toHaveCount(0)
+  await expect(card).toBeVisible()
+  expect(
+    await card.evaluate((el) => {
+      const r = el.getBoundingClientRect()
+      const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2)
+      return !!hit && (el.contains(hit) || !!hit.closest('[data-card-scaler]')?.contains(el))
+    }),
+    'the card is what a pointer meets',
+  ).toBe(true)
+}
+
+test('Settings from the drawer: a lifeless copy of the page stays behind the panel, there is no Back button, focus is in the panel', { tag: [TAG.desktop, TAG.engines] }, async ({ page, app }) => {
+  await app.goto('/')
+  await app.expectHome()
+  await hoverDrawer(app)
+  const titles = await rowTitles(app.shell)
+  expect(titles.length).toBeGreaterThan(1)
+  const boxes = await cardBoxes(app.shell)
+  expect(boxes.length).toBeGreaterThan(3)
+  await openSettingsFromDrawer(page, app)
+
+  // the copy: hidden from assistive technology and from input, the same rows, every card where it was
+  const copy = underlay(page)
+  await expect(copy).toHaveAttribute('inert', /.*/)
+  await expect(copy).toHaveAttribute('aria-hidden', 'true')
+  expect(await rowTitles(copy)).toEqual(titles)
+  expect(await cardBoxes(copy)).toEqual(boxes)
+  // the drawer was open when Settings was chosen: behind the panel the rail rests closed
+  expect(await copiedRailWidth(page)).toBeLessThan(100)
+  // not darkened: the Settings page's own background lets the copy through, and nothing lies over the copy
+  expect(await backgroundAlpha(page)).toBe(0)
+  expect(await tintAlpha(page)).toBe(0)
+
+  // nothing in the copy answers the app's lookups or can take focus
+  await expect(copy.locator('[data-focusable], [data-focus-trap], [data-shell], [data-page-root]')).toHaveCount(0)
+  await expect(copy.locator('[tabindex], [autofocus], audio, video, iframe')).toHaveCount(0)
+  expect(await copy.evaluate((host) => Array.from(host.querySelectorAll('[id]')).filter((el) => !(el instanceof SVGElement)).length)).toBe(0)
+  await expect(app.shell).toHaveCount(0)
+  await expect(app.pageRoot).toHaveCount(1)
+
+  await expect(settingsBack(page)).toHaveCount(0)
+  await expect.poll(() => focusInPanel(page)).toBe(true)
+  // Shift+Tab from the first row stays out of the copy: it takes no focus
+  await page.keyboard.press('Shift+Tab')
+  expect(await page.evaluate(() => !!document.activeElement?.closest('[data-page-underlay]'))).toBe(false)
+})
+
+test('from the open drawer to Settings without a blink: the drawer stays open until Settings shows, whose first frame already has the page behind and no Back button', { tag: [TAG.desktop, TAG.engines] }, async ({ page, app }) => {
+  await app.goto('/')
+  await app.expectHome()
+  await app.settle()
+  await hoverDrawer(app)
+  // what is on screen at every animation frame from the click on
+  await page.evaluate(() => {
+    const w = window as unknown as { __frames: string[] }
+    w.__frames = []
+    const tick = () => {
+      const settings = document.querySelector('[data-settings-list]')
+      if (settings) {
+        const copy = document.querySelector('[data-page-underlay]')?.childElementCount ?? 0
+        const back = document.querySelectorAll('[data-fullscreen] button[aria-label="Back"]').length
+        w.__frames.push(`settings copy=${copy} back=${back}`)
+      } else {
+        w.__frames.push(`page drawer=${document.querySelector('[data-shell-drawer]')?.hasAttribute('data-open') ? 'open' : 'closed'}`)
+      }
+      if (w.__frames.length < 600 && w.__frames.filter((f) => f.startsWith('settings')).length < 20) requestAnimationFrame(tick)
+    }
+    requestAnimationFrame(tick)
+  })
+  await app.drawer.getByRole('link', { name: 'Settings' }).click()
+  await expect(page).toHaveURL(/\/settings$/)
+  await expect.poll(() => page.evaluate(() => (window as unknown as { __frames: string[] }).__frames.filter((f) => f.startsWith('settings')).length)).toBe(20)
+  const frames = await page.evaluate(() => (window as unknown as { __frames: string[] }).__frames)
+  // never the bare page with its drawer closed, never Settings on a flat background or with the shell's Back button
+  expect(Array.from(new Set(frames))).toEqual(['page drawer=open', 'settings copy=1 back=0'])
+})
+
+test('a click beside the panel goes one step back: from a sub-screen to Settings, from Settings to the page, which is usable again', { tag: [TAG.desktop, TAG.engines] }, async ({ page, app }) => {
+  await app.goto('/')
+  await app.expectHome()
+  const titles = await rowTitles(app.shell)
+  await openSettingsFromDrawer(page, app)
+  const row = page.locator('[data-pref-id="UserProfileSettings"] [data-focusable]').first()
+  await row.click()
+  await expect(page).toHaveURL(/\/settings\/user$/)
+  // a sub-screen is a panel over the same page
+  await expect(settingsBack(page)).toHaveCount(0)
+  expect(await rowTitles(underlay(page))).toEqual(titles)
+
+  await clickBesidePanel(page)
+  await expect(page).toHaveURL(/\/settings$/)
+  await expect(row).toBeFocused()
+  expect(await rowTitles(underlay(page))).toEqual(titles)
+  await expect(settingsBack(page)).toHaveCount(0)
+
+  await clickBesidePanel(page)
+  await app.expectHome()
+  await expectPageUsable(page, app, app.homeCard('0:0'))
+  // the page answers the pointer: the drawer opens under it again
+  await hoverDrawer(app)
+})
+
+test('Escape goes one step back: from a sub-screen to Settings, from Settings to the page it was opened from', { tag: [TAG.keyboard, TAG.engines] }, async ({ page, app }) => {
+  await app.goto('/')
+  await app.expectHome()
+  await expect.poll(() => app.focusedHomePos()).toBe('0:0')
+  const titles = await rowTitles(app.shell)
+  // the drawer's Settings entry, with the keyboard
+  await app.press('ArrowLeft')
+  await expect(app.drawer).toHaveAttribute('data-open', /.*/)
+  for (let i = 0; i < 20 && (await app.focused.getAttribute('href')) !== '/settings'; i++) await app.press('ArrowDown')
+  await expect(app.focused).toHaveAccessibleName('Settings')
+  await page.keyboard.press('Enter')
+  await expect(page).toHaveURL(/\/settings$/)
+  await expect.poll(() => focusInPanel(page)).toBe(true)
+  expect(await rowTitles(underlay(page))).toEqual(titles)
+  // the drawer had keyboard focus and was open: behind the panel the rail rests closed
+  expect(await copiedRailWidth(page)).toBeLessThan(100)
+  await expect(settingsBack(page)).toHaveCount(0)
+
+  const row = page.locator('[data-pref-id="UserProfileSettings"] [data-focusable]').first()
+  await row.focus()
+  await page.keyboard.press('Enter')
+  await expect(page).toHaveURL(/\/settings\/user$/)
+  await expect.poll(() => focusInPanel(page)).toBe(true)
+
+  await page.keyboard.press('Escape')
+  await expect(page).toHaveURL(/\/settings$/)
+  await expect(row).toBeFocused()
+  expect(await rowTitles(underlay(page))).toEqual(titles)
+
+  await page.keyboard.press('Escape')
+  await app.expectHome()
+  await expectPageUsable(page, app, app.homeCard('0:0'))
+  // focus is in the page again, not on the drawer entry that opened Settings
+  await expect.poll(() => app.focusedHomePos()).toBe('0:0')
+  await expect(app.drawer).not.toHaveAttribute('data-open')
+  // and the keys are the page's
+  await app.press('ArrowRight')
+  await expect.poll(() => app.focusedHomePos()).toBe('0:1')
+})
+
+test('Settings opened by its address: no copy and a flat background, no Back button; Escape and a click beside the panel go Home', { tag: [TAG.desktop, TAG.engines] }, async ({ page, app }) => {
+  await app.goto('/settings')
+  await expect(underlay(page)).toHaveCount(1)
+  await expect(underlay(page).locator('*')).toHaveCount(0)
+  await expect(settingsBack(page)).toHaveCount(0)
+  await expect.poll(() => focusInPanel(page)).toBe(true)
+  // the page works: a dialog opens, Escape closes the dialog and only that
+  await page.locator('[data-pref-id="ThemeColors"] [data-focusable]').first().click()
+  await expect(page.getByRole('dialog')).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+  await expect(page).toHaveURL(/\/settings$/)
+
+  await page.keyboard.press('Escape')
+  await app.expectHome()
+  await expectPageUsable(page, app, app.homeCard('0:0'))
+
+  await app.goto('/settings')
+  await expect(page.locator('[data-pref-id="ThemeColors"]')).toBeVisible()
+  await clickBesidePanel(page)
+  await app.expectHome()
+  await expectPageUsable(page, app, app.homeCard('0:0'))
+})
+
+test('the copy shows the page where it was scrolled: a grid scrolled with the window, and one scrolled in its own box', { tag: [TAG.desktop, TAG.engines] }, async ({ page, app, api }) => {
+  // a short window, wide enough for the area beside the panel: both grids need scrolling
+  await page.setViewportSize({ width: 1000, height: 460 })
+  await app.goto('/')
+  await app.expectHome()
+  const index = await app.homeRow('Recently added in Movies').getAttribute('data-home-row')
+  const movies = (await api.userViews()).find((v) => v.CollectionType === 'movies')!
+  const cells = page.locator('[data-page-root] [data-grid-index]')
+
+  // "View more": the window scrolls
+  await app.goto(`/home/row/${index}`)
+  await expect(cells.first()).toBeVisible()
+  await cells.first().hover()
+  await page.mouse.wheel(0, 60)
+  // how far one wheel step goes is the engine's business (WebKit: 52 px here)
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(20)
+  await app.settle()
+  await hoverDrawer(app)
+  let boxes = await cardBoxes(app.shell)
+  expect(boxes.length).toBeGreaterThan(2)
+  await openSettingsFromDrawer(page, app)
+  expect(await cardBoxes(underlay(page))).toEqual(boxes)
+  await page.keyboard.press('Escape')
+  await expect(page).toHaveURL(/\/home\/row\//)
+  await expectPageUsable(page, app, cells.first())
+
+  // a library grid: its own scroller
+  await app.goto(`/library/${movies.Id}?tab=library`)
+  await expect(cells.first()).toBeVisible()
+  const scroller = page.locator('[data-page-root] [data-focus-enter="last"]')
+  await app.gridCards.nth(1).hover()
+  await page.mouse.wheel(0, 200)
+  await expect.poll(() => scroller.evaluate((el) => el.scrollTop)).toBeGreaterThan(24)
+  await app.settle()
+  await hoverDrawer(app)
+  boxes = await cardBoxes(app.shell)
+  expect(boxes.length).toBeGreaterThan(2)
+  await openSettingsFromDrawer(page, app)
+  expect(await cardBoxes(underlay(page))).toEqual(boxes)
+})
+
+test('/settings/subtitles on a wide window keeps its Back button (a preview fills the area beside the panel)', { tag: [TAG.desktop, TAG.engines] }, async ({ page, app }) => {
+  await app.goto('/')
+  await app.expectHome()
+  const titles = await rowTitles(app.shell)
+  await openSettingsFromDrawer(page, app)
+  await expect(settingsBack(page)).toHaveCount(0)
+  await page.locator('[data-pref-id="SubtitleStyle"] [data-focusable]').first().click()
+  await expect(page).toHaveURL(/\/settings\/subtitles$/)
+  await expect(settingsBack(page)).toBeVisible()
+  // nothing of the page shows around the preview
+
+  await settingsBack(page).click()
+  await expect(page).toHaveURL(/\/settings$/)
+  await expect(settingsBack(page)).toHaveCount(0)
+  expect(await rowTitles(underlay(page))).toEqual(titles)
+})
+
+test('narrowing the window until the panel is the whole width brings the Back button back, widening it takes it away', { tag: [TAG.desktop] }, async ({ page, app }) => {
+  await app.goto('/')
+  await app.expectHome()
+  await openSettingsFromDrawer(page, app)
+  await expect(settingsBack(page)).toHaveCount(0)
+  await page.setViewportSize({ width: 700, height: 900 })
+  await expect(settingsBack(page)).toBeVisible()
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await expect(settingsBack(page)).toHaveCount(0)
+  await clickBesidePanel(page)
+  await app.expectHome()
+  await expectPageUsable(page, app, app.homeCard('0:0'))
+})
+
+test('phone width: Settings is the whole width and keeps its Back button, which goes one step back', { tag: [TAG.phone, TAG.iphone] }, async ({ page, app }) => {
+  await app.goto('/')
+  await app.expectHome()
+  await app.tap(app.menuButton)
+  await expect(app.drawer).toHaveAttribute('data-open', /.*/)
+  await app.tap(app.drawer.getByRole('link', { name: 'Settings' }))
+  await expect(page).toHaveURL(/\/settings$/)
+  await expect(settingsBack(page)).toBeVisible()
+  // the panel covers the window: nothing of the page shows beside or through it
+  const panel = page.getByRole('region', { name: 'Settings' })
+  expect(Math.round((await panel.boundingBox())!.width)).toBe(await page.evaluate(() => innerWidth))
+
+  const row = page.locator('[data-pref-id="UserProfileSettings"] [data-focusable]').first()
+  await row.scrollIntoViewIfNeeded()
+  await app.tap(row)
+  await expect(page).toHaveURL(/\/settings\/user$/)
+  await expect(settingsBack(page)).toBeVisible()
+  await app.tap(settingsBack(page))
+  await expect(page).toHaveURL(/\/settings$/)
+  await app.tap(settingsBack(page))
+  await app.expectHome()
+  await expectPageUsable(page, app, app.homeCard('0:0'))
+  // the drawer sheet closed when Settings was chosen and is closed on the page that returns
+  await expect(app.drawer).not.toHaveAttribute('data-open')
+})
+
+test.describe('with animations on', () => {
+  // the suite's reduced motion skips the cover: the page then simply appears
+  test.use({ reducedMotion: 'no-preference' })
+
+  test('Settings opens out of the drawer: its ground slides out once and the content fades in; the panel itself and the page do not move, and nothing moves between Settings screens', { tag: [TAG.desktop, TAG.engines] }, async ({ page, app }) => {
+    await app.goto('/')
+    await app.expectHome()
+    await app.settle()
+    // every animation that starts inside the full-screen layout from now on (the copy behind the panel is still)
+    await page.evaluate(() => {
+      const w = window as unknown as { __started: string[] }
+      w.__started = []
+      const inSettings = (el: Element | null) => !!el?.closest('[data-fullscreen]') && !el.closest('[data-page-underlay] > *')
+      document.addEventListener('animationstart', (e) => inSettings(e.target as Element) && w.__started.push(`css ${e.animationName}`), true)
+      const animate = Element.prototype.animate
+      Element.prototype.animate = function (...args: Parameters<Element['animate']>) {
+        if (inSettings(this) && (this.matches('[data-page-root], [data-page-underlay]') || !!this.querySelector('[data-settings-list]'))) w.__started.push('script')
+        return animate.apply(this, args)
+      }
+    })
+    await openSettingsFromDrawer(page, app)
+    const panel = page.getByRole('region', { name: 'Settings' })
+    // at full strength and in place right away: the opening only uncovers the panel
+    expect(await panel.evaluate((el) => `${getComputedStyle(el).opacity} ${getComputedStyle(el).transform} ${getComputedStyle(el.closest('[data-page-root]')!).opacity}`)).toBe('1 none 1')
+    await app.activate(page.locator('[data-pref-id="AdvancedSettings"] [data-focusable], [data-pref-id="AdvancedSettings"][data-focusable]').first())
+    await expect(page).toHaveURL(/\/settings\/advanced$/)
+    await expect(page.getByRole('region', { name: 'Advanced Settings' })).toBeVisible()
+    await page.waitForTimeout(400)
+    // the opening, played once when Settings opened (the names are hashed by the build): the ground behind the
+    // panel slides out, and the header and the list fade in. Nothing else, and nothing on the next screen.
+    const started = await page.evaluate(() => (window as unknown as { __started: string[] }).__started)
+    expect(started.map((name) => /ground|content/.exec(name)?.[0]).sort()).toEqual(['content', 'content', 'ground'])
+    // the ground is the drawer's colour with a soft end edge, one piece; on the next screen it is at rest
+    const advanced = page.getByRole('region', { name: 'Advanced Settings' })
+    expect(await advanced.evaluate((el) => getComputedStyle(el, '::before').animationName)).toBe('none')
+    expect(await advanced.evaluate((el) => getComputedStyle(el, '::before').backgroundImage)).toContain('linear-gradient')
+    expect(await advanced.evaluate((el) => getComputedStyle(el.querySelector('[data-settings-list]')!).opacity)).toBe('1')
+  })
+
+  test('back on the page: the copy covers the arriving page for a moment, the page does not fade in again, then the copy is gone', { tag: [TAG.desktop, TAG.engines] }, async ({ page, app }) => {
+    await app.goto('/')
+    await app.expectHome()
+    await openSettingsFromDrawer(page, app)
+    await app.settle()
+    type Cover = { added: number; removed: number; elements: number; shells: number; pageAnimations: number }
+    await page.evaluate((selector) => {
+      const log = { added: 0, removed: 0, elements: 0, shells: -1, pageAnimations: -1 }
+      ;(window as unknown as { __cover: typeof log }).__cover = log
+      const cover = (n: Node): n is HTMLElement => n instanceof HTMLElement && n.matches(selector)
+      new MutationObserver((records) => {
+        for (const r of records) {
+          for (const n of Array.from(r.addedNodes).filter(cover)) {
+            log.added++
+            log.elements = n.querySelectorAll('*').length
+            log.shells = document.querySelectorAll('[data-shell]').length
+          }
+          // a removed node has no parent left to match "body >" against
+          for (const _ of Array.from(r.removedNodes).filter((n) => n instanceof HTMLElement && n.matches('div[inert][aria-hidden="true"]'))) {
+            log.removed++
+            // the page's own fade lasts 700 ms: it would still run now
+            log.pageAnimations = document.querySelector('[data-shell] [data-page-root]')?.getAnimations().length ?? -1
+          }
+        }
+      }).observe(document.body, { childList: true })
+    }, RETURN_COVER)
+
+    await clickBesidePanel(page)
+    await expect(page).toHaveURL((u) => u.pathname === '/')
+    const log = () => page.evaluate(() => (window as unknown as { __cover: Cover }).__cover)
+    await expect.poll(async () => (await log()).removed).toBe(1)
+    const seen = await log()
+    expect(seen.added).toBe(1)
+    // the cover held the copy, over the real page that was already there
+    expect(seen.elements).toBeGreaterThan(50)
+    expect(seen.shells).toBe(1)
+    expect(seen.pageAnimations).toBe(0)
+    await app.expectHome()
+    await expectPageUsable(page, app, app.homeCard('0:0'))
+  })
+
+  test('back on the page: its backdrop picture is there from the first frame, it does not blank and fade in again', { tag: [TAG.desktop, TAG.engines] }, async ({ page, app }) => {
+    await app.goto('/')
+    await app.expectHome()
+    const image = page.locator('[data-shell] [data-shell-backdrop] img')
+    // the focused card's backdrop, after its 500 ms wait and 800 ms fade
+    await expect(image).toHaveCSS('opacity', '1', { timeout: 15_000 })
+    const src = await image.getAttribute('src')
+    await openSettingsFromDrawer(page, app)
+    await app.settle()
+    // the returned page's backdrop on each of its first 90 frames (1.5 s: longer than the wait and most of the fade)
+    await page.evaluate(() => {
+      const w = window as unknown as { __backdrop: string[] }
+      w.__backdrop = []
+      const tick = () => {
+        const shell = document.querySelector('[data-shell]')
+        if (shell) {
+          const img = shell.querySelector('[data-shell-backdrop] img')
+          w.__backdrop.push(img ? `${img.getAttribute('src')} ${getComputedStyle(img).opacity}` : 'none')
+        }
+        if (w.__backdrop.length < 90) requestAnimationFrame(tick)
+      }
+      requestAnimationFrame(tick)
+    })
+    // Escape, not a click: the pointer stays where it is (a pointer arriving on a card would select that card)
+    await page.keyboard.press('Escape')
+    await expect(page).toHaveURL((u) => u.pathname === '/')
+    await expect.poll(() => page.evaluate(() => (window as unknown as { __backdrop: string[] }).__backdrop.length)).toBe(90)
+    const frames = await page.evaluate(() => (window as unknown as { __backdrop: string[] }).__backdrop)
+    expect(Array.from(new Set(frames))).toEqual([`${src} 1`])
   })
 })

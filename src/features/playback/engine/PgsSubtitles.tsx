@@ -2,17 +2,18 @@ import { PgsRenderer } from 'libpgs'
 // the worker is a self-contained classic script: Vite hands out its address (same origin, so worker-src 'self')
 import workerUrl from 'libpgs/dist/libpgs.worker.js?url'
 import { useEffect, useRef } from 'react'
+import { usePrefs } from '../../../stores/preferences'
 import { observeResize } from '../../../ui'
-import { getPlaybackEngine } from './engine'
+import { getPlaybackEngine, usePlaybackStore } from './engine'
 import styles from './SubtitleLayer.module.css'
-import { RAISED_SHIFT } from './subtitles/style'
+import { isHdrVideo, RAISED_SHIFT } from './subtitles/style'
 
 export interface PgsSubtitlesProps {
   /** the PGS stream (.sup) of the selected track */
   data: ArrayBuffer
   /** subtitle delay in ms (positive = later) */
   delayMs: number
-  /** controls are visible: the picture shrinks to the top-center 70%, as the TV's SubtitleView does (PlaybackPage.kt:520) */
+  /** controls are visible: the picture keeps its size and steps up by the height of the control strip (style.ts RAISED_SHIFT) */
   raised: boolean
   /** keep the renderer alive but draw nothing (seek indicator) */
   hidden: boolean
@@ -28,6 +29,10 @@ export interface PgsSubtitlesProps {
  */
 export function PgsSubtitles({ data, delayMs, raised, hidden }: PgsSubtitlesProps) {
   const holder = useRef<HTMLDivElement>(null)
+  // "Image subtitle opacity" (PlaybackPage.kt:516-517, 594-599: the alpha of the subtitle view for image cues), from
+  // the style set the video uses: the HDR copy when "different for HDR" is on and the video is HDR
+  const hdr = usePlaybackStore((s) => isHdrVideo(s.item?.MediaSources?.find((m) => m.Id === s.source?.Id)?.MediaStreams ?? s.source?.MediaStreams))
+  const opacity = usePrefs((p) => (p.subSeparateHdr && hdr ? p.hdrSubImageOpacity : p.subImageOpacity)) / 100
   const delay = useRef(delayMs)
   useEffect(() => {
     delay.current = delayMs
@@ -94,7 +99,7 @@ export function PgsSubtitles({ data, delayMs, raised, hidden }: PgsSubtitlesProp
     <div
       ref={holder}
       className={`${styles.layer} ${styles.pgs}`}
-      style={{ transform: raised ? RAISED_SHIFT : undefined, visibility: hidden ? 'hidden' : undefined }}
+      style={{ transform: raised ? RAISED_SHIFT : undefined, visibility: hidden ? 'hidden' : undefined, opacity: opacity < 1 ? opacity : undefined }}
       data-subtitle-renderer="pgs"
     />
   )

@@ -251,7 +251,7 @@ What it needs:
 
 * **A DNS name that resolves to the same address** as the existing one. Wildcard DNS gives that
   (`*.media.example.org`), and so does a dynamic-DNS provider that answers every name under a registered name
-  with the same address (DuckDNS does); then nothing has to be registered. Check it first:
+  with the same address; then nothing has to be registered. Check it first:
   `nslookup app.media.example.org` must print the address `media.example.org` has.
 * **Step 1 as above**, unchanged: the container on `127.0.0.1:8090`, `JELLYFIN_URL` the address a browser
   already uses for Jellyfin. `-e HSTS=false` is not needed for this variant: the header the app sends has no

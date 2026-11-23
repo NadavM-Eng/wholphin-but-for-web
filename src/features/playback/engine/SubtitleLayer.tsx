@@ -1,9 +1,11 @@
 import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { usePrefs } from '../../../stores/preferences'
 import { observeResize } from '../../../ui'
 import { getPlaybackEngine, usePlaybackStore } from './engine'
 import styles from './SubtitleLayer.module.css'
 import { activeCues, type SubtitleCue } from './subtitles/cues'
+import { cueLineDirections, cueLineText, trackLayout } from './subtitles/direction'
 import { containedVideoRect, isHdrVideo, RAISED_BY, stylePrefsFor, subtitleBottomMargin, subtitleStyle, type SubtitleStylePrefs } from './subtitles/style'
 
 // JASSUB (libass WASM + worker) is loaded only when an ASS/SSA track is selected, keeping it out of the player chunk.
@@ -26,7 +28,12 @@ export interface SubtitleLayerProps {
 export function SubtitleLayer({ raised = false, hidden = false }: SubtitleLayerProps) {
   const subtitle = usePlaybackStore((s) => s.subtitle)
   const delayMs = usePlaybackStore((s) => s.subtitleDelayMs)
-  if (!subtitle) return null
+  // the subtitle style sheet is open: text subtitles show a sample line while no cue is on screen, also when
+  // subtitles are off (the sheet would otherwise change nothing one can see)
+  const sample = usePlaybackStore((s) => s.subtitleSample)
+  // (no track chosen: a chosen track that is still loading gets no sample in the meantime)
+  const noTrack = usePlaybackStore((s) => s.subtitleIndex == null)
+  if (!subtitle) return sample && noTrack && !hidden ? <TextSubtitles key="sample" cues={NO_CUES} delayMs={0} raised={raised} sample /> : null
   if (subtitle.kind === 'pgs')
     // stays mounted while hidden: a new renderer would start a worker and parse the whole stream again
     return (
@@ -35,7 +42,7 @@ export function SubtitleLayer({ raised = false, hidden = false }: SubtitleLayerP
       </Suspense>
     )
   if (hidden) return null
-  if (subtitle.kind === 'text') return <TextSubtitles key={subtitle.streamIndex} cues={subtitle.cues} delayMs={delayMs} raised={raised} />
+  if (subtitle.kind === 'text') return <TextSubtitles key={subtitle.streamIndex} cues={subtitle.cues} delayMs={delayMs} raised={raised} sample={sample} />
   if (subtitle.kind === 'ass')
     return (
       <Suspense fallback={null}>
@@ -63,7 +70,10 @@ function useVideoRect(ref: React.RefObject<HTMLElement | null>) {
   return containedVideoRect(box.width, box.height, vw, vh)
 }
 
-function TextSubtitles({ cues, delayMs, raised }: { cues: SubtitleCue[]; delayMs: number; raised: boolean }) {
+const NO_CUES: SubtitleCue[] = []
+
+function TextSubtitles({ cues, delayMs, raised, sample = false }: { cues: SubtitleCue[]; delayMs: number; raised: boolean; sample?: boolean }) {
+  const { t } = useTranslation()
   const ref = useRef<HTMLDivElement>(null)
   const rect = useVideoRect(ref)
   const [active, setActive] = useState<SubtitleCue[]>([])
@@ -73,6 +83,8 @@ function TextSubtitles({ cues, delayMs, raised }: { cues: SubtitleCue[]; delayMs
   const hdr = usePlaybackStore((s) => isHdrVideo(s.item?.MediaSources?.find((m) => m.Id === s.source?.Id)?.MediaStreams ?? s.source?.MediaStreams))
   const prefs: SubtitleStylePrefs = useMemo(() => stylePrefsFor(allPrefs, hdr), [allPrefs, hdr])
   const style = useMemo(() => subtitleStyle(prefs, rect.height), [prefs, rect.height])
+  // what the track as a whole says about its layout: read once per track
+  const track = useMemo(() => trackLayout(cues.flatMap((c) => c.text.split('\n').map(cueLineText))), [cues])
 
   // cue timing needs frame accuracy: timeupdate fires only ~4x per second
   useEffect(() => {
@@ -95,21 +107,30 @@ function TextSubtitles({ cues, delayMs, raised }: { cues: SubtitleCue[]; delayMs
 
   // with the controls up the text keeps its size and steps up by the height of the control strip (style.ts RAISED_BY)
   const area: CSSProperties = { left: rect.x, top: rect.y, width: rect.width, height: rect.height }
+  const sampleText = t('web_subtitle_sample_1')
+  const sampleCue = useMemo<SubtitleCue[]>(() => [{ startMs: 0, endMs: 0, text: sampleText }], [sampleText])
+  const shown = active.length === 0 && sample ? sampleCue : active
   const box: CSSProperties = raised ? { ...style.box, marginBottom: `calc(${subtitleBottomMargin(prefs.subMargin, rect.height)} + ${RAISED_BY})` } : style.box
   return (
     <div ref={ref} className={styles.layer} aria-live="off">
       <div className={styles.area} style={area}>
-        {active.length > 0 && (
-          <div className={styles.box} style={box}>
-            {active.map((c) => (
-              <div key={`${c.startMs}-${c.endMs}-${c.text}`} className={styles.cue} style={style.cue}>
-                {c.text.split('\n').map((line, i) => (
-                  <span key={i} className={styles.line}>
-                    <span style={style.line}>{renderInline(line)}</span>
-                  </span>
-                ))}
-              </div>
-            ))}
+        {shown.length > 0 && (
+          <div className={styles.box} style={box} data-subtitle-sample={shown !== active || undefined}>
+            {shown.map((c) => {
+              const lines = c.text.split('\n')
+              // each line is a paragraph of its own with its own direction (subtitles/direction.ts); the box keeps
+              // it centred either way
+              const dirs = cueLineDirections(lines.map(cueLineText), track)
+              return (
+                <div key={`${c.startMs}-${c.endMs}-${c.text}`} className={styles.cue} style={style.cue}>
+                  {lines.map((line, i) => (
+                    <span key={i} className={styles.line} dir={dirs[i]}>
+                      <span style={style.line}>{renderInline(line)}</span>
+                    </span>
+                  ))}
+                </div>
+              )
+            })}
           </div>
         )}
       </div>

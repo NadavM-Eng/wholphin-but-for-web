@@ -2,6 +2,7 @@ import JASSUB from 'jassub'
 import { useEffect, useRef } from 'react'
 import { getPlaybackEngine } from './engine'
 import styles from './SubtitleLayer.module.css'
+import { assWithLineDirections } from './subtitles/assDirection'
 
 /** ASS/SSA subtitles through JASSUB (libass in a worker). Loaded lazily by SubtitleLayer. */
 export function AssSubtitles({ content, fonts, delayMs }: { content: string; fonts: Uint8Array[]; delayMs: number }) {
@@ -17,7 +18,8 @@ export function AssSubtitles({ content, fonts, delayMs }: { content: string; fon
     el.appendChild(canvas)
     let inst: JASSUB | null = null
     try {
-      inst = new JASSUB({ video: getPlaybackEngine().video, canvas, subContent: content, fonts, timeOffset: 0 })
+      // libass draws every line left to right unless the script asks otherwise: state each line's direction first
+      inst = new JASSUB({ video: getPlaybackEngine().video, canvas, subContent: assWithLineDirections(content), fonts, timeOffset: 0 })
       instance.current = inst
     } catch {
       // Worker/OffscreenCanvas unavailable: no ASS rendering
@@ -43,5 +45,5 @@ export function AssSubtitles({ content, fonts, delayMs }: { content: string; fon
     }
   }, [delayMs])
 
-  return <div ref={holder} className={styles.layer} />
+  return <div ref={holder} className={styles.layer} data-subtitle-renderer="ass" />
 }

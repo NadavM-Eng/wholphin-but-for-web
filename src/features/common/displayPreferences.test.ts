@@ -4,14 +4,14 @@ import { mapItemsDeep } from './itemCache'
 import { ud } from './testT'
 
 describe('removed from next up', () => {
-  const json = '{"value":{"418ca0e3-2d36-940a-2b2c-5525fe7947a0":"2026-11-17T15:19:25.560"}}'
+  const json = '{"value":{"01234567-89ab-cdef-0123-456789abcdef":"2025-01-01T00:00:00.000"}}'
 
   it('parses the Android format and writes it back with dashed ids', () => {
     const map = parseRemovedNextUp(json)
-    expect(map).toEqual({ '418ca0e32d36940a2b2c5525fe7947a0': '2026-11-17T15:19:25.560' })
+    expect(map).toEqual({ '0123456789abcdef0123456789abcdef': '2025-01-01T00:00:00.000' })
     expect(serializeRemovedNextUp(map)).toBe(json)
     expect(parseRemovedNextUp('not json')).toEqual({})
-    expect(dashedId('418ca0e32d36940a2b2c5525fe7947a0')).toBe('418ca0e3-2d36-940a-2b2c-5525fe7947a0')
+    expect(dashedId('0123456789abcdef0123456789abcdef')).toBe('01234567-89ab-cdef-0123-456789abcdef')
   })
 
   it('hides a removed series until it is played after the removal', () => {

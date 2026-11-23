@@ -2,10 +2,22 @@
  * Dialogs of the player (PlaybackDialogType + the subtitle search, the web shortcuts sheet and the web layout's
  * chapters and queue panels, which replace the CHAPTERS / QUEUE states of upstream's `OverlayViewState`).
  */
-export type PlayerDialog = 'settings' | 'captions' | 'audio' | 'speed' | 'scale' | 'bitrate' | 'delay' | 'search' | 'help' | 'chapters' | 'queue'
+export type PlayerDialog =
+  | 'settings'
+  | 'captions'
+  | 'audio'
+  | 'speed'
+  | 'scale'
+  | 'bitrate'
+  | 'delay'
+  | 'subtitleStyle'
+  | 'search'
+  | 'help'
+  | 'chapters'
+  | 'queue'
 
 /** The sheets that stand on the control strip: the controls stay up while one of them is open. */
-export const STRIP_SHEETS: ReadonlySet<PlayerDialog> = new Set(['settings', 'captions', 'audio', 'speed', 'scale', 'bitrate', 'chapters', 'queue'])
+export const STRIP_SHEETS: ReadonlySet<PlayerDialog> = new Set(['settings', 'captions', 'audio', 'speed', 'scale', 'bitrate', 'subtitleStyle', 'chapters', 'queue'])
 
 /** `PrefContentScale` values (PlaybackConstants.playbackScaleOptions order). */
 export const CONTENT_SCALES = ['FIT', 'NONE', 'CROP', 'FILL', 'Fill_WIDTH', 'FILL_HEIGHT'] as const

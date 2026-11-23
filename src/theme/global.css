@@ -149,6 +149,28 @@ ol {
   background: color-mix(in srgb, var(--c-on-surface) 30%, transparent) padding-box;
 }
 
+/*
+ * A scroller that holds a card grid always reserves the room of its vertical scrollbar: the element marked
+ * `data-grid-scroller`, or the page itself while it shows a grid that scrolls with the window
+ * (`data-grid-window`, set by CardGrid). The cards are sized from the scroller's width and decide the height of
+ * its content; if the scrollbar took room only while the content overflows, a grid that just fits would have no
+ * resting state (scrollbar in, cards narrower and shorter, content fits, scrollbar out, cards larger again: the
+ * whole grid shifted sideways on every frame). With the gutter reserved the width cannot depend on the content
+ * height. Overlay scrollbars (touch, macOS) take no room either way.
+ */
+[data-grid-scroller],
+html:has([data-grid-window]) {
+  scrollbar-gutter: stable;
+}
+
+/* Safari before 18.2 has no scrollbar-gutter: an always-present scrollbar reserves the same room. */
+@supports not (scrollbar-gutter: stable) {
+  html [data-grid-scroller],
+  html:has([data-grid-window]) {
+    overflow-y: scroll;
+  }
+}
+
 .fa {
   font-family: 'Font Awesome Solid';
   font-weight: 900;

@@ -4,7 +4,7 @@
   --shell-back-reserve: 0px;
   position: relative;
   min-height: 100dvh;
-  /* the open drawer pushes the page 160dp past the end edge; never scroll sideways */
+  /* never scroll sideways */
   overflow-x: clip;
 }
 
@@ -23,23 +23,14 @@
   --shell-back-reserve: 48px;
 }
 
-/* Page area: padding start 64 + 8 = 72dp, end 16dp; translated by 224 - 64 = 160dp while the drawer is open
-   (spring StiffnessMedium, same curve as the drawer width). */
+/* Page area: padding start 64 + 8 = 72dp, end 16dp. Owner request: the open drawer lies over the page
+   (NavDrawer.module.css) instead of pushing it 160dp aside as on the TV, so the page never moves. */
 .content {
   position: relative;
   z-index: 1;
   min-height: 100dvh;
   padding-inline: 72px 16px;
-  transition: transform var(--shell-spring-ms) var(--shell-spring);
   outline: none;
-}
-
-.content[data-open] {
-  transform: translateX(160px);
-}
-
-.rtl .content[data-open] {
-  transform: translateX(-160px);
 }
 
 .page {
@@ -52,7 +43,7 @@
   outline: none;
 }
 
-/* Floating Back button: sticks to the top of the viewport inside the shifting page area. */
+/* Floating Back button: sticks to the top of the viewport inside the page area. */
 .backSlot {
   position: sticky;
   top: 0;
@@ -64,6 +55,29 @@
   position: absolute;
   top: 8px;
   inset-inline-start: 0;
+}
+
+/*
+ * Owner request: the Back arrow has no circle at rest; under the pointer it gets a gentle one (the kit button's
+ * rest look, not its bright focus look), and also while the page is scrolled, when rows pass under the arrow.
+ * Keyboard focus keeps the kit's look.
+ */
+.back.back:not(:focus-visible, [data-focus-held]),
+.barBack.barBack:not(:focus-visible, [data-focus-held]) {
+  background: transparent;
+  color: var(--c-on-surface);
+  transform: none;
+}
+
+.backSlot[data-scrolled] .back.back:not(:focus-visible, [data-focus-held]) {
+  background: rgb(from var(--c-surface-variant) r g b / 0.8);
+}
+
+@media (hover: hover) {
+  :where(:root[data-pointer]) .back.back:hover:not(:focus-visible, [data-focus-held]),
+  :where(:root[data-pointer]) .barBack.barBack:hover:not(:focus-visible, [data-focus-held]) {
+    background: rgb(from var(--c-surface-variant) r g b / 0.8);
+  }
 }
 
 /* see AppShell.tsx: keyboard mode on a mouse device, window scrolled, button not focused */

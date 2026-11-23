@@ -253,6 +253,8 @@ function SearchContent() {
       )}
       <div
         className={styles.results}
+        // a grid scrolls here (CardGrid checks the mark); this scroller's bar is hidden, so nothing is reserved
+        data-grid-scroller
         ref={(el) => {
           scrollEl.current = el
           restoreScroll(el)

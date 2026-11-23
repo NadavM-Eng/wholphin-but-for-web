@@ -93,11 +93,49 @@ export function backdropColorSourceFor(item: BaseItemDto): string | null {
   return itemImageUrl(item, 'Backdrop')
 }
 
+// ---- Settings over a page (pageSnapshot.ts) ---------------------------------------------------------------
+// The copy behind Settings shows the page's backdrop, while the published one is cleared as for every
+// full-screen page. Back on the page it is published again at once (image and colours, no wait, no fade);
+// a request for the same image shortly after (a page that clears and submits when it mounts) is answered
+// from it too. Without this the backdrop blanked and came back 500 ms later with its 800 ms fade.
+let kept: BackdropResult | null = null
+let resumed: { result: BackdropResult; until: number } | null = null
+const RESUME_MS = 2000
+
+/** The page is about to be copied: remember what it shows. */
+export function keepBackdrop() {
+  kept = useBackdropResult.getState()
+}
+
+/** The copy was discarded without a return to its page. */
+export function forgetBackdrop() {
+  kept = null
+}
+
+/** Back on the copied page: publish what it showed. */
+export function resumeBackdrop() {
+  const result = kept
+  kept = null
+  if (!result?.itemId) return
+  resumed = { result, until: performance.now() + RESUME_MS }
+  useBackdropResult.setState(result)
+}
+
+const resumedNow = () => (resumed && performance.now() < resumed.until ? resumed.result : null)
+
+/** True for the image a return from Settings just published again: the renderer shows it without its fade. */
+export const isResumedBackdrop = (url: string) => resumedNow()?.imageUrl === url
+
 const isDynamic = () => getPref('backdropStyle') !== 'BACKDROP_IMAGE_ONLY' && getPref('backdropStyle') !== 'BACKDROP_NONE'
 
 async function submit(itemId: string, imageUrl: string | null, colorSource: string | null = imageUrl) {
   const cur = useBackdropResult.getState()
   if (cur.imageUrl === imageUrl && imageUrl != null) return
+  const again = resumedNow()
+  if (again && imageUrl != null && again.imageUrl === imageUrl) {
+    useBackdropResult.setState({ ...again, itemId })
+    return
+  }
   useBackdropResult.setState({ itemId, imageUrl: null })
   pending(1)
   let colors: BackdropColors | null | undefined

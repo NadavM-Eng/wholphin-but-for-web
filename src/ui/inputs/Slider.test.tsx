@@ -182,6 +182,31 @@ describe.each(['touch', 'pen'])('Slider under a %s (a pointer that scrolls the p
 })
 
 describe('Slider under the mouse (unchanged)', () => {
+  // the browser's own answers to a press: with the page's selection over the slider (a double click on it, select
+  // all) it dragged the selection away, the pointer events ended and the cursor showed "not allowed"
+  it('while the mouse is down on it, no drag-and-drop and no text selection begins, on the slider or beside it', () => {
+    const { slider, at, pointer } = setup()
+    const beside = document.body.appendChild(document.createElement('p'))
+    const refused = (type: string, on: Element) => !on.dispatchEvent(new Event(type, { bubbles: true, cancelable: true }))
+    const parts = [slider, ...slider.querySelectorAll('*'), beside]
+    expect(parts.length).toBe(6)
+    pointer('pointerdown', 'mouse', at(60))
+    pointer('pointermove', 'mouse', at(70))
+    for (const part of parts) {
+      expect(refused('dragstart', part), `dragstart on ${part.className || part.tagName}`).toBe(true)
+      expect(refused('selectstart', part), `selectstart on ${part.className || part.tagName}`).toBe(true)
+    }
+    pointer('pointerup', 'mouse', at(70))
+    // released: the page is the browser's again
+    for (const part of parts) {
+      expect(refused('dragstart', part)).toBe(false)
+      expect(refused('selectstart', part)).toBe(false)
+    }
+    // and the press itself always was: it is what moves focus to the slider
+    expect(refused('mousedown', slider)).toBe(false)
+    beside.remove()
+  })
+
   it('a press sets the value at once and captures the pointer; the drag follows', () => {
     const { value, at, pointer } = setup()
     pointer('pointerdown', 'mouse', at(80))

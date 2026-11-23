@@ -2,7 +2,7 @@
 
 This document lists every significant decision in the Wholphin Web project, who made it, why, and where it shows up in the code. It is meant for reviewing the project once it is finished.
 
-Last updated: 2026-11-18
+Last updated: 2026-11-24
 
 Related documents: [README.md](README.md) (index), [PROJECT-LOG.md](PROJECT-LOG.md) (chronology), [ARCHITECTURE.md](ARCHITECTURE.md) (structure), [DEVIATIONS.md](DEVIATIONS.md) (differences from upstream), [TOOLING.md](TOOLING.md) (tools and commands), [STATUS.md](STATUS.md) (current state), [spec/](spec/) (behavior specs extracted from upstream), [CLAUDE.md](../CLAUDE.md) (working agreement).
 
@@ -25,6 +25,9 @@ Other documents can cite an entry by its number, for example "see DECISIONS T-10
 - **Wave** means one build phase: wave 1 (foundations), wave 2 (shell, setup, Home, crawler), wave 3a (playback, settings, Seerr, production server), wave 3b (library browsing, detail pages, search, Home customization), wave 4 (Live TV, music, photos, screensaver). **The fix pass** is a later round of fixes on `main`. **The final merge** joins `main` and `wave3a` on branch `integration`: stage 1 joined `wave3a` with `main` as it was before the fix pass, stage 2 merged the fix pass, and **the stage 2 repair** handled the 31 findings of the checkers of stage 2. **The TV-comparison pass** (also called the parity pass, branch `parity`) compared the web app's screens with pictures of the Android TV app and fixed the differences (T-40). **The early merge** joined it into the merged app on branch `final` (T-41). **The final check and repair** examined the result with thirteen checkers and repaired it (T-44). **The backdrop colour job** made the dynamic backdrop colours match the TV (T-45). **The polish round** closed the points that the final check and the comparison pass had left open, after the landing (T-48).
 - **Usage limit** means the cap on how much model work the account may use in a period. When it is reached, running agents stop mid-task until it is reset.
 - **Mocked** means that a test answered a network request itself (with a Playwright route handler), so the request never reached a server.
+- **The trial** is the deployment of the app behind the owner's reverse proxy that started on 2026-11-18 (O-26, T-53) and still runs (O-27). **The trial address** is the public name it answers under. A **go-live** replaces the build the trial runs with a newer one, after the owner's yes for that build (O-45, T-64).
+- **The private repository** holds the full development history and is where the work goes on. **The public repository** holds the published tree, one commit per release (O-35, T-58). The commit hashes named in this document belong to the private repository.
+- **The fast path** is the lead's way of making a small, clear interface change alone and showing it within minutes, with the slow checks afterwards (T-63).
 
 **Status labels.** Each technical decision has a status. The labels follow [README.md](README.md#status-labels), with additions that name the branch where the work was done (all of it is on `main` since 2026-11-18):
 
@@ -67,6 +70,12 @@ That was the state when this document was first written (2026-11-17). Since then
 - **The trial deployment** started on the owner's go (O-26; T-52, T-53), and the owner tested the app on a touch device (O-29).
 - **The touch fix** for the one problem the owner named: one fixer and one independent verifier, verdict "ready to commit", commit `7ad52ba` on `main` (T-54 to T-56; A-163 to A-166). `main` was pushed at `7ad52ba`; the CI run on GitHub succeeded on `c358a52` and on `7ad52ba`.
 - **The clean-up:** all worktrees and finished branches removed (T-57).
+- **The work up to the first public release** (still 2026-11-18; [PROJECT-LOG.md](PROJECT-LOG.md) phase 31): the interface scale is applied when its slider is released (`93fe59c`; O-32, T-65) and the audio-track button is a music note (`6c14670`; O-32); a privacy sweep of the documents (`f3e18b1`; O-33); a compact player control strip and far less server transcoding (`bf31148`; O-34, T-59, T-60); the README of the first public release (`1003992`). The repository was published as a clean copy the same day (O-35, T-58).
+- **The first maintenance round** (2026-11-22; phase 32): four bugs, one fixer each (`db14d7c`, `4a08905`, `186fe2a`, `6f16c8b`; O-37, T-66 to T-68), then two more rounds for the player's strip (`c2316a4`, `255bff6`; T-60).
+- **The shell and Settings round** (2026-11-23; phase 33): the Back button only where it is needed (`32a0101`; O-39, T-69), the open drawer over the page and no darkening (`bb76c45`, `732e409`; T-70), Settings as a panel over the page it was opened from (`dc3c877` and six more commits up to `445a739`; O-40, T-61), and the series actor rows (`ba1526e`; T-75).
+- **Sign-in, the Home header and the player's settings** (2026-11-23 and 2026-11-24; phase 34): `27ab920` (O-41, T-71), `8d305b7` (O-42, T-72), `e31ba4b`, `cf29a99` and `509db33` (O-43, T-73, T-74).
+- **State on 2026-11-24:** `main` is at `509db33` and pushed to the private repository. The trial runs the image built from `509db33`. After it came the documentation catch-up (`3c66f2e`), the conversation export (`fda0c2b`, `0baf14f`; O-46), the repair of two Settings tests (`e9b96bf`) and the commit with the privacy sweep's fixes and phase 35. The second public release of 2026-11-24 (O-47, T-58) carries the tree of `main` after that commit, so the public repository holds the work up to and including phase 35.
+- **Phase 35** (2026-11-24; [PROJECT-LOG.md](PROJECT-LOG.md)): the conversation export on the owner's request (O-46), the privacy sweep and the second release after the owner's "Yes, publish" (O-47, T-58), and the lead's rule that every agent gets an explicit model (T-76).
 
 > **Landing state of the comparison pass:** landed. On `main` since 2026-11-18, commit `e1b7e04` (fast-forward of `main` to `final`, which holds the merge `3085fba` of `parity` at `2a25082` and the top-up merges `f27f68a` and `b120d5f`).
 
@@ -81,6 +90,8 @@ O-13 to O-18 are instructions the owner gave during the build without being aske
 O-19 to O-25 come from the lead's conversation with the owner on 2026-11-17 and 2026-11-18. They are in no file; the lead reported them for this document. The wording below is the lead's summary of the owner's meaning, not a quote; the few words in quotation marks are the lead's rendering of the owner's own phrase.
 
 O-26 to O-29 come from later on 2026-11-18, around the trial deployment and the owner's first test of the app. They are recorded the same way: in no file, reported by the lead, summarized and not quoted.
+
+O-30 to O-47 come from 2026-11-18 (after the touch fix) to 2026-11-24: the way to the first public release, the maintenance rounds after it and the second release, in which the owner tried each change on the trial and answered. They are in no file either; the lead reported them for this document. Here the words in quotation marks are the owner's own, with the spelling corrected; everything else is the lead's summary.
 
 ### O-1. Name and license
 
@@ -101,6 +112,7 @@ O-26 to O-29 come from later on 2026-11-18, around the trial deployment and the 
   - The raw agent logs (`.agent-logs/`) are git-ignored. This documentation set is the curated history instead.
   - The timing of publication is still open (Q-3).
 - **Superseded on 2026-11-18 by O-20.** The bar "public when a first version works" no longer applies: the repository goes public only when every known problem is solved. The rest of this entry (writing everything as if public, the no-reply identity, the git-ignored logs) still holds.
+- **Updated later on 2026-11-18:** the project was published the same day, as a clean copy in a new public repository; this repository stays private (O-33, O-35, T-58). Q-3 is settled.
 
 ### O-3. Look and layout
 
@@ -114,6 +126,7 @@ O-26 to O-29 come from later on 2026-11-18, around the trial deployment and the 
   - Design values are copied exactly from upstream (T-3, T-4).
   - Layout is not fixed: rows scroll sideways, grids reflow, and pages scroll vertically (CLAUDE.md, "Layout").
   - The wave 2 and wave 3a briefs state the owner's bar in these words: it must look and behave like the TV app (same colors, cards, type, structure), adapted to mouse, keyboard and touch, with a fluid layout from 360px phones to ultrawide desktops. (This is the lead's wording in the briefs, not a verbatim quote from the owner.)
+- **Departures the owner asked for later (2026-11-18 to 2026-11-24):** the player's controls (O-34, T-60), the Back button, the nav drawer and the Settings panel (O-39, O-40, T-61, T-69, T-70), the Home header's overview (O-42) and the player's Settings sheets (O-43). Each is a deliberate difference from the TV app, made on the owner's word and recorded in [DEVIATIONS.md](DEVIATIONS.md). For everything else this entry still holds.
 
 ### O-4. Target devices
 
@@ -210,6 +223,7 @@ O-26 to O-29 come from later on 2026-11-18, around the trial deployment and the 
 - **Question:** The lead's notes record this as an adjustment the owner asked for explicitly. The options offered are not recorded.
 - **Choice:** An on-screen Back button plus the Escape key replace the TV remote's Back key.
 - **What it means for the build:** See T-7.
+- **Narrowed on 2026-11-23 by O-39:** the button shows only where it is needed. Escape and the browser's Back are unchanged.
 
 ### O-13. The limited test account may be used as a normal user
 
@@ -271,6 +285,7 @@ O-26 to O-29 come from later on 2026-11-18, around the trial deployment and the 
 - **What the owner decided:** The GitHub repository goes public only after every known problem is solved and the product is, in the owner's word, perfect. If the licensing could not have been made clean (O-19), the repository would have stayed private.
 - **What it replaced:** O-2's bar, "public when a first version works" (sign-in, browsing, playback and a README). O-2 is marked superseded.
 - **What it changed:** Q-3 now waits on this bar instead of O-2's. The public demo was cancelled partly because of it (O-25).
+- **Updated later on 2026-11-18:** the owner gave the go for publishing the same day, after two last requests and a privacy sweep (O-33, O-34), and chose a clean copy (O-35). What was still open at that moment stayed open and is listed in [STATUS.md](STATUS.md).
 
 ### O-21. Going live: first a trial on a second port
 
@@ -308,7 +323,7 @@ O-26 to O-29 come from later on 2026-11-18, around the trial deployment and the 
 ### O-25. No public demo
 
 - **What the owner asked for, and then cancelled:** A public demo on GitHub Pages, where visitors type the address of their own server. The owner asked for it and cancelled it on the same day, 2026-11-18, with the words "No demo".
-- **Why, as the lead recorded it:** On the free plan, GitHub Pages needs a public repository. A public demo also distributes the GPL application, so its source would have to be public too. Both conflict with O-20.
+- **Why, as the lead recorded it:** A public demo distributes the GPL application, so its source would have to be public too. That conflicts with O-20.
 - **What it changed:** The job that was to build the demo was stopped before it wrote any code (the archive lists it with one agent and no result).
 
 ### O-26. The go for the trial, and a second go for a sub-domain
@@ -326,6 +341,7 @@ O-26 to O-29 come from later on 2026-11-18, around the trial deployment and the 
 
 - **What the owner decided:** After testing the app (O-29), the owner decided to keep the trial for now.
 - **What stays the owner's:** making it permanent is the owner's decision; the lead does not edit the owner's reverse-proxy configuration.
+- **State on 2026-11-24:** the trial still runs, on the same temporary route. Since the first public release each newer build replaces the one it runs only after the owner's yes for that build (O-45, T-64).
 
 ### O-28. The order of work: the desktop browser version first, phone and touch after
 
@@ -333,13 +349,176 @@ O-26 to O-29 come from later on 2026-11-18, around the trial deployment and the 
 - **What it changed:**
   - Open points are sorted by it: [STATUS.md](STATUS.md) section 4.3 lists the phone and touch interface as a later block of work, with no list of problems yet.
   - One exception was made the same day, by the lead: the touch problem the owner had just named was fixed at once (T-54).
-  - It raised a question the owner has not answered yet: whether "flawless" includes the features that are not built (Q-43).
+  - It raised a question: whether "flawless" includes the features that are not built (Q-43). The owner answered it later the same day: they do not block it (O-30).
+  - The maintenance rounds after the first public release follow it: the owner hands over items one at a time, the desktop browser first (O-35, O-37).
 
 ### O-29. The owner's first acceptance: "everything works"
 
 - **What happened:** On 2026-11-18 the owner tried the app on a real touch device and reported that everything works. It is the first time a person used the app, and the first use on a real touch device.
 - **What the owner named:** one touch problem. In Settings, scrolling the page with a finger that lands on a slider changed the slider at once.
 - **What it changed:** the touch fix (`7ad52ba`; T-54 to T-56, A-163 to A-166). The owner's statement is recorded as given: which pages and which browser the owner used is not recorded, and it does not replace the acceptance pass of [STATUS.md](STATUS.md) section 5.
+
+### O-30. The features that are not built do not block "finished"
+
+- **Context:** Q-43 asked whether the "flawless" desktop version of O-28 includes four things that a browser could have and the app did not: remote control of this app from another device, the filter and the full view options on the music library tabs, Play on an album or an artist from the shared context menu, and image subtitles drawn in the browser.
+- **What the owner decided (2026-11-18):**
+  - Remote control from another device is "nice to have", not required.
+  - The music extras: the owner does not care about them as long as music works.
+  - Image subtitles drawn in the browser: left out, on the lead's recommendation, after the lead had explained what it is.
+- **What it changed:**
+  - Q-43 is settled: none of the four blocks "finished".
+  - One of them was built later the same day after all, as part of the request for less server transcoding: image subtitles of the PGS kind are drawn in the browser (O-34, T-59).
+  - The others stay recorded as not built in [DEVIATIONS.md](DEVIATIONS.md).
+
+### O-31. The next priority: polish, then additions for the owner of a deployment
+
+- **What the owner decided (2026-11-18):**
+  - The next priority, in the owner's words: "polish everything up so it would look the greatest that ever been".
+  - After that, additions for the owner of a deployment: things that shape how that deployment's own users first get the app. The first example is the default interface language of a deployment.
+- **Confirmed on 2026-11-19:** the direction is that the owner of a deployment sets the defaults for all its users (O-36).
+- **What it changed:** Nothing is built yet. The lead's idea, which is not agreed: a setting of the deployment, served through `/config.json` (T-12), and not a fork of the code. The form is open (Q-44).
+
+### O-32. Two small requests: the audio-track button and the interface scale slider
+
+- **What the owner asked for (2026-11-18):**
+  - The audio-track button of the player must not look like the volume control. Both showed a speaker (open as Q-34 since wave 3a).
+  - The interface scale must not resize the interface while its slider is dragged.
+- **What it changed:**
+  - Commit `6c14670`: the volume control keeps its speaker, and the audio-track button takes the Material "audiotrack" music note, which Jellyfin's own web player uses for it. The icon was the lead's choice; the owner saw it: "looks fine". Q-34 is settled.
+  - Commit `93fe59c`: a drag on the "Interface scale" slider moves only the thumb and the row's summary, and the scale is applied once, at the release (T-65).
+  - Each was built by one fixer, and one independent verifier checked both (the archive lists the job with three agents).
+
+### O-33. The go for publishing, after a privacy sweep
+
+- **What the owner decided (2026-11-18):** When the fixes are finished: first a privacy sweep of the repository, then the repository becomes public. The owner asked for five agents at once, each on a different part, and not as a high-security matter: "don't treat it as high security", find and fix.
+- **The rule for the documents:** a decision the owner made may be recorded. Nothing describes the owner, the owner's home, machine or server, and no picture shows the real server.
+- **What it replaced:** the bar of O-20, "only when every known problem is solved". The owner gave the go while some points were still open; they are listed in [STATUS.md](STATUS.md).
+- **What it changed:**
+  - The sweep ran as five finders (the documents that tell the story; the technical documents; the application code; the tools, tests and pictures; the git history), one fixer and two re-checkers.
+  - Its fixes are commit `f3e18b1` (the documents) and a part of `bf31148` (the last wording in comments and tool READMEs).
+  - How the repository was published is O-35 and T-58. Q-3 is settled.
+
+### O-34. Two must-haves before shipping: less server transcoding, and a player laid out like Jellyfin's own web player
+
+- **Context:** For a desktop Chromium browser the server transcoded far more than it had to: "container not supported" for MKV files, "audio codec not supported" for AC-3 and E-AC-3 sound, and image subtitles burned into the picture.
+- **What the owner decided (2026-11-18):**
+  - (a) Less server transcoding: the site should do as much as it can itself.
+  - (b) A player layout modelled on Jellyfin's own web player: no dimming of the video when the controls show; a compact control strip flush with the bottom edge; chapters and queue as icon buttons that open panels, instead of rows of cards.
+  - Later, after seeing the layout: "keep the controls in the middle."
+- **What it means:** (b) knowingly departs from the TV layout, and so from O-3 for the player's controls.
+- **What it changed:**
+  - Commit `bf31148`, built by two builders side by side (the layout; the playback engine), each checked by an independent verifier (the archive lists the job with four agents).
+  - The direct-play work is T-59; the layout is T-60. A web-only preference brings the TV's dimming back.
+
+### O-35. How to publish: a clean copy
+
+- **Context:** The privacy sweep cleaned the current files (O-33). Older versions of the documents stayed in the repository's history, and a history cannot be cleaned in place on the host (T-58).
+- **What the owner decided (2026-11-18):** "Yes, clean copy". The existing repository stays private, as the archive with the full history. A new public repository holds the cleaned tree as one fresh commit.
+- **What happened:** The project was published on 2026-11-18 at about 21:30 UTC. The README of that release is commit `1003992`.
+- **What it changed:**
+  - Since then the project is in "maintenance and improvements": the owner hands over items one at a time, the desktop browser first (O-28).
+  - The procedure for every later release is T-58.
+
+### O-36. Four answers: the time format, where Settings opens, global view options, the defaults of a deployment
+
+- **What the owner decided (2026-11-19):**
+  - The time format in the player: "52:53 and 1:52:53". There is no hour field under an hour.
+  - Settings opens next to the sidebar (the nav drawer), in left-to-right and in right-to-left languages alike.
+  - The view options (card size, columns, spacing, text under a card) are global: one setting for every library.
+  - The owner of a deployment sets the defaults for all its users (O-31).
+- **What it changed:**
+  - The time format: commit `c2316a4` (T-60).
+  - Settings on the nav drawer's side: commit `398f168` (O-40, T-61).
+  - The global view options are not built; the owner set them aside on 2026-11-24 (O-44).
+  - The defaults of a deployment are not built (Q-44).
+
+### O-37. The order of the first maintenance round
+
+- **What the owner decided (2026-11-22):**
+  - Bugs first, one agent per bug, the lead leading: "start only on the bugs. delegate to each for an agent. You are the lead as always."
+  - Then, for the player: a softer gradient, fixed button positions, the title closer to the edge, the time format of O-36, a favourite button.
+  - Then: swap the two side button groups and keep their inner order, "meaning that the volume will be at the right in its row".
+- **What it changed:**
+  - Four bugs, one fixer each; the archive also lists one checker for each fix:
+    - a poster grid that just fits shook sideways (`db14d7c`, T-66);
+    - a mouse drag on a slider was taken over by the browser's drag-and-drop (`4a08905`, T-67);
+    - the player's video box against the window: measured, it already filled it, and a test now holds that (`186fe2a`);
+    - subtitle lines took the direction of the interface language (`6f16c8b`, T-68).
+  - The player round: commit `c2316a4` (T-60).
+  - The swap: commit `255bff6` (T-60).
+
+### O-38. Small changes must not take long
+
+- **What the owner said (2026-11-22 and 2026-11-23):** "it doesn't need to take more than 7 minutes"; "again, things are taking too long"; "you need to learn how to make things go faster, without losing quality".
+- **What it changed:** The lead set a rule for small, clear interface changes: the fast path (T-63). The multi-agent workflows of O-11 are kept for large or risky work.
+
+### O-39. The Back button only where it is needed
+
+- **Context:** Since T-7 a floating Back button showed on every page except Home (O-12).
+- **What the owner decided (2026-11-23):** The Back button "is ugly, and unneeded in many cases. Understand when there is no need for it and get rid of it." Later the same day: no Back button on Settings either.
+- **What it changed:**
+  - Commit `32a0101`: no Back button on the pages the drawer leads to, and no circle around the arrow at rest (T-69).
+  - Commit `dc3c877` and the ones after it: no Back button on Settings while the area beside the panel can be clicked (T-61).
+
+### O-40. Settings: a panel on the drawer's side over the page behind it, and no darkening
+
+- **What the owner decided (2026-11-23),** one step at a time, each after seeing the one before:
+  1. No Back button on Settings, and a see-through background: "just remove it and make the background transparent with a little tint". Asked what should be behind it, the owner chose "Page behind stays visible".
+  2. "I now want to make the settings be in the correct side": the nav drawer's side.
+  3. "make the settings not fade in, just appear".
+  4. "I do not like the way the settings pop up. Can't it be something similar to the sidebar's look and feel?"
+  5. "I want the darkening of the image to go away. The background doesn't need to get dark when I open the sidebar or settings."
+  6. A blink between the open drawer and Settings, to be found and fixed.
+  7. The opening transition of the Settings panel was broken: "redo it".
+- **At the end:** "seems to work great now."
+- **Related, the same day:** the open drawer lies over the page instead of pushing it aside (commit `bb76c45`). The commit message records it as an owner request, because the push was unpleasant to watch; the owner's words are not recorded.
+- **What it changed:**
+  - Commits `dc3c877`, `398f168`, `5ab9fd6`, `d1be200`, `7454e4c`, `732e409`, `630c7e9` and `445a739` (T-61, T-70).
+  - Step 3 was replaced by steps 4 and 7 for one case: chosen from the open drawer, the panel now opens out of the drawer. Opened any other way, and between Settings screens, it just appears.
+  - Each step is a deliberate difference from the TV app, which shows Settings as a full-screen page with its panel at the end edge, fades and slides it in, and darkens the backdrop behind the open drawer. They are recorded in [DEVIATIONS.md](DEVIATIONS.md).
+
+### O-41. A listed user without a password is signed in by the click
+
+- **What the owner decided (2026-11-23):** About users without a password: "it should account only to users on the welcome screen". For such a user: "clicking it should immediately open the main screen".
+- **What it changed:** Commit `27ab920` (T-71).
+
+### O-42. More room for the description in the Home header
+
+- **What the owner asked for (2026-11-23):** more room for the show description in the Home header.
+- **What it changed:** Commit `8d305b7` (T-72). The owner: "seems fine".
+
+### O-43. The player's settings: subtitle style inside the player, and smaller sheets
+
+- **What the owner asked for (2026-11-23 and 2026-11-24),** in three steps:
+  - "change subtitles inside a player's settings": the subtitle style options inside the player (commit `e31ba4b`).
+  - "When there are subtitles unable to be changed it should say so. Make it a bit more transparent. The settings themselves take too much space for what they need. Let them keep a bit of padding and make less wide." With a picture of the player's main Settings menu the owner made clear that this means every Settings sheet of the player (commit `cf29a99`).
+  - "there is still a lot of space to the left" and "less transparent also make it" (commit `509db33`).
+- **What it changed:** T-73 and T-74.
+
+### O-44. View options for every library: set aside
+
+- **Context:** O-36 had decided that the view options are global. The lead offered "view options for every library, with a bigger dialog" as the next item.
+- **What the owner decided (2026-11-24):** "no need for now, I think it is pretty nice as it is".
+- **What it changed:** The global view options of O-36 are not built. The view options stay as they are.
+
+### O-45. A new build replaces the trial only after the owner's yes for that build
+
+- **What the owner decided:** A standing rule, restated every time: a new build replaces the one the trial runs only after the owner's explicit yes for that build ("Yes, go live").
+- **What it means:**
+  - It continues O-21: nothing on the live side changes without the owner's explicit yes.
+  - A yes covers one build. The lead shows the change first, then asks (T-63); how a go-live is carried out is T-64.
+
+### O-46. A written copy of the whole working session, kept up to date
+
+- **Context:** The documents are written from agents' reports and the lead's account; the owner wanted the working session itself to be readable afterwards.
+- **What the owner asked (2026-11-24):** An automatically written copy of the working session that includes the pictures, the subagents' chats and the chat with the lead; then that it be brought up to date "every few chats".
+- **What it changed:** The tool `tools/export-conversation.mjs` (`npm run conversation`; commits `fda0c2b`, `0baf14f`), described in [TOOLING.md](TOOLING.md) section 15. Its output is git-ignored, like the agent-log archive. As a Claude Code "Stop" hook it rebuilds the copy on every fifth reply.
+
+### O-47. The go for the second public release
+
+- **Context:** After the documentation catch-up the lead asked whether to run the privacy check and publish the newer work. Until then it was not recorded whether the owner wants to give a go for each release.
+- **What the owner decided (2026-11-24):** "Yes, publish".
+- **What it changed:** The privacy sweep and the second release were made the same day (T-58; phase 35 of [PROJECT-LOG.md](PROJECT-LOG.md)). For this release the owner was asked and gave the go; whether the owner wants to be asked before every later release is not recorded.
 
 ---
 
@@ -358,6 +537,8 @@ Each entry gives:
 Where the sources do not record which alternatives were weighed, the "Rejected" line names the obvious alternative and is marked "(implied)".
 
 T-27 to T-32 each came out of an incident on the development machine. What happened, in order and with the commits, is in [PROJECT-LOG.md](PROJECT-LOG.md) phase 15. T-33 to T-36 are the lead's decisions from the later phases (phases 13 to 17 of the log). T-37 to T-42 are the lead's decisions of 2026-11-17 and 2026-11-18: stage 2 of the final merge, the run in which the usage limit was reached, the TV-comparison pass and the way to landing. T-48 to T-51 are the lead's decisions at the landing of the polish round, the same day. T-52 to T-57 are the lead's later decisions of that day: the trial deployment, the touch fix after the owner's first test, and the clean-up.
+
+T-58 to T-64 are the lead's decisions around the first public release and the maintenance rounds after it (2026-11-18 to 2026-11-24; phases 31 to 34 of the log): how the project is published, the direct-play work, the web player's layout, the Settings panel, and three working rules. T-65 to T-75 record the smaller technical choices of the same days that have a visible effect, one entry per change. T-76 is the lead's rule of 2026-11-24 about the model each agent runs on. Part 3 ends with the touch fix, so these entries also hold the choices of the agents that built the work of 2026-11-18 and 2026-11-22; the lead kept those choices when it committed, and each entry says who built it where that is recorded. The work of 2026-11-23 and 2026-11-24 was the lead's own, on the fast path (T-63).
 
 ### T-1. Stack: Vite, React, TypeScript and a small set of libraries
 
@@ -503,6 +684,7 @@ T-27 to T-32 each came out of an incident on the development machine. What happe
   - Pages with content in the top corners must leave room for the floating button (`--shell-back-reserve`).
   - The player hides the button.
   - What Escape does on Home is an agent decision (A-5).
+- **Changed on 2026-11-23:** the floating button no longer shows on every page except Home. It is absent on the pages the drawer leads to (T-69) and on Settings while the area beside the panel can be clicked (T-61). The keys are unchanged.
 - **Code:** `src/app/shell/BackButton.tsx`, `src/app/shell/useBackKey.ts`, `src/app/shell/useGoBack.ts`.
 - **Status:** Built and reviewed; verified in a browser.
 
@@ -1291,6 +1473,311 @@ T-27 to T-32 each came out of an incident on the development machine. What happe
 - **Code:** none. [TOOLING.md](TOOLING.md) sections 8 and 14.
 - **Status:** `reference/` restored: Done. The new capture: Planned.
 
+### T-58. Publication as a clean copy: two repositories, one commit per release
+
+- **Context:** The owner gave the go for publishing after a privacy sweep (O-33). The sweep cleaned the current files. Older versions of the documents, with what the sweep had removed, stayed in the git history.
+- **Decision:**
+  - Two repositories. The private repository keeps the full history and is where the work goes on. The public repository gets one commit per release.
+  - The procedure for a release: first a privacy sweep of the tree; then one commit on the public branch whose tree is exactly the tree of `main`, with its dates in UTC and a no-reply identity.
+  - The private history is never pushed to the public remote.
+- **Why:**
+  - The history could not be cleaned in place: the host keeps old commits reachable through pull-request refs, so rewriting the branches would not have removed them.
+  - A release that is one commit brings no history with it, so the sweep before it has only the tree to read.
+  - The owner chose it: "Yes, clean copy" (O-35).
+- **Rejected:** rewriting the history of the existing repository and making that one public.
+- **Consequences:**
+  - The commit hashes named in these documents belong to the private repository and cannot be looked up in the public one.
+  - The public repository shows no development history; these documents are the history.
+  - The second release was made on 2026-11-24 (O-47; phase 35 of [PROJECT-LOG.md](PROJECT-LOG.md)): one new commit on the public branch on top of the first release's commit, whose tree is the tree of `main` at the release, made with a no-reply identity and UTC dates, and pushed to the public repository; the private history was not pushed. The public repository now holds the work of phases 32 to 35.
+  - Its sweep followed the procedure above with five readers, one per part of the difference between the first release and `main` (the documents, the end-to-end tests, the player, the rest of the code and tools, and a pattern search over the whole tracked tree), and a second reader for every finding who was told to refute it. 51 findings were reported; the readers that tried to refute them let about 30 stand, all of low severity (none was a name, an address, a credential or a path), and about half of those were in text that the first release had already published. What was found, in general terms: statements that described the owner's use or the real server rather than the software, local clock times of the work, sample data in a unit test taken from a real response, and a table of the stream types of real items. All were reworded or removed before the release. The lead also searched the whole tree for the real private values themselves; none was present.
+  - It cost more than announced: see T-76.
+- **Code:** none. `README.md` carries the status line of the first public release (commit `1003992`).
+- **Status:** In use. The first release: Done. The second release: Done (2026-11-24).
+
+### T-59. Direct play: the browser plays what it really can, and the server converts only what is left
+
+- **Context:** For a desktop Chromium browser the server converted far more than it had to, and the owner asked for the site to do as much as it can itself (O-34). Until then Matroska files were always repackaged by the server; image subtitles were always burned in (A-25); HDR video was offered only on an HDR display; and the browser's own answers about AC-3 and E-AC-3 were believed.
+- **Decision** (commit `bf31148`, by the engine builder; the lead kept it):
+  - **Matroska is decided by playing a clip, not by asking and not by the browser's name.** A Matroska clip of about 1.5 kB is embedded in the app and loaded into a detached, muted media element when the capabilities are measured. A decoded first frame means yes, an error means no. With no answer in 2 seconds (a browser that postpones loading), the browser's own type answer is believed, but only from an engine that turns down a made-up codec.
+  - **Inside Matroska only what the element decodes is listed.** Chromium plays a Matroska file whose audio it cannot decode as a silent film, without an error. Such a file goes through the server, which copies the video and converts the audio.
+  - **AC-3 and E-AC-3 are confirmed with a silent clip** of a quarter of a second when the type check says yes. An explicit error overrules the claim; no answer leaves it standing.
+  - **The second audio track is the server's call.** A video element without the `audioTracks` API plays the first audio track of a file, whatever the default flags say (measured in Edge, Chrome and Firefox). The profile says so with the condition `IsSecondaryAudio = false`, and the server answers a request for another track with a repackaged stream in which the video and that audio track are copied. The player's own fallback step for this case was removed, so choosing the first track again returns to direct play.
+  - **PGS subtitles are drawn in the browser** by libpgs when the existing preference "Direct play PGS" is on. It is on by default and had no effect before. The track is fetched whole with the Authorization header, and a body that is not a PGS stream is treated as unavailable. DVD (VobSub) and DVB subtitles stay burned in.
+  - **HDR10 and HLG are played directly in desktop Chromium also on a display that is not HDR,** because that browser converts the picture for the display itself. No API answers the question, so this is the one check by browser engine: the "Chromium" brand and "not mobile" of the browser's own client hints.
+  - **When one codec is unsupported, only that stream is converted** and the video is copied.
+- **Why:**
+  - Each point removes a conversion the owner had seen.
+  - A type question answers "would you play this"; the clip answers "did you just play it". Browsers disagree with their own type answers for Matroska, and a browser can name the Dolby codecs without having a decoder on the machine.
+  - Three points follow Jellyfin's own web client: Matroska as a direct-play container, the `IsSecondaryAudio` condition, and PGS delivered as a file for a canvas renderer. The HDR check is the one that client makes.
+- **Rejected:**
+  - Deciding by the browser's name (the user agent).
+  - Believing the type answers alone.
+  - A Dolby decoder inside the browser (WebAssembly feeding Web Audio beside a muted video): looked into by the builder and not built. It takes the sound out of the video element, so keeping picture and sound in step, volume, mute and picture in picture would all have to be built again.
+- **Consequences:**
+  - A new dependency, libpgs 0.9.0 (MIT), in its own lazily loaded chunk; it is in `THIRD-PARTY-NOTICES.md` and in the generated licence list.
+  - AC-3, E-AC-3, DTS and TrueHD sound is still converted by the server where the browser has no decoder: the audio alone, with the video copied.
+  - Two earlier entries changed: the rule of A-24 that a track change never climbs back to direct play no longer holds for a file's first audio track, and the first point of A-25 is replaced.
+  - A defect fixed on the way: the audio track shown as selected for a directly played file was the one with the default flag, where the browser plays the first one. It is the first one now.
+  - The throwaway test server got three small sample files for these cases, and the Debug page shows what was measured.
+  - Tested in headless Edge with those sample files (`e2e/specs/playback-direct.spec.ts`). Not recorded here: how the films of a real server play since the change, and how the browser's HDR conversion looks on real films.
+- **Code:** `src/features/playback/engine/probeMedia.ts`, `capabilities.ts` (`matroskaSupported`, `confirmDecode`, `browserToneMapsHdr`, `hdrPlayable`), `deviceProfile.ts`, `engine.ts`, `PgsSubtitles.tsx`, `subtitles/loader.ts`, `PLAYBACK_MATRIX.md`; `src/features/settings/debugInfo.ts`; `e2e/specs/playback-direct.spec.ts`.
+- **Status:** Done. The HDR rule: Open for re-checking when someone has watched real HDR films this way.
+
+### T-60. The web player's layout: one compact strip, fixed button positions, clock times
+
+- **Context:** The owner asked for a player laid out like Jellyfin's own web player (O-34), then for a second round and a swap of the side groups (O-36, O-37). The TV's controller is a title, a seek bar, three button groups and rows of chapter and queue cards under them, about a quarter of the screen, over a darkened picture.
+- **Decision,** in three commits:
+  - **`bf31148` (the layout builder, checked by an independent verifier; the last two points are the lead's changes before the commit):**
+    - Nothing darkens the picture while the controls show. A web-only preference, "Dim the video while the controls are shown" (`WebPlayerDimVideo`, off by default), brings the TV's scrim back.
+    - One low strip at the bottom edge. Its height is one variable, `--player-strip-h`: 62dp, never more than 12.8% of the window's height, which is the black bar of a 2.39:1 film on a 16:9 screen, and never less than 46 real pixels. Every inner size is a share of it. Phones in portrait get two rows of buttons in 100dp.
+    - Title, Back and clock are in a slim strip at the top.
+    - Chapters and queue are two icon buttons that open panels (keys H and Q), instead of the rows of cards.
+    - The transport buttons are in the middle: the button row is a grid whose two side columns are equal while there is room. The builder had put them at the start side; the lead changed it after the owner's "keep the controls in the middle" (O-34).
+    - With the controls up, subtitles step up only by the strip's height. The TV shrinks its subtitle view to the top 70% of the screen, because its controller covers the lower part of the picture. Both builders had left the TV's rule in place and both verifiers pointed at it.
+  - **`c2316a4` (a job of two builders, three checkers and one fixer):**
+    - The button row has the same physical positions in every language; it is laid out left to right whatever the page's direction.
+    - Times are clocks ("52:53", "1:52:53", "-53:39") in the elapsed and remaining time, the seek preview, the D-pad seek overlay and the chapter list. The digits have one width and the longest text of the item has its room, so the seek bar keeps its length.
+    - The strip's dark gradient starts transparent one strip height above it and darkens to the window's edge.
+    - The top strip has no logo: the title starts right after Back.
+    - A favourite button for the item that is playing (a web addition).
+    - A window under 500 wide has the two-row strip whatever its height.
+  - **`255bff6`** (how it was built is not recorded): the two side groups swap places. Left: settings, favourite, picture in picture, volume. Right: subtitles, audio track, chapters, queue, fullscreen. Settings and fullscreen stay at the ends, the transport stays in the middle. The volume slider opens at the right of its button, over the free part of the left side, and takes no room in the row. Sheets and panels open above their buttons.
+- **Why:**
+  - The owner asked for each of these.
+  - A strip no taller than the letterbox bar does not cover the picture of a wide film.
+  - Fixed positions: a button stays where the hand expects it, in Hebrew and Arabic too.
+  - A grid centres the transport group without measuring anything in script.
+- **Rejected:** the TV controller's layout for the web (one preference keeps its dimming); a row that mirrors with the language's direction, as the first commit had it.
+- **Consequences:**
+  - A deliberate deviation from the TV layout, and from O-3 for the player; it is recorded in [DEVIATIONS.md](DEVIATIONS.md).
+  - The times are plain left-to-right text in every locale, so the minus of the remaining time stands in front of the digits in Hebrew too. That settles Q-35.
+  - For the favourite button, item patches now reach the playback store's own copies (`itemCache.onItemPatched`), so its state is right at once and after a rollback.
+  - The TV-comparison scenes of the player differ from the TV pictures by design.
+  - A burned-in subtitle cannot move and can be covered by the strip.
+  - Known limit: in a narrow one-row window the volume slider has little room while a Skip button shows.
+- **Code:** `src/features/playback/PlayerView.module.css` (`--player-strip-h`), `src/features/playback/ui/Controller.tsx`, `Controller.module.css`, `PlayerTopBar.tsx`, `PlayerPanel.tsx`, `ChaptersPanel.tsx`, `QueuePanel.tsx`, `FavoriteButton.tsx`, `VolumeControl.tsx`, `keymap.ts`; `src/features/playback/engine/subtitles/style.ts` (`RAISED_BY`); `tools/gen-preferences.ts` (`WEB_ONLY`); `e2e/specs/playback-layout.spec.ts`.
+- **Status:** Done.
+
+### T-61. Settings as a panel over a lifeless copy of the page it was opened from
+
+- **Context:** The owner wanted Settings as a panel beside the page, with the page behind it still visible (O-40). The shell (the drawer and the page) and Settings are different route layouts: the shell layout unmounts when the full-screen layout mounts, so the page is gone at the moment Settings shows.
+- **Decision:**
+  - **A copy, not the page.** When the shell is torn down for a Settings route it copies its own DOM. The full-screen layout shows the copy in an inert layer behind the panel. Opened by its address, Settings has no copy and the layer is the plain background.
+  - **What is stripped from the copy:** media elements, frames and scripts, so that there is never a second player; ids, `for`, `autofocus` and `tabindex`; every `data-*` attribute that no stylesheet selects on, because those are the hooks code finds elements by; the drawer's open state. A copy has no listeners. Its animations and transitions are switched off.
+  - **What is kept:** the scroll offsets inside the page and of the window, the width the shell had, the values of inputs and the content of canvases.
+  - **Whose it is:** the copy carries the key of the user it was taken for. It is never shown to another session and is dropped at sign-out.
+  - **The return:** back on the copied page, the copy lies over the real page for 150 ms while that mounts, then fades away in 200 ms, and the page's own fade-in is skipped. With reduced motion it is removed at once. Any other arrival discards it.
+  - **The backdrop:** a full-screen layout clears the published backdrop. The backdrop service remembers what the copied page showed and publishes it again on the return; a request for the same image within 2 seconds is answered from it, and the image skips its fade.
+  - **The panel:** at the start edge, the nav drawer's side, in both directions, with the open drawer's look: the surface colour and a soft fade of 64dp past its end edge.
+  - **The opening:** only when Settings is chosen from the open drawer. One piece moves, the panel's ground (one pseudo-element): it slides out from the open drawer's width with the drawer's spring, as a single transform. The header and the list do not move and are not clipped; they fade in once the ground has all but arrived. Opened by its address, on a reload and between Settings screens nothing moves. The Settings code is fetched while the drawer is open, so the bare page does not show in between.
+  - **The Back button:** none while the empty area beside the panel can be clicked to leave. That room is measured (at least 48dp), not asked with a width query, because the panel's least width grows with the interface scale. Where it is missing the layout places its own button: over the panel's header when the panel fills the window, in the preview's corner beside the subtitle preview. The shell's floating button never shows on Settings.
+- **Why:** Keeping the real page mounted would leave its key handlers, its focus logic and its queries running under Settings. A copy is a picture of the page that costs nothing while Settings is open.
+- **Rejected:**
+  - Keeping the real page mounted behind the panel.
+  - Built first on the owner's word and then replaced on the owner's word (O-40): a light tint over the copy (`dc3c877`, removed in `732e409`), and a panel that just appears on every opening (`5ab9fd6`, replaced in `7454e4c`).
+  - For the opening: a clip-path that grew out of the rail (`7454e4c`); a mask that ended in the drawer's fade (`630c7e9`), which wiped the content in mid-word beside the page's text and was painted on every frame; and, by the lead's account, a version with two transforms whose counter transform did not take effect in Chromium.
+- **Consequences:**
+  - An independent review on 2026-11-23 by two reviewers. A third agent, which tested in a browser, was stopped because it was testing the old panel side. A reviewer's test found one real defect, which was fixed: the copy was measured 10px too wide, because it used the document's client width; it now uses the shell's own width. Three unfinished reviewer tests were adapted or dropped.
+  - Still open from the review, all minor: the copy does not follow a window resize, a change of the interface scale or a change of language made inside Settings; the mini player is not in the copy; pictures that had not loaded yet are empty in the copy.
+  - To check: after Back to a "View more" grid in a short window, the window's scroll position is not restored. It was seen also without Settings, so it predates this work.
+  - The way the opening was judged led to a rule of its own (T-62).
+- **Code:** `src/app/shell/pageSnapshot.ts`, `PageUnderlay.tsx`, `backdropService.ts` (`keepBackdrop`, `resumeBackdrop`), `NavDrawer.tsx`; `src/app/AppShell.tsx`; `src/app/layouts.tsx` (`FullScreenLayout`); `src/features/settings/SettingsLayout.tsx`, `SettingsLayout.module.css`; `e2e/specs/settings.spec.ts`.
+- **Status:** Done (commits `dc3c877`, `398f168`, `5ab9fd6`, `d1be200`, `7454e4c`, `630c7e9` and `445a739`; the tint went with `732e409`, T-70), and reviewed. The Firefox and WebKit projects were not run for its tests.
+
+### T-62. Motion is judged from recorded frames at normal speed
+
+- **Context:** The end-to-end fixture switches CSS animations off, with the same stylesheet as the screenshot crawler. On 2026-11-23 the opening of the Settings panel passed its tests while it looked wrong; the lead found that out the hard way, after the owner had seen it (O-40).
+- **Decision:** Before an animated change is shown to the owner, the lead removes the fixture's no-animation style, sets reduced motion to "no preference", records screencast frames at normal speed and looks at them.
+- **Why:** A test that passes with animations off says nothing about how an animation looks.
+- **Rejected (implied):** judging a motion from its end state, or from still pictures of a run with animations off.
+- **Consequences:** an extra step, for animated changes only. The recording runs headless like every other browser of the project (T-28).
+- **Code:** none. The style it removes is `NO_ANIMATION_CSS` in `tools/shots/settle.ts`, applied by `e2e/fixtures/index.ts`.
+- **Status:** In force.
+
+### T-63. The fast path for small interface changes
+
+- **Context:** The owner found small changes too slow (O-38). Until then every substantive task ran as a multi-agent workflow with build, review and fix phases (O-11, T-21).
+- **Decision:**
+  - A small, clear interface change takes the fast path: the lead edits directly, with no multi-agent job. It runs the type check, the unit tests and the one browser test that covers the change, takes one or two headless pictures, commits, builds the image, and asks for the go in the same message that shows the picture.
+  - The slow checks (the full end-to-end suite, the other browsers) come afterwards and out of the owner's way.
+  - Multi-agent jobs are kept for large or risky work, with the expected time stated first.
+- **Why:** The owner asked for it (O-38): a small change should be in front of the owner within minutes, without losing quality, and the owner judges such a change by looking at it.
+- **Rejected:** a multi-agent job for every change, as before.
+- **Consequences:**
+  - Phases 33 and 34 of the log were the lead working alone this way, with one review job (T-61).
+  - The cost: the full end-to-end suite has not been run again after every small change. It ran once over the work of phases 33 and 34, before the second release (phase 35): 336 tests, two failures, both faults of Settings tests on WebKit. [STATUS.md](STATUS.md) carries the current state of the checks.
+- **Code:** none.
+- **Status:** In use.
+
+### T-64. Every go-live keeps the previous image for a rollback and labels the build with its commit
+
+- **Context:** Since the first public release, each newer build replaces the one the trial runs, after the owner's yes for that build (O-45).
+- **Decision:**
+  - Before the new image takes over, the previous one is kept under a rollback tag.
+  - The build is labelled with its commit, so that the running container can be matched to the source.
+- **Why:** If a build turns out wrong on the trial, the way back is one step and does not need a rebuild. The label answers "which commit is running" without guessing.
+- **Rejected (implied):** replacing the image in place.
+- **Consequences:**
+  - On 2026-11-24 the trial runs the image built from `509db33`.
+  - The reverse-proxy route of the trial is still the temporary one (O-27, T-53); making it permanent is the owner's decision (Q-1).
+- **Code:** none in the repository. Neither the rollback tag nor the commit label is written down in `Dockerfile` or `docs/deploy.md`; the lead sets them at each go-live.
+- **Status:** In use.
+
+### T-65. The interface scale is applied at the release of its slider; every other slider still applies each step
+
+- **Context:** While the "Interface scale" slider was dragged, every step resized the whole page, the slider included, under the finger or the mouse (O-32).
+- **Decision** (commit `93fe59c`, by a fixer; checked by an independent verifier):
+  - The shared slider can report its value while it is dragged apart from the value it commits.
+  - Only a slider whose value lays out its own page anew uses that, and the list of those has one entry, `WebInterfaceScale`. Its row shows the pending value and applies it once, at the release.
+  - After the page is laid out with the new scale, the list scrolls so that the slider is back at the height it had.
+  - The keys still apply each step, as on the TV.
+- **Why:** A control must not move and change size under the pointer that drags it. Every other slider changes something beside its list or nothing on screen, so those keep the TV's behaviour.
+- **Rejected (implied):** applying at the release for every slider.
+- **Consequences:** a web-only difference from the TV for one slider and for pointer drags only.
+- **Code:** `src/ui/inputs/Slider.tsx` (`onDragValue`), `src/features/settings/SliderPreference.tsx` (`dragSummary`), `prefModel.ts` (`relaysOutPage`); `e2e/specs/settings.spec.ts`.
+- **Status:** Done.
+
+### T-66. A scroller that holds a card grid always reserves the room of its scrollbar
+
+- **Context:** A poster grid that just fitted its scroller shook sideways (O-37). The cards are sized from the width of the element that scrolls them and decide the height of its content. With a scrollbar that takes room only while the content overflows, such a grid had no resting state: scrollbar in, cards narrower and shorter, content fits, scrollbar out, cards larger again, on every frame.
+- **Decision** (commit `db14d7c`, by a fixer): whatever scrolls a card grid always reserves the gutter of its vertical scrollbar (`scrollbar-gutter: stable`): the grid's own scroller, marked `data-grid-scroller`, or the page itself while it shows a grid that scrolls with the window. Where a browser has no `scrollbar-gutter`, an always-present scrollbar reserves the same room.
+- **Why:** With the gutter reserved, the width cannot depend on the height of the content, so the loop cannot start.
+- **Rejected (implied):** damping the resize in script.
+- **Consequences:** on a device with classic scrollbars a grid page keeps an empty gutter while its content fits. Overlay scrollbars (touch, macOS) take no room either way. In development builds the grid reports a scroller without the mark.
+- **Code:** `src/theme/global.css`, `src/ui/rows/CardGrid.tsx`; `e2e/specs/grid-stability.spec.ts`.
+- **Status:** Done.
+
+### T-67. From a press on a slider to its release, the page starts no drag-and-drop and no text selection
+
+- **Context:** A press on a slider that the page's text selection covered (select all, a double click on the slider, a selection across the row) made the browser drag the selection away: the pointer was cancelled, the cursor showed "not allowed" and the slider did not follow (O-37).
+- **Decision** (commit `4a08905`, by a fixer): from the press to its release both are refused on the whole page, not only on the control (`keepPressToControl`). It applies to the shared slider, the player's and the music page's seek bars and the Live TV guide's drag-scroll. The refusal also ends at the next press anywhere and when the window loses focus.
+- **Why:**
+  - The browser looks up what to drag at the point of the press once the pointer has moved, and by then the control can have moved from under that point, so the drag would begin on the selected text beside it.
+  - `user-select: none` on the control would not do: the drag of a selection made elsewhere remains.
+  - Cancelling the press itself would take away the browser's own focus on press.
+- **Rejected:** `user-select: none` on the control; cancelling the press event.
+- **Consequences:** while a slider is held nothing on the page can be selected or dragged, which is what a held slider means.
+- **Code:** `src/ui/lib/touchIntent.ts` (`keepPressToControl`), `src/ui/inputs/Slider.tsx`, `src/features/playback/ui/SeekBar.tsx`, `src/features/music/nowplaying/MusicSeekBar.tsx`, `src/features/livetv/GuideGrid.tsx`; `e2e/specs/slider-mouse.spec.ts`.
+- **Status:** Done.
+
+### T-68. Each subtitle line gets the direction of its own text
+
+- **Context:** A subtitle line took its direction from the interface language, so closing punctuation landed on the wrong end: a Hebrew sentence in an English interface, an English one in a Hebrew interface (O-37). The TV app draws cues with Android text views, which pick each line's direction themselves.
+- **Decision** (commit `6f16c8b`, by a fixer): every line of a cue gets a direction of its own, by these rules in order:
+  - a line that starts with a direction mark has the direction its author stated;
+  - a line without right-to-left letters is left to right;
+  - a track that stores the closing punctuation of its right-to-left lines at the start of the line was prepared for players that lay every line out left to right (common for right-to-left subtitle files). Its lines are laid out left to right, as on those players;
+  - otherwise a line with right-to-left letters is right to left when its first letter is one, when most of its letters are, or when the track as a whole is mostly right to left;
+  - a line without letters follows its neighbour in the cue, else the track.
+  
+  ASS scripts in reading order get the automatic detection of the ASS renderer. Only the base direction is set; the text itself is never rearranged.
+- **Why:** Setting only the base direction leaves the marks a file already carries working, and leaves embedded numbers and Latin words to the browser's own algorithm.
+- **Rejected (implied):** one direction for a whole track; rearranging the text.
+- **Consequences:** the price the code names: in a mostly right-to-left track, an English sentence that quotes a right-to-left word is laid out right to left.
+- **Code:** `src/features/playback/engine/subtitles/direction.ts`, `assDirection.ts`, `src/features/playback/engine/SubtitleLayer.tsx`, `AssSubtitles.tsx`; `e2e/specs/subtitles-bidi.spec.ts`.
+- **Status:** Done.
+
+### T-69. No Back button on the pages the drawer leads to, and no circle at rest
+
+- **Context:** The floating Back button showed on every page except Home (T-7). The owner found it ugly and unneeded in many cases (O-39).
+- **Decision** (commit `32a0101`):
+  - The shell shows no Back button on a page the drawer itself leads to: Home, Search, Favorites, Discover, Live TV and the libraries. It stays on inner pages such as an item.
+  - Until the libraries have loaded the drawer is empty, so the shape of the address decides, and the button does not flash.
+  - At rest the arrow has no circle. Under the pointer, and while the page is scrolled under it, it gets a gentle one. Keyboard focus keeps the kit's look.
+- **Why:** On those pages the drawer is beside the page and is the way out. The circle returns while the page is scrolled, when rows pass under the arrow.
+- **Rejected:** the button on every page except Home, as before.
+- **Consequences:** Escape and the browser's Back work on those pages as before. The Settings pages have their own rule (T-61).
+- **Code:** `src/app/shell/drawerItems.ts` (`isDrawerDestination`), `src/app/AppShell.tsx`, `src/app/shell/AppShell.module.css`.
+- **Status:** Done.
+
+### T-70. The open drawer lies over the page, and nothing is darkened for it or behind Settings
+
+- **Context:** On the TV the open drawer pushes the page 160dp aside, and the backdrop image is covered with black at 75% while the drawer is open. The owner found the push unpleasant to watch and wanted no darkening (O-40).
+- **Decision:**
+  - Commit `bb76c45`: the page and the music bar no longer move when the drawer opens. The open drawer has its own panel in the surface colour, solid under its entries and fading out past its end edge. The phone's drawer sheet keeps its own background.
+  - Commit `732e409`: the backdrop is no longer darkened while the drawer is open, and the light tint over the page behind Settings is gone.
+- **Why:** The owner asked for both. A panel that fades out gives the page under it no hard border.
+- **Rejected:** the TV's push and its darkening.
+- **Consequences:** two deliberate deviations from the TV app, recorded in [DEVIATIONS.md](DEVIATIONS.md). The Settings panel took the same look (T-61).
+- **Code:** `src/app/shell/NavDrawer.module.css`, `AppShell.module.css`, `Backdrop.tsx`, `src/features/music/MiniPlayer.tsx`.
+- **Status:** Done.
+
+### T-71. A user the server lists without a password is signed in by the click
+
+- **Context:** Upstream opens the login dialog for every user who is not signed in. The owner wanted a user without a password to open the main screen at once, and only for the users shown on the user list (O-41).
+- **Decision** (commit `27ab920`):
+  - A user without a password is recognised by the server's public user list (`GET /Users/Public`): `HasPassword` is `false`. Only an explicit `false` counts; a server that does not say is treated as asking for a password.
+  - A click on such a user signs in with the empty password instead of opening the dialog.
+  - A refusal falls back to the dialog: a password may have been set since the list loaded. Any other error is shown first.
+  - A name typed under Add User goes through the dialog as before.
+- **Why:** The server's own list already says who has no password, so nothing has to be tried or guessed.
+- **Rejected (implied):** trying the empty password for every listed user.
+- **Consequences:** no new access: the dialog accepted an empty password before. With a preset server, such a user is now one click away for anyone who opens the app (Q-15). A deviation from upstream.
+- **Code:** `src/features/setup/setupHelpers.ts` (`hasNoPassword`), `SwitchUserScreen.tsx`; `e2e/specs/signin.spec.ts`.
+- **Status:** Done.
+
+### T-72. The Home header's overview takes the room the header has
+
+- **Context:** The overview in the Home header was upstream's fixed box, 400dp wide and 3 lines high (2 under an episode name), with empty room beside and under it. The owner wanted more room for the description (O-42).
+- **Decision** (commit `8d305b7`): the box takes the height that is left in the header's 180dp and shows as many whole lines as fit (4 for a film, 3 under an episode name). It is a third of the window wide, from 400dp up to 680dp. The number of lines is measured from the box and its line height.
+- **Why:** The header keeps its height, so the rows below do not move; only room that was empty is used.
+- **Rejected (implied):** a taller header.
+- **Consequences:** a deviation from upstream, which keeps the fixed box.
+- **Code:** `src/features/home/HomeHeader.tsx`, `HomeHeader.module.css`.
+- **Status:** Done.
+
+### T-73. Subtitle style in the player reuses the Settings list, with the video as the preview
+
+- **Context:** Upstream has the subtitle style options in Settings only. The owner wanted to change them inside the player (O-43).
+- **Decision** (commit `e31ba4b`):
+  - "Subtitle style" in the player's Settings opens the same list as the Settings page (the `SUBTITLE_STYLE` screen of the preference model) in a sheet on the control strip. No second list was written. The row that opens another page is left out.
+  - The playing video is the preview: changes apply at once. While no subtitle line is on screen a sample line stands in, also with subtitles off.
+  - The sheet edits the copy of the style the video uses: the separate HDR one for HDR video when that option is on.
+  - A dialog opened from a row of a sheet (a colour choice) is drawn outside the sheet. Its keys no longer reach the sheet's handler or the player's Back handling, so its Escape closes only that dialog.
+- **Why:** One list means that an option added to Settings appears in the player too, and both always edit the same preferences.
+- **Rejected (implied):** a list of its own for the player.
+- **Consequences:** the sheet addresses the Settings rows by their place (the element inside a `data-pref-id` row), because their class names belong to the settings feature. A web addition.
+- **Code:** `src/features/playback/ui/SubtitleStyleSheet.tsx`, `PlaybackDialogs.tsx`, `PlayerSheet.tsx`, `usePlayerKeys.ts`; `src/features/playback/engine/SubtitleLayer.tsx`; `e2e/specs/playback-subtitle-style.spec.ts`.
+- **Status:** Done.
+
+### T-74. The player's Settings sheets are compact and a little see-through, and say when subtitles cannot be restyled
+
+- **Context:** The player's Settings sheets had the TV's size, 424dp wide with 64dp rows, and hid the video. The owner asked for less width, a little padding, some transparency, and a note for subtitles the options cannot change; then for still less empty room and less transparency (O-43).
+- **Decision:**
+  - Commit `cf29a99`: the Settings sheets of the player (Settings, speed, scale, bitrate, subtitle style) are 280dp wide instead of the TV's 424dp, at most 72% of the height and 80% opaque, with 44dp rows and no empty slot for a selection dot before the Settings rows. The track, chapter and queue sheets keep the TV's size.
+  - Commit `509db33`: a menu is as wide as its longest row, from 120dp to 280dp. The subtitle style sheet keeps the full 280dp, because a slider has no width of its own. The surface is 92% opaque; at the 80% of the commit before, a bright picture washed the labels out.
+  - The subtitle style sheet says so when the subtitles on screen cannot be restyled, and shows no sample line then. Three cases: pictures (PGS; only the image opacity applies), ASS with its own style, and subtitles the server draws into the video.
+  - "Image subtitle opacity" is now applied to PGS subtitles in the player, as upstream does for image cues. Before, only the Settings preview used it.
+- **Why:** The video is what one looks at while using these sheets. The fixed 280dp of the first version left an empty half beside short labels.
+- **Rejected:** the TV's sheet size for these sheets; the fixed 280dp; 80% opacity.
+- **Consequences:**
+  - A deviation from the TV's sheet size, for the Settings sheets only.
+  - Not verified: the note was tested by setting the subtitle kind through the development hook, not with real image, ASS or burned-in subtitles; the sheets were not reviewed at phone width.
+- **Code:** `src/features/playback/ui/PlaybackDialogs.module.css` (`.compactSheet`), `SubtitleStyleSheet.tsx`; `src/features/playback/engine/subtitles/style.ts` (`subtitleStyleReach`), `PgsSubtitles.tsx`; `src/i18n/extra/en.json` (`web_subtitle_style_note_*`).
+- **Status:** Done.
+
+### T-75. The series actor rows stay while the selection moves between episodes
+
+- **Context:** On a series page the Cast & Crew and Guest stars rows show the people of the selected episode, 250 ms after the selection settles. As upstream does, every change of episode emptied the rows; on the web they were then removed and built again with a fade, every picture loaded again, although most of the cast is the same. With a mouse moving along the episode strip that happened for episode after episode.
+- **Decision** (commit `ba1526e`): the rows keep the people shown last until the newly selected episode's people are ready. Shared actors keep their cards; only the others change. Without an episode (a season still loading), or when the lookup fails, the rows are empty.
+- **Why:** A mouse moving along the strip selects episode after episode, so the rows were torn down and built again each time, pictures included.
+- **Rejected:** upstream's emptying on every change.
+- **Consequences:** for up to 250 ms and the time of the lookup, the rows show the people of the episode selected before. A deviation from upstream.
+- **Code:** `src/features/detail/series/seriesQueries.ts`; `e2e/specs/series.spec.ts`.
+- **Status:** Done.
+
+### T-76. Every agent gets an explicit model, and a confirm stage batches its findings
+
+- **Context:** The owner asked whether all subagents were running as Claude Fable. They were: the lead had set no model on the agents of the documentation job or of the privacy sweep before the second release, so all inherited the lead's model. The sweep's "one confirmer per finding" stage also grew it to 56 agents where the lead had announced five.
+- **Decision:**
+  - Every agent gets an explicit model chosen for its task: reading, searching, sweeps, confirmations and mechanical edits on Claude Sonnet, plain lookups on Claude Haiku, and Claude Fable only for hard code changes and for work where a wrong result is costly.
+  - A confirm stage batches findings instead of starting one agent per finding.
+- **Why:** An agent that inherits the lead's model runs on the most expensive one whatever its task, and a stage that starts one agent per finding has a size nobody announced.
+- **Rejected:** leaving the model to be inherited.
+- **Consequences:** The two jobs of 2026-11-24 (the documentation catch-up and the privacy sweep, 10 and 56 agents) ran entirely on the most expensive model. The fix-up of the sweep's findings in the documents ran on Claude Sonnet, the first job started under the rule.
+- **Code:** none.
+- **Status:** In use.
+
 ---
 
 ## Part 3: Decisions made by agents during the build
@@ -1309,6 +1796,8 @@ These choices were made by agents, usually to resolve something the specs left o
 - **(closing)**: made after the polish round, in the closing round's small fix (commit `692715f`) or in the touch fix (commit `7ad52ba`). Both were committed on `main`; the mark names no branch.
 
 Since 2026-11-18, `main` holds everything marked (wave3a), (integration) and (stage 2), because it was fast-forwarded to `integration` (commit `c14b168`), and, since a second fast-forward the same day (commit `e1b7e04`, T-47), everything marked (parity) and (final) as well. Everything marked (polish) reached `main` with the merge commit `f1fb308` the same day (T-48), and everything marked (closing) with the commits `692715f` and `7ad52ba` later that day. The marks are kept to show where each decision was made; the branches themselves were deleted on 2026-11-18 (T-57).
+
+Part 3 ends with the touch fix (A-166). The choices made after it, by agents on 2026-11-18 and 2026-11-22 and by the lead working alone after that, are recorded in Part 2 as T-58 to T-76. Where one of them changed an entry below, the entry says so.
 
 **Decisions that were made more than once.** Several things were decided by one agent and changed by a later one. Such an entry gives the decisions in order and says which one stands. In a few cases the fix pass (on `main`) and the repair (on `integration`) each changed the same thing in their own way. Those entries say so. Stage 2 of the final merge settled which version remains; A-107 lists how, and the entries concerned were updated.
 
@@ -1369,13 +1858,13 @@ All of these were built on branch `wave3a` and are part of branch `integration`.
 
 | # | What was decided | Where it lives (wave3a) |
 |---|---|---|
-| A-24 | **Playback fallback ladder.** Direct play, then remux, then full transcode, then a clear error, without looping. A track or bitrate change never climbs back to direct play. Steps are defined by what is requested, because Jellyfin calls a remux "Transcode". | `src/features/playback/engine/` |
-| A-25 | **Subtitles and codecs in the browser:**<br>• image subtitles (PGS) are always burned in by the server, so the "direct play PGS" setting has no effect;<br>• the "decode AV1" setting is ignored, because the browser decides;<br>• all text subtitles are fetched and drawn by the app;<br>• the "ASS: built-in" mode shows ASS as plain text cues. | `src/features/playback/engine/` |
+| A-24 | **Playback fallback ladder.** Direct play, then remux, then full transcode, then a clear error, without looping. A track or bitrate change never climbs back to direct play. Steps are defined by what is requested, because Jellyfin calls a remux "Transcode". **Changed on 2026-11-18 (T-59):** the ladder has no step of its own for an audio track any more. The server decides, so choosing a file's first audio track again returns to direct play. | `src/features/playback/engine/` |
+| A-25 | **Subtitles and codecs in the browser:**<br>• image subtitles (PGS) are always burned in by the server, so the "direct play PGS" setting has no effect;<br>• the "decode AV1" setting is ignored, because the browser decides;<br>• all text subtitles are fetched and drawn by the app;<br>• the "ASS: built-in" mode shows ASS as plain text cues.<br>**Changed on 2026-11-18 (T-59):** the first point no longer holds. PGS subtitles are drawn in the browser, and the "direct play PGS" setting chooses between that and burn-in; DVD and DVB subtitles are still burned in. | `src/features/playback/engine/` |
 | A-26 | **Playback behavior changes:**<br>• "Next up: never" combined with autoplay now autoplays;<br>• skip-back-on-resume also applies when a resumed item starts;<br>• subtitle delay is saved per item and track;<br>• remembered audio/subtitle choices are stored in the browser per server and user, capped at 3000 items;<br>• playback does not pause when the tab goes to the background;<br>• remote control over Jellyfin's websocket is not implemented. | `src/features/playback/engine/`, `src/stores/playbackChoices.ts` |
 | A-27 | **Seerr sign-in and storage:**<br>• there is no "enter your Seerr URL" step; the deployment decides;<br>• Seerr passwords are never stored (upstream stores them in plain text); the browser's Seerr cookie is the credential;<br>• an API key is kept only for the browser tab's lifetime (Q-7);<br>• Discover is reachable when not linked and shows a sign-in prompt (upstream hides it);<br>• rows follow upstream exactly (7 rows);<br>• grids reflow by width instead of a fixed 6 columns;<br>• a read-only season-status list was added to the TV page (Q-8). | `src/api/seerr/session.ts`, `src/api/seerr/client.ts`, `src/features/discover/` |
 | A-28 | **Settings adaptations:**<br>• "Installed version" opens an About dialog (version, upstream commit, links to License and Debug) instead of upstream's release notes;<br>• "Clear image cache" can clear only the app's own cache storage;<br>• a header Back button shows only on touch or under 720 px. Overturned before wave 4: every settings screen now uses the shell's floating Back button at every width (A-42);<br>• "Start screensaver" stays hidden until a screensaver exists. Wave 4 built the screensaver, and the row now starts it (A-86);<br>• Android-only settings (update checks, player backend) are omitted. | `src/features/settings/` |
 | A-29 | **Production server defaults:**<br>• the Seerr proxy forwards only three path prefixes and rejects cross-site writes;<br>• Seerr cookies are limited to `/seerr-proxy`;<br>• Seerr responses get a "no scripts" content security policy (a browser rule that limits what a page may load or run);<br>• `TRUST_PROXY` defaults to on, for Caddy (Q-9);<br>• a sub-path deployment is not supported. | `server/seerrProxy.ts`, `server/config.ts`, `docs/deploy.md` |
-| A-42 | **Joining wave 3a to the shell from `main`** (the agent that merged `main` into `wave3a` before wave 4):<br>• the Discover entry in the drawer shows only while Seerr is linked. An expired or failed link hides it, as upstream does;<br>• one store for drawer pins. The settings row "Customize Navigation Drawer Items" keeps only the row; **(integration)** it opens the dialog from `main` (A-67). This settles the former Q-19;<br>• one Back control per page: settings screens use the shell's floating Back button at every width, which overturns the header Back button of A-28. Reason given: one consistent Back control;<br>• Discover backdrops go through the shell's backdrop service instead of a private layer, and so also get the dynamic colors other backdrops have;<br>• "Clear track choices" in the item menu gets a default handler for the whole app. A detail page may install its own, which then wins;<br>• a wave 4 fixer added: the Media Session artwork (the picture a browser or operating system shows for playing media) is set only when the image exists, so no request is made that is certain to fail. | wave3a `src/app/layouts.tsx`, `src/app/startup.ts`, `src/features/settings/SettingsLayout.tsx`, `src/features/discover/backdropStore.ts`, `src/features/playback/engine/platform.ts` |
+| A-42 | **Joining wave 3a to the shell from `main`** (the agent that merged `main` into `wave3a` before wave 4):<br>• the Discover entry in the drawer shows only while Seerr is linked. An expired or failed link hides it, as upstream does;<br>• one store for drawer pins. The settings row "Customize Navigation Drawer Items" keeps only the row; **(integration)** it opens the dialog from `main` (A-67). This settles the former Q-19;<br>• one Back control per page: settings screens use the shell's floating Back button at every width, which overturns the header Back button of A-28. Reason given: one consistent Back control. Changed on 2026-11-23: the shell's floating button never shows on Settings, and the Settings layout places its own where the area beside the panel cannot be clicked (T-61);<br>• Discover backdrops go through the shell's backdrop service instead of a private layer, and so also get the dynamic colors other backdrops have;<br>• "Clear track choices" in the item menu gets a default handler for the whole app. A detail page may install its own, which then wins;<br>• a wave 4 fixer added: the Media Session artwork (the picture a browser or operating system shows for playing media) is set only when the image exists, so no request is made that is certain to fail. | wave3a `src/app/layouts.tsx`, `src/app/startup.ts`, `src/features/settings/SettingsLayout.tsx`, `src/features/discover/backdropStore.ts`, `src/features/playback/engine/platform.ts` |
 | A-43 | **License list and the `/license` page in development.**<br>• The generated list of third-party licenses skips packages that are links to `vendor/`. Those are the project's own code under GPL-2.0-only (T-32).<br>• A dev-server plugin answers a page load of a path that has no file extension but matches a file in the repository with the app itself. Without it, `/license` served the `LICENSE` file on a disk that ignores upper and lower case. This settles the former Q-11. | wave3a `tools/gen-licenses.ts`, `vite.config.ts` (`spaRoutesOverRootFiles`) |
 | A-44 | **Theme music: volume at the highest setting, and one player.** Upstream writes 75 where a fraction is meant, and its player clamps that to full volume (the former Q-21).<br>• Wave 3b detail builder (`main`): 0.75, as `docs/spec/preferences.json` records.<br>• Wave 4 music builder (`wave3a`): 1.0, with its own second player.<br>• **(integration)** The final merge kept one player, the one from `main`, and 0.75 everywhere. The music service and a starting video stop it, and it never starts while the music queue is active. 0.75 stands.<br>• The cross-engine recheck (on `main`) made it ask the browser's autoplay policy first where the browser offers that, and wait for the first user action when autoplay is refused. | `src/features/detail/common/themeMusic.ts` |
 | A-45 | **"Send media info log to server": built twice.** It was a placeholder until both branches ported it, independently:<br>• Fix pass (`main`): `src/features/detail/common/mediaReport.ts`. It sends the media sources and playback preferences, puts the browser's user-agent string where upstream puts the Android device details, and leaves out the device profile, because the player was on the other branch.<br>• **(integration)** Repair: `src/features/settings/sendMediaReport.ts`. It also sends the device profile the web player would use.<br>• Both show the entry whenever the item has media sources, as upstream does. The brief for the fix pass had offered hiding the entry when the server lacks the companion plugin. The agent found that upstream uses Jellyfin's built-in client-log upload, not the plugin, and did not hide it.<br>• Both keep upstream's fixed English toast text.<br>• Which of the two remains is settled by stage 2 of the final merge. | as named |
@@ -1445,7 +1934,7 @@ Built in wave 4 on branch `wave3a` **(wave3a)**; later changes are marked. Paths
 
 ### Music
 
-Built in wave 4 on branch `wave3a` **(wave3a)**; later changes are marked. Paths are under `src/features/music/`. No music library is visible to the limited test account on the real server, so music was tested on the throwaway test server only.
+Built in wave 4 on branch `wave3a` **(wave3a)**; later changes are marked. Paths are under `src/features/music/`. Music was tested on the throwaway test server only.
 
 | # | What was decided | Where it lives |
 |---|---|---|
@@ -1526,7 +2015,7 @@ Everything here is **(stage 2)**. The full record is `docs/final-merge-notes.md`
 | A-114 | **The additional permission on the License page reads left to right in a Hebrew interface** (`dir="auto"`), as other long English texts do. The GPL notice above it is a translated string and stays at the right edge. | `src/features/settings/LicensePage.tsx` |
 | A-115 | **Test-data housekeeping.**<br>• The playlist end-to-end test waits a fixed 3 seconds before it deletes its playlist. Jellyfin writes the playlist's metadata a moment after creating it, and a delete that comes first leaves its folder behind; a later library scan lists each such folder again as an ownerless playlist (24 had gathered). The fixed wait goes against the suite's own rule of polling instead of sleeping, because there is nothing to poll for.<br>• The end-to-end global setup signs in as the throwaway server's administrator, when its credentials are configured, only to delete such leftovers older than ten minutes: only the administrator may delete an ownerless playlist.<br>• The repair agent ran one library rescan on the throwaway server to list and delete the leftovers. Turning off that server's scheduled scan was left for later (Q-40). | `e2e/global-setup.ts`, the playlist spec in `e2e/specs/` |
 | A-116 | **Duplicate web-only strings** (finding 9). Nine keys were removed: the eight the checker listed, and one that repeated upstream's own "Subtitles" string. The two "previous" keys and the two "next" keys stay, because scrolling a row and the previous item of a queue are two meanings. | `src/i18n/extra/en.json` |
-| A-117 | **The player's remaining-time label in Hebrew follows the locale's direction** (finding 16), as upstream does: upstream hands the label the locale's direction, inside a row that is always left to right. Whether a leading minus sign should stay on the left was not decided (Q-35). | `src/features/playback/ui/Controller.module.css` |
+| A-117 | **The player's remaining-time label in Hebrew follows the locale's direction** (finding 16), as upstream does: upstream hands the label the locale's direction, inside a row that is always left to right. Whether a leading minus sign should stay on the left was not decided (Q-35). Changed on 2026-11-22: the times are clocks, left to right in every locale, so the label no longer takes the locale's direction and the minus is in front of the digits (T-60). | `src/features/playback/ui/Controller.module.css` |
 | A-118 | **A test race is fixed in the test, not in the app.** The drawer test "an empty page still takes focus out of the drawer" pressed Left in the frame between the empty-state text appearing and that text taking focus, and failed about once in fifteen runs. The test now waits until the text holds focus (commit `62fe020`, by the lead). A WebKit browser process that crashed once during a long repeat run (a failed picture allocation) was not treated as an app or test problem; the same test then passed 8 of 8 times. | `e2e/specs/drawer.spec.ts` |
 | A-119 | **The library grid is kept over a replace navigation.** A replace navigation changes the current history entry instead of adding one; Favorites uses it right after its first render to write its tab into the address. The grid's identity contained the history entry's key, so the grid was built twice and the focused first card was removed, leaving focus nowhere for about 25 ms (longer under load). An arrow key pressed in that gap went to the tab row. The fixer keyed the grid by the visit instead: the history key kept over replace navigations, new on every push and every Back or Forward. Scroll memory stays keyed by the history entry itself, which is what Back returns to. Recorded on the other pages built from the same parts: only the library grid had this key. As a consequence, choosing the current page's own drawer entry again kept the grid instead of rebuilding it. **Superseded in part by A-129:** since the final check every drawer choice builds the page anew; the visit key over replace navigations stands. | `src/features/browse/data/visit.ts` (`useVisitKey`), `src/features/browse/components/LibraryGrid.tsx` |
 | A-120 | **Keyboard arrival from the drawer is "pending" from the moment a drawer entry is activated.** On a second visit the page's cards come from the cache and are there at once, so the page asked for its first focus before the shell had moved focus out of the drawer, was refused, and never asked again: focus stayed on the tab row on 10 of the 11 drawer pages. Now, from the keyboard activation until the shell's first look at the new page, a page may take its first focus even though focus is still in the drawer, and the shell then leaves it alone. Any key or pointer press ends the window. Three pages had their own obstacle on that path and were fixed too (the photo grid, and the two music grids in the development build only). | `src/app/shell/shellFocus.ts`, `src/app/AppShell.tsx` |
@@ -1597,7 +2086,7 @@ Everything here is **(closing)**. A-158 to A-162 are choices of the closing roun
 |---|---|---|
 | A-158 | **Which means keeps a value in order in a right-to-left line.** A value made of digits, signs and Latin units (".25", "-1.5s", "100 Mbps") is ordered by the direction of its line, so in Hebrew and Arabic it was drawn backwards. Three means, each for one kind of slot, and no new component: `<bdi>` where a slot holds either a translated text or a value (the rows of the player's sheets, a settings slider's summary), so the slot takes its direction from its content; `dir="ltr"` on an element whose content is always a value (the subtitle delay value and its step buttons, the debug overlay); the isolate characters U+2066 and U+2069, written as escapes, only for a plain string that has no element of its own (the two shortcut toasts, through `ltrValue()`). They follow what the License page, the Seerr request options and the setup helpers already did. The checker's note: `ltrValue` sits beside an older `isolate` helper in the Discover code and inline isolates in `src/i18n/index.ts` and the setup helpers; one shared helper could serve them all and was not needed now. | `src/features/playback/ui/PlaybackDialogs.tsx` (`Line`), `SubtitleDelayDialog.tsx`, `DebugOverlay.tsx`, `text.ts` (`ltrValue`), `src/features/settings/SliderPreference.tsx` |
 | A-159 | **Every row of the player's sheets is wrapped, and two neighbours were fixed without being asked for.** The component that draws a sheet row's headline and supporting line wraps its text for every row, not only for the rows known to hold a value, so a track title from the server also takes its direction from its content; nothing visible changed with the test data. The task named the speed list; the agent's scan of all 1,236 value strings found the same defect in the bitrate list, the delay dialog and the slider summaries, and beside them in the debug overlay and the two shortcut toasts, each a one-line change, and fixed those too. | `src/features/playback/ui/PlaybackDialogs.tsx`, `DebugOverlay.tsx`, `src/features/playback/PlayerView.tsx` |
-| A-160 | **The player's time codes are left as they are.** In Hebrew a remaining time is drawn with its minus to the right of the number. The stylesheet gives each time text the locale's direction on purpose, citing upstream (`Controller.module.css`, `PlaybackControls.kt:297-322`), so the agent did not change it and handed it to the lead, who leaves it to the owner (Q-35). | `src/features/playback/ui/Controller.module.css` (unchanged) |
+| A-160 | **The player's time codes are left as they are.** In Hebrew a remaining time is drawn with its minus to the right of the number. The stylesheet gives each time text the locale's direction on purpose, citing upstream (`Controller.module.css`, `PlaybackControls.kt:297-322`), so the agent did not change it and handed it to the lead, who leaves it to the owner (Q-35). Changed on 2026-11-22: the times are clocks, left to right in every locale, so the minus is in front of the digits (T-60). | `src/features/playback/ui/Controller.module.css` (unchanged) |
 | A-161 | **Three points closed without a code change, each with its cause.**<br>• The one 404 of the production smoke run is the app's probe for the optional Wholphin server plugin (`GET /wholphin/public`), answered 404 by a server without the plugin. The TV app sends the same request on every user switch; the web asks less often. A browser logs every 404, and the plugin's presence has no other signal, so the line stays; the end-to-end guard already allows it.<br>• The "ResizeObserver loop completed with undelivered notifications" message comes from the list library's own row observer, which renders synchronously when a measured row comes with a scroll correction; it shows only when a scrolled grid is resized in several steps, existed before the polish round and has no visible effect. One library option (measuring a frame later) removed it in 32 Firefox rounds and was put back: it delays every row measurement in every grid and was not run through the suite. Not tried: switching the library's synchronous render off, or not logging this message.<br>• The three overlays outside the kit do not need the "openers gone" handling: two keep their opener through resizes, and the other cases close onto the page body, which is the idle state of the full-screen viewer and player by design. The shell's handler must not be used there: it would put focus on a control of a page whose keys act without focus, so Enter would press that control. | `docs/final-merge-notes.md` section 14.1; `src/features/home/model/homeSettings.ts`, `src/ui/rows/CardGrid.tsx`, `e2e/fixtures/guard.ts` (all unchanged) |
 | A-162 | **Tests of the closing round.**<br>• Six unit tests assert the markup that is absent without the fix; two end-to-end tests assert the order in which the characters are drawn, through a new fixture helper, `app.drawnText(locator)`, in Chromium, Firefox and WebKit (the suite went from 239 to 245 tests). Both fail in all three engines with the fix switched off.<br>• The player test plays for about a second without the `@writes` tag, like the existing engines test: each engine pauses an item of its own that no other test plays, and stops below 5 % of the runtime, so the server keeps neither a resume point nor a played mark; the fixture restores anyway.<br>• One exception to the page guard inside that test: Firefox ends the download of a paused direct-play file itself and reports it as a failed request. | `src/features/playback/ui/rtlValues.test.tsx`, `e2e/specs/playback-engines.spec.ts`, `e2e/specs/settings.spec.ts`, `e2e/fixtures/app.ts` |
 | A-163 | **A slider under a finger: the page scrolls, a sideways drag is absolute, and the browser's decision wins.**<br>• The slider lets the browser pan up and down (`touch-action: pan-y pinch-zoom`, not bare `pan-y`, so a two-finger zoom that starts on a slider still works) and does nothing when a finger lands.<br>• One distance decides, 10 dp (`TOUCH_SLOP_DP`, through `dp()`): at least Android's 8 dp and about iOS's 10 pt, so the browser has normally decided whether it pans before the slider reacts.<br>• The direction is locked once decided: a gesture that began as a scroll never becomes a drag, even where nothing can scroll and no cancel comes.<br>• The drag is absolute, not relative: the thumb goes under the finger. A relative drag cannot reach the far end from a finger that started beside the thumb, and absolute matches the mouse, the tap and the browsers' own range input.<br>• A gesture the browser takes back after a drag began restores the value the slider had, so "the browser took the gesture" always means nothing changed.<br>• A pen is treated like a finger; no reason against it was found. Mouse and keyboard are unchanged. | `src/ui/inputs/Slider.tsx`, `Slider.module.css`, `src/ui/lib/touchIntent.ts` |
@@ -1615,22 +2104,20 @@ These wait on the owner or on the lead. The numbers of earlier questions are kep
 
 | # | Question | Notes |
 |---|---|---|
-| Q-1 | How and when does Wholphin Web go live behind a reverse proxy? | O-8 says "decide later". `docs/deploy.md` (on `main` since 2026-11-18) gives a Caddy example (subdomain or own port, proxying to the container). The container has been built and run locally against the throwaway test server (T-11). Nobody has run it behind the live proxy, and nothing touches the live Caddy. **Updated 2026-11-18:** the owner decided how it starts: a trial on a second port, next to what runs today, before it replaces anything (O-21; `docs/deploy.md` section 9). The timing is still the owner's call: the trial waits for the owner's go. The integrator of the final check smoke-tested the image built from the final tree in a local container (T-44); that was not the trial. **Updated later on 2026-11-18:** the owner gave the go, and the trial ran under a sub-domain (O-26, T-52, T-53). The owner tested it and keeps it for now (O-27, O-29). Open: whether and when it becomes permanent, and when the app replaces or joins what users use today. |
+| Q-1 | How and when does Wholphin Web go live behind a reverse proxy? | O-8 says "decide later". `docs/deploy.md` (on `main` since 2026-11-18) gives a Caddy example (subdomain or own port, proxying to the container). The container has been built and run locally against the throwaway test server (T-11). Nobody has run it behind the live proxy, and nothing touches the live Caddy. **Updated 2026-11-18:** the owner decided how it starts: a trial on a second port, next to what runs today, before it replaces anything (O-21; `docs/deploy.md` section 9). The timing is still the owner's call: the trial waits for the owner's go. The integrator of the final check smoke-tested the image built from the final tree in a local container (T-44); that was not the trial. **Updated later on 2026-11-18:** the owner gave the go, and the trial ran under a sub-domain (O-26, T-52, T-53). The owner tested it and keeps it for now (O-27, O-29). Open: whether and when it becomes permanent, and when the app replaces or joins what users use today. **Updated 2026-11-24:** the trial still runs on the same temporary route and gets each newer build after the owner's yes for it (O-45, T-64); on this day it runs the build of `509db33`. Still open: whether the route becomes permanent. |
 | Q-2 | Should the GitHub repository be renamed? | The name was left unchanged on purpose; only the description was edited. |
-| Q-3 | When does the repository go public? | **Updated 2026-11-18:** O-20 replaces O-2's bar. The repository goes public only when every known problem is solved and the product is, in the owner's word, perfect. (O-2's bar was sign-in, browsing, playback and a README working; all of that is on `main` since 2026-11-18.) The licensing question that could have kept it private is settled (O-19). The CI builder's notes list three GitHub settings to switch on at that point: private vulnerability reporting (the security policy file relies on it), Dependabot alerts, and branch protection that requires the CI check. |
 | Q-8 | Keep or remove the web-only season-status list on Seerr TV pages? (owner or lead) | Upstream has the equivalent row commented out. The builder declared it a web addition; not verified how much code removing it takes. |
-| Q-15 | With a preset server, anyone who opens the app sees the server's public user list. Is that acceptable? | The deploy agent suggests hiding users from the login screen in Jellyfin's own settings. Nothing is changed on the real server. |
+| Q-15 | With a preset server, anyone who opens the app sees the server's public user list. Is that acceptable? | The deploy agent suggests hiding users from the login screen in Jellyfin's own settings. Nothing is changed on the real server. **Updated 2026-11-23:** a user whom that list shows without a password is now signed in by one click (O-41, T-71). It gives no new access, because the login dialog accepted an empty password before, but it is one step shorter for anyone who opens the app. |
 | Q-23 | Should the web-only strings be translated, by whom, and into which languages? | About 190 strings (183 counted at `c358a52`) exist only in English (T-9), so they stay English in the 41 other languages. A checker of the final merge saw this in the Hebrew interface. No translation source exists for them. Deferred by the repair. **Updated 2026-11-18:** the owner wants them translated into the popular languages upstream supports, right-to-left ones included, and has put it on hold (O-22). Open: when, by whom, and the full list of languages. Until then, English fallback text in right-to-left languages is isolated so that it reads in order (A-110). |
 | Q-24 | Which rule should hide a page's header: scrolling or focus? | Two rules exist. Library browsing (and the recordings grid that now uses it) hides the tab row once the content is scrolled (A-51). Music, Discover, the Live TV guide and photos hide it only while keyboard focus is below the first row (A-70). Choosing one changes how the other features behave. Deferred by the repair. Still open on 2026-11-18: stage 2 and its repair left it as it was, and the TV-comparison pass recorded it as an open owner decision and did not change either rule (its list layout follows the scroll rule, `docs/parity-notes.md` section 5). The final check and repair did not change either rule, nor did the polish round. Open. |
 | Q-26 | What should happen with the pull requests Dependabot opens? | Dependabot was configured together with the CI files (A-91). From the lead's notes; the agent reports do not cover the pull requests themselves. |
-| Q-35 | Is the minus sign of the player's remaining-time label in the right place in Hebrew? (owner or lead) | The label now reads as the Hebrew locale orders it, as upstream does (A-117). Whether a leading minus should stay on the left was not decided by the repair. A reader of a right-to-left language would settle it. **Updated later on 2026-11-18:** the closing round made every other value of digits, signs and Latin units read in order in Hebrew and Arabic (A-158) and left the time codes as they are on purpose, for the owner to decide (A-160). |
 | Q-37 | Keep the photo viewer's mirrored arrow keys in right-to-left languages? (owner or lead) | The repair kept them mirrored on purpose, against upstream's raw keys, and asked the lead to say if upstream's behavior is wanted instead (A-108). No answer is recorded. |
 | Q-38 | Should the Live TV guide float in the middle of a tall desktop window? (owner) | The comparison pass applied the TV rule (a guide shorter than its box is centered vertically) from 600 px width up, and left a note for the owner: with few channels on a tall window the grid floats in the free space; one line of CSS turns it off (A-124). On `main` since 2026-11-18; no answer is recorded. |
-| Q-43 | Does the finished desktop version include the features that are not built? (owner) | The owner's order of work is "the desktop browser version flawless first" (O-28). Four things that a browser could have are not built: remote control of this app from another device over Jellyfin's websocket (with it, the server's message toasts); the filter and the full view options on the music library tabs; Play on an album or artist from the shared context menu; and drawing image subtitles (PGS, VobSub) in the browser, where today the server burns them into the picture. Each is recorded as a deviation ([DEVIATIONS.md](DEVIATIONS.md) sections 9, 10, 14 and 16). The lead asked the owner on 2026-11-18 whether "flawless" includes them; no answer is recorded yet. The answer sets the next round of work. |
+| Q-44 | What form do the defaults of a deployment take? (owner and lead) | The owner wants the owner of a deployment to set the defaults for all its users; the first example is the default interface language (O-31, O-36). Nothing is built. The lead's idea, which is not agreed: a setting of the deployment served through `/config.json` (T-12), not a fork of the code. Open: which settings can get such a default, where it is set, and how it meets a choice a user has already made. |
 
 ### Waiting on the lead
 
-Most of these were deferred by fixer agents with a recorded reason. The follow-up polish round for the open items of `docs/final-merge-notes.md` section 12.7 and the audit's minor points (T-44) has run and landed (T-48); it settled Q-39, Q-41 and Q-42 (see the third table). What it left open (section 13.7 of the notes) is defects and checks rather than choices, so it is tracked in [STATUS.md](STATUS.md), not here. The closing round then took four of those points: one is fixed, three are closed with their cause (A-158 to A-161). One task for the lead came out of the clean-up of that day and is not a question: capturing the Android TV reference pictures again before the next comparison work (T-57).
+Most of these were deferred by fixer agents with a recorded reason. The follow-up polish round for the open items of `docs/final-merge-notes.md` section 12.7 and the audit's minor points (T-44) has run and landed (T-48); it settled Q-39, Q-41 and Q-42 (see the third table). What it left open (section 13.7 of the notes) is defects and checks rather than choices, so it is tracked in [STATUS.md](STATUS.md), not here. The closing round then took four of those points: one is fixed, three are closed with their cause (A-158 to A-161). One task for the lead came out of the clean-up of that day and is not a question: capturing the Android TV reference pictures again before the next comparison work (T-57). On 2026-11-24 more tasks were owed that are not questions either: a privacy sweep and the next public release (done the same day, O-47, T-58), the slow checks that the fast path postponed (they ran once before that release, T-63; a second whole run after their repairs is still owed), and the items the owner listed for later (Settings navigation and categories, a better sign-in and welcome page, the defaults of a deployment (Q-44), microphone search at low priority, then phone and touch polish). [STATUS.md](STATUS.md) tracks them.
 
 | # | Question | Notes |
 |---|---|---|
@@ -1642,15 +2129,14 @@ Most of these were deferred by fixer agents with a recorded reason. The follow-u
 | Q-14 | The crawler cannot show a keyboard-style focus highlight on touch screenshots. | A design choice for screenshots only. |
 | Q-16 | Should PINs be hashed instead of stored as plain text? | Upstream stores them as plain text. The spec suggested hashing, and the settings agent kept plain text so setup and settings compare the same way. |
 | Q-18 | CLAUDE.md says preferences are "persisted per user", but the code stores most per browser (T-15). | Either update CLAUDE.md or change the generator. |
-| Q-20 | Upstream's companion Jellyfin plugin features (a server-provided Seerr address, server-side home settings) are not ported. | The web gets Seerr only through its own proxy. Plugin-based home settings were not tested, because neither server has the plugin. Home's probe for the plugin is answered "not found" on both servers, which the tests treat as expected. The closing round traced the one 404 line in the console of a production smoke run to this probe (A-161). |
+| Q-20 | Upstream's companion Jellyfin plugin features (a server-provided Seerr address, server-side home settings) are not ported. | The web gets Seerr only through its own proxy. Plugin-based home settings were not tested (that needs a server with the plugin). Home's probe for the plugin is answered "not found" in the tests, which they treat as expected. The closing round traced the one 404 line in the console of a production smoke run to this probe (A-161). |
 | Q-27 | Re-check `npm audit` when a fixed release of `picomatch` exists. | T-35. |
 | Q-28 | Convert the existing files to Unix line endings in one commit? | `.gitattributes` now asks for Unix line endings (A-91). The CI builder left the one-time conversion to the lead: as its own commit, at a quiet moment, because branches that have not merged it would get whole-file conflicts. The git history shows no such commit yet. |
 | Q-29 | What is the policy for the remaining lint warnings? | The linter passes with warnings and no errors: 20 on `main` after the fix pass and 26 on `integration`, as reported; 25 after the stage 2 repair and after the focus fixes (`docs/final-merge-notes.md` sections 9.5 and 10.7); 26 on branch `parity` at its end; 25 after the early merge and after the final check and repair (sections 11.3 and 12.6), and on `main` after the landing as the lead reports; 23 on the final tree of the polish round, the same 23 as on `3b1dd7b`, linted side by side (`docs/final-merge-notes.md` section 13.6). No policy has been set. Most are advisories from the React compiler rules, plus unused variables in the tools. The wave 3b integrator asked for a policy. |
 | Q-30 | Add the fixed colors to the spec file? | The fixed-color tokens exist only in the generator, not in `docs/spec/design-tokens.json` (A-41). |
 | Q-31 | Should the photo grid and the music grid be replaced by the shared library grid? | Both were built as their own grids in wave 4 (A-79, A-85). The final merge replaced only the recordings grid (A-73). The music grid lacks filter, the full view options and the random-item button. **Updated 2026-11-18:** on branch `parity` the music library uses the shared library grid and its own grid is removed; the photo grid stays its own, with the shared column rule (A-124). **Updated after the landing:** the music part is settled and on `main` since 2026-11-18 (commit `e1b7e04`). Open for the photo grid only. It also keeps its own letter column; whether Left from a letter that is level with no photo row ends in the nav drawer there, as it did in the library grid before A-132, was not looked at (`docs/final-merge-notes.md` section 12.7). **Updated by the polish round:** it did (27 of 27 letters of a test library at 1440 and 1920 px wide); the photo grid now follows the library grid's rule, so an arrow key entering it, Left from any letter included, returns to the card focused last (`db09814`). Right from the photo grid into its letter column still goes by geometry, where the library grid lands on the current letter (section 13.7). |
 | Q-32 | Give the shell a rule for bars below the page, in place of the mini player's own key handler? | A-77. |
-| Q-33 | Remove the Docker images the project built locally? | The wave 4 gate and the final merge each kept one image as a build cache. The wave 4 report gives about 257 MB for its image. After the stage 2 repair one image is left, `wholphin-web:latest` (258 MB); the other project images and the superseded builds were removed (`docs/final-merge-notes.md` section 9.5). The integrator of the final check rebuilt `wholphin-web:latest` from the final tree (258 MB) and smoke-tested it; it is still the only image of this project (section 12.6). No Docker build was run in the polish round (section 13.7). **Updated later on 2026-11-18:** the lead rebuilt `wholphin-web:latest` from `main` three times after the landing: from `3b1dd7b` (checked with plain requests), from `c358a52` before the trial started, and from `7ad52ba` (258 MB) after the touch fix. The last one is the image the trial used, so it is not a leftover; it was smoke-tested through the reverse proxy (T-53; [STATUS.md](STATUS.md) section 4.1). The question comes back only if the trial is removed. The Docker leftovers of earlier attempts are a separate matter, settled by O-23. |
-| Q-34 | Where should the web-only volume control sit in the player, and with which icon? (lead or owner) | The player adds a volume and mute button, because a browser has no hardware volume keys. Its speaker icon looks almost the same as upstream's audio-track button in the same row, and a user of the TV app expects a speaker to open the audio-track list. A reviewer in wave 3a raised it. The playback fixer deferred it as a design choice and named three options: another icon, showing the control only on mouse hover, or dropping it in favor of the M key and the mouse wheel. On branch integration (on `main` since 2026-11-18). Still open after the landing: the final check and repair did not change it, and the TV-comparison pass left the volume button in place and its checkers listed it among the intended web additions; none of them looked at the icon question. The polish round did not touch it either. |
+| Q-33 | Remove the Docker images the project built locally? | The wave 4 gate and the final merge each kept one image as a build cache. The wave 4 report gives about 257 MB for its image. After the stage 2 repair one image is left, `wholphin-web:latest` (258 MB); the other project images and the superseded builds were removed (`docs/final-merge-notes.md` section 9.5). The integrator of the final check rebuilt `wholphin-web:latest` from the final tree (258 MB) and smoke-tested it; it is still the only image of this project (section 12.6). No Docker build was run in the polish round (section 13.7). **Updated later on 2026-11-18:** the lead rebuilt `wholphin-web:latest` from `main` three times after the landing: from `3b1dd7b` (checked with plain requests), from `c358a52` before the trial started, and from `7ad52ba` (258 MB) after the touch fix. The last one is the image the trial used, so it is not a leftover; it was smoke-tested through the reverse proxy (T-53; [STATUS.md](STATUS.md) section 4.1). The question comes back only if the trial is removed. The Docker leftovers of earlier attempts are a separate matter, settled by O-23. **Updated 2026-11-24:** the image is built anew for every go-live, and the one before it is kept under a rollback tag on purpose (T-64). |
 | Q-36 | Real Safari, on macOS and on iPhone or iPad, has never been tested. | Every WebKit check (the cross-engine recheck, stage 2, its repair, the focus fixes) used Playwright's WebKit build on Windows, which, for example, has no MediaSource and no native HLS. No real Safari exists on the machine. See T-33. **Updated after the landing:** the final check and repair also used only Playwright's WebKit build and touch profiles (`docs/final-merge-notes.md` section 12.7: real Safari, real iOS and real touch hardware not verified). The backdrop colour job names Safari on Apple hardware as a browser whose JPEG decoder might differ from Android's on a few pixels and so give other backdrop colours (T-45); not testable on this machine. The polish round also used only Playwright's engines; its 400 ms touch rule (A-144) is unit-tested only. **Updated later on 2026-11-18:** one phone is the first real touch device that opened the app (O-29); which browser it runs is not recorded. The touch fix that followed (A-163, A-164) was tested with real touch gestures in Chromium only; in Playwright's WebKit and Firefox only its handlers could be exercised, and the reorder handle's pick-up on iOS is untested. |
 | Q-40 | Turn off the throwaway test server's scheduled library scan, and clear its old sessions? | The scan relists leftover test playlists; with the 3-second wait and the clean-up in the global setup that should be rare (A-115), but the scan still exists and belongs to `tools/testserver`. The audit also counted about 950 sign-in sessions of the test account on that server, collected from test runs; harmless there, but the number grows with every run. **Updated after the landing:** before the last gate the lead reset the server to its seed (`npm run ts:reset`, T-46), which started its user data, sessions included, from the seed again. Not recorded: whether the scheduled scan is still on after the reset. The scan question and a rule for clearing sessions stay open. **Updated after the polish round:** the lead reset and provisioned the server once more before the final runs (T-49), because the round's crawls had moved its data. |
 
@@ -1670,6 +2156,10 @@ Most of these were deferred by fixer agents with a recorded reason. The follow-u
 | Q-41 | With the music mini player showing, should Down on an empty, failed or still-loading page reach the bar? | Settled by the polish round: Down reaches the bar once the page has settled (some text shown, nothing marked busy); while the page is still loading the key is still taken. See A-142. |
 | Q-42 | Make one shared helper for "arrows leave a one-line text field at its edges"? | Settled by the polish round: one helper, `src/ui/lib/fieldArrowExit.ts`, used by the search page and Add to playlist. See A-148. |
 | Q-25 | Should old Docker leftovers on the development machine be removed? | Settled by the owner on 2026-11-18: yes. The lead deleted these leftovers of the project and touched nothing else. The question used to say the leftovers had nothing to do with this project; the lead's account says they came from earlier attempts at this project. See O-23. |
+| Q-3 | When does the repository go public? | Settled by the owner on 2026-11-18: after two last requests and a privacy sweep, as a clean copy. A new public repository holds the cleaned tree as one commit, and the existing repository stays private with the full history. Published the same day. See O-33, O-35 and T-58. Not recorded: whether the three GitHub settings the question named for that moment (private vulnerability reporting, Dependabot alerts, branch protection that requires the CI check) were switched on in the public repository. |
+| Q-34 | Where should the web-only volume control sit in the player, and with which icon? | Settled on 2026-11-18, on the owner's request: the volume control keeps its speaker, and the audio-track button is the Material "audiotrack" music note (commit `6c14670`). The lead chose the icon and the owner approved it. See O-32. Where the control sits changed later with the player's layout: it is in the left group of the strip (T-60). |
+| Q-35 | Is the minus sign of the player's remaining-time label in the right place in Hebrew? | Settled by the player round of 2026-11-22 (commit `c2316a4`): the times are clocks, written left to right in every locale, so the minus stands in front of the digits in Hebrew and Arabic too. It came with the time format the owner chose (O-36); no word of the owner about the minus itself is recorded. See T-60. This replaces what A-160 had left as it was. |
+| Q-43 | Does the finished desktop version include the features that are not built? (Remote control from another device, the music library tabs' filter and full view options, Play on an album or artist from the shared menu, image subtitles drawn in the browser.) | Answered by the owner on 2026-11-18: they do not block "finished". Remote control is "nice to have"; the music extras do not matter as long as music works; image subtitles in the browser were left out on the lead's recommendation. PGS subtitles were built the same day after all, with the direct-play work (T-59). See O-30. |
 
 ---
 
@@ -1708,6 +2198,12 @@ The update after the closing round and the first owner test (2026-11-18) added:
 - the final reports of the closing round's small-fix agent and its checker and of the touch fix's fixer and its verifier, and the code on `main` at `7ad52ba` for the entries A-158 to A-166 (the files named there were read);
 - the git log of `main` (`692715f`, `7ad52ba`) and the list of CI runs on GitHub;
 - the lead's account of the owner's later decisions of that day (O-26 to O-29), of the two attempts of the trial (T-52, T-53), of the changes made before the touch fix was committed (T-55) and of the clean-up and its accident (T-57). The trial and the owner's words are in no file. Details of the setup the trial ran on are left out on purpose.
+
+The update of 2026-11-24 (the first public release and the maintenance rounds) added:
+
+- the git log of `main` from `7ad52ba` to `509db33`, whose commit messages the lead wrote, and the code on `main` at `509db33` for the entries T-59 to T-61 and T-65 to T-75 (the files named there were read);
+- the index of the agent log archive for the jobs of 2026-11-18 and 2026-11-22 (which agents each job had), and the notes of an unfinished documentation update of 2026-11-18 for details of the player layout and the direct-play work;
+- the lead's account of the owner's decisions and words (O-30 to O-47), of the publication and the second release (T-58), of the review of the Settings panel (T-61), of the working rules T-62 to T-64, and of the state on 2026-11-24. None of these is in a file. Where a number of agents or a count of a test run was not recorded, the entry says so and gives none.
 
 The items that the earlier update could not yet record (the comparison pass's notes, section 11 of the final merge notes, the outcome of T-41) are now in T-40, T-41 and T-43. The result of the lead's last full end-to-end run is in [STATUS.md](STATUS.md), not here.
 

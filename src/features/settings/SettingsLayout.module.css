@@ -1,14 +1,32 @@
 .page {
-  --slide: 1;
   position: fixed;
   inset: 0;
   display: flex;
-  background: var(--c-background);
+  /* the panel's ground starts its opening partly beyond the window's edge */
+  overflow: clip;
   color: var(--c-on-surface);
 }
 
-:global([dir='rtl']) .page {
-  --slide: -1;
+/* A preview beside the panel has its own ground; without one the layer behind shows (PageUnderlay: the page
+   Settings was opened from, or the plain background). */
+.withAside {
+  background: var(--c-background);
+}
+
+/* Where the empty area cannot be clicked to leave (SettingsLayout.tsx): over the panel's header. */
+.back {
+  position: fixed;
+  top: 8px;
+  inset-inline-start: 8px;
+  z-index: 10;
+}
+
+/* Beside a preview: in the preview's corner next to the panel. */
+.asideBack {
+  position: absolute;
+  top: 8px;
+  inset-inline-start: 8px;
+  z-index: 1;
 }
 
 .empty {
@@ -23,27 +41,83 @@
   overflow: hidden;
 }
 
-/* fillMaxWidth(.4f): the floor is the TV's own 384dp (40% of the 960dp canvas), the whole width on phones. */
+/* fillMaxWidth(.4f): the floor is the TV's own 384dp (40% of the 960dp canvas), the whole width on phones.
+   Web (owner request): at the start edge, the nav drawer's side, in both directions (upstream: the end edge). */
 .panel {
+  --settings-dir: 1;
+  order: -1;
+  position: relative;
+  /* its own stacking context: the ground below stays behind the header and the list, above the page */
+  z-index: 0;
   display: flex;
   flex-direction: column;
   flex: none;
   width: clamp(min(100%, 384px), 40%, 100%);
   height: 100%;
-  background: var(--c-surface-1);
-  animation: enter 300ms cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+:global([dir='rtl']) .panel {
+  --settings-dir: -1;
+}
+
+/* Web (owner request): the look of the open nav drawer (NavDrawer.module.css). One piece, the ground: the surface
+   colour, solid under the panel and fading out over 64dp past its end edge instead of ending in a hard edge.
+   (Upstream: surface at 1dp.) */
+.panel::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  z-index: -1;
+  width: calc(100% + 64px);
+  background: linear-gradient(to right, var(--c-surface) calc(100% - 64px), transparent);
+  pointer-events: none;
+}
+
+:global([dir='rtl']) .panel::before {
+  background: linear-gradient(to left, var(--c-surface) calc(100% - 64px), transparent);
+}
+
+/* ...and its opening, when Settings is chosen from the open drawer: the drawer's panel widens into this one with
+   the drawer's spring, then the Settings content fades in on it. (Upstream slides the panel in from half its
+   width.) Exactly one thing moves, the ground, and it is one transform: it slides out from where its solid part
+   is as wide as the open drawer, soft edge included, so nothing has to stay in step with anything else. The
+   content does not move and is not clipped; it only becomes visible once the ground has all but arrived. */
+.opening .panel::before {
+  animation: ground var(--shell-spring-ms, 280ms) var(--shell-spring, ease-out) both;
+}
+
+.opening .header,
+.opening .list {
+  animation: content 140ms linear 120ms both;
+}
+
+@keyframes ground {
+  from {
+    transform: translateX(calc((var(--shell-rail-open-width, 224px) + 64px - 100%) * var(--settings-dir)));
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes content {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .opening .panel::before,
+  .opening .header,
+  .opening .list {
+    animation: none;
+  }
 }
 
 /* SubtitleStylePage.kt:240 fillMaxWidth(.25f): the floor is the TV's own 240dp (25% of the 960dp canvas). */
 .narrow .panel {
   width: clamp(min(100%, 240px), 25%, 100%);
-}
-
-@keyframes enter {
-  from {
-    opacity: 0;
-    transform: translateX(calc(50% * var(--slide)));
-  }
 }
 
 /* PreferencesContent.kt:224-232: headlineSmall, fillMaxWidth, centered, 8dp above and below. The Text is trimmed
@@ -86,6 +160,7 @@
   }
 
   .withAside .panel {
+    order: 0;
     flex: 1;
     min-height: 0;
     width: 100%;
@@ -93,11 +168,12 @@
   }
 }
 
+/* the panel is the whole width: keep the title clear of the Back button over its header */
+.page:has(> .back) .header {
+  padding-inline: 56px;
+}
+
 @media (max-width: 719px) {
-  /* the panel is the whole width here: keep the title clear of the shell's floating Back button */
-  .header {
-    padding-inline: 56px;
-  }
 
   .page:not(.withAside) .empty {
     display: none;

@@ -8,23 +8,32 @@
   cursor: default;
 }
 
-.bottomStart {
-  align-items: flex-end;
-  justify-content: flex-start;
-}
-
-.bottomEnd {
-  align-items: flex-end;
-  justify-content: flex-end;
-}
-
 /*
  * Web layout: the bottom sheets stand on the control strip (8dp above it), not on the screen's bottom edge as on
  * the TV, where the dialog window covers the controller. The strip's height is the player's --player-strip-h.
+ * They stand at the physical left in every language, above the buttons that open them (the strip's buttons do
+ * not mirror: Controller.module.css).
  */
-.bottomStart,
-.bottomEnd {
+.bottomLeft {
+  align-items: flex-end;
+  justify-content: flex-start;
   padding-bottom: calc(var(--player-strip-h, 0px) + 8px + env(safe-area-inset-bottom, 0px));
+}
+
+/* the left is the end side of a right-to-left page */
+:global([dir='rtl']) .bottomLeft {
+  justify-content: flex-end;
+}
+
+.bottomRight {
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding-bottom: calc(var(--player-strip-h, 0px) + 8px + env(safe-area-inset-bottom, 0px));
+}
+
+/* the right is the start side of a right-to-left page */
+:global([dir='rtl']) .bottomRight {
+  justify-content: flex-start;
 }
 
 .center {

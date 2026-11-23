@@ -1,7 +1,8 @@
 import clsx from 'clsx'
-import { useRef, useState, type KeyboardEvent, type PointerEvent } from 'react'
+import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react'
 import { useTranslate } from '../../common/useTranslate'
 import { formatClock } from '../../../lib/format'
+import { keepPressToControl } from '../../../ui/lib/touchIntent'
 import styles from './MusicSeekBar.module.css'
 
 export type MusicSeekBarProps = {
@@ -23,6 +24,8 @@ export function MusicSeekBar({ positionMs, durationMs, bufferedMs, onSeek, onInt
   const { t } = useTranslate()
   const root = useRef<HTMLDivElement>(null)
   const [dragMs, setDragMs] = useState<number | null>(null)
+  // the press and the drag are the bar's: no text selection, no drag-and-drop of a selection that covers it
+  useEffect(() => keepPressToControl(root.current!), [])
   const span = Math.max(1, durationMs)
   const shown = dragMs ?? positionMs
   const pct = (ms: number) => `${Math.min(100, Math.max(0, (ms / span) * 100))}%`

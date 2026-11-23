@@ -68,8 +68,10 @@ export function usePlayerKeys(ctx: RefObject<PlayerKeyContext>) {
       if (ENTER_KEYS.has(e.key) && !e.repeat) armedEnter = null
       if (e.defaultPrevented || isTyping(e.target)) return
       if (c.dialogOpen) {
-        // the dialog handles keys inside itself; this catches Back when focus was left outside it
-        if (BACK_KEYS.has(e.key) && !(e.target instanceof Element && e.target.closest('[data-player-sheet]'))) {
+        // the dialog handles keys inside itself; this catches Back when focus was left outside it. A dialog opened
+        // from a sheet's row (a colour choice of the subtitle style sheet) is drawn outside the sheet and handles
+        // its own keys too.
+        if (BACK_KEYS.has(e.key) && !(e.target instanceof Element && e.target.closest('[data-player-sheet], [data-focus-trap]'))) {
           e.preventDefault()
           c.closeDialog()
         }

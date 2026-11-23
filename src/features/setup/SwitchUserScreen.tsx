@@ -9,6 +9,7 @@ import {
   getPublicSystemInfo,
   getPublicUsers,
   getQuickConnectEnabled,
+  loginWithPassword,
   needsLogin,
   needsPin,
   removeUser,
@@ -41,7 +42,7 @@ import { ProfileProtectionDialog } from './ProfileProtectionDialog'
 import styles from './setup.module.css'
 import { SetupFrame } from './SetupFrame'
 import { classifyServerVersion, serverSupportedMessage } from '../../lib/serverVersion'
-import { errorDetail, focusInitialCard, safeNext, sessionErrorMessage } from './setupHelpers'
+import { errorDetail, focusInitialCard, hasNoPassword, safeNext, sessionErrorMessage } from './setupHelpers'
 import { useSetupServer } from './useSetupServer'
 
 /** A circle on the user picker (upstream JellyfinUserAndImage): saved users are `known`. */
@@ -51,6 +52,8 @@ interface ListedUser {
   imageTag: string | null
   /** the saved row; null for a public user that was never signed in here */
   saved: SavedUser | null
+  /** the server lists this user as having no password (hasNoPassword): a click signs in without the dialog */
+  noPassword: boolean
 }
 
 /** Login dialog request carried by the /setup/login route. */
@@ -135,17 +138,20 @@ export function SwitchUserScreen({ login }: { login: LoginRequest | null }) {
     if (!server) return []
     const saved = Object.values(allUsers).filter((u) => u.serverId === server.id)
     const known = new Set(saved.map((u) => u.id))
-    const listed: ListedUser[] = saved.map((u) => ({ id: u.id, name: u.name, imageTag: u.primaryImageTag, saved: u }))
+    const listed: ListedUser[] = saved.map((u) => ({ id: u.id, name: u.name, imageTag: u.primaryImageTag, saved: u, noPassword: false }))
     const publicTags = new Map<string, string | null>()
+    const open = new Set<string>()
     for (const p of usersQuery.data?.publicUsers ?? []) {
       const id = normalizeId(p.Id)
       if (!id) continue
       publicTags.set(id, p.PrimaryImageTag ?? null)
+      if (hasNoPassword(p)) open.add(id)
       if (known.has(id)) continue
-      listed.push({ id, name: p.Name ?? null, imageTag: p.PrimaryImageTag ?? null, saved: null })
+      listed.push({ id, name: p.Name ?? null, imageTag: p.PrimaryImageTag ?? null, saved: null, noPassword: false })
     }
     // A saved user's avatar may have changed since sign-in: prefer the server's current tag when listed.
     for (const u of listed) if (u.saved && publicTags.has(u.id)) u.imageTag = publicTags.get(u.id) ?? null
+    for (const u of listed) u.noPassword = open.has(u.id)
     return listed
   }, [server, allUsers, usersQuery.data])
 
@@ -205,11 +211,32 @@ export function SwitchUserScreen({ login }: { login: LoginRequest | null }) {
     }
   }
 
+  // Web (owner request): a user the server lists without a password is signed in by the click,
+  // with the empty password, instead of through the login dialog (upstream always opens the dialog). Only for the
+  // users on this screen: a name typed under Add User goes through the dialog as before.
+  const signInWithoutPassword = async (u: ListedUser) => {
+    setBusy(true)
+    try {
+      await loginWithPassword(server, u.name ?? '', '')
+      finish()
+    } catch (err) {
+      // a password was set since the list loaded: the dialog asks for it. Anything else is shown first.
+      if (!(err instanceof SessionError && err.kind === 'invalid-credentials')) {
+        toast(errorDetail(t, err) ?? sessionErrorMessage(t, err), { long: true })
+      }
+      openLogin(u.name ?? '', true)
+    } finally {
+      setBusy(false)
+    }
+  }
+
   const onSwitchUser = (u: ListedUser) => {
     if (busy) return
     const saved = u.saved
-    if (!saved || needsLogin(saved)) openLogin(u.name ?? '')
-    else if (needsPin(saved)) setPinUser(saved)
+    if (!saved || needsLogin(saved)) {
+      if (u.noPassword && u.name) void signInWithoutPassword(u)
+      else openLogin(u.name ?? '')
+    } else if (needsPin(saved)) setPinUser(saved)
     else void trySwitchUser(saved)
   }
 
