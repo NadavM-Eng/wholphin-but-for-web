@@ -17,6 +17,7 @@
     "gen": "npm run gen:tokens && npm run gen:strings && npm run gen:preferences && npm run gen:licenses",
     "shots": "tsx tools/shots/cli.ts",
     "conversation": "node tools/export-conversation.mjs",
+    "map": "node tools/gen-code-map.mjs",
     "shots:compare": "tsx tools/shots/cli.ts --compare",
     "shots:quick": "tsx tools/shots/cli.ts --theme PURPLE --viewport desktop,phone",
     "ts:up": "node tools/testserver/setup.mjs up",

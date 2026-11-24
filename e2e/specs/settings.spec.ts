@@ -73,14 +73,54 @@ test('the theme dialog changes the theme at once and the choice survives a reloa
   await expect(row).toContainText('Blue')
 })
 
-test('the drawer opens Settings; its rows lead to the user, subtitle, Home and drawer-items screens', { tag: [TAG.desktop] }, async ({ page, app }) => {
+test('the drawer opens Settings; its quick rows and its subjects lead to their screens', { tag: [TAG.desktop] }, async ({ page, app }) => {
+  await page.setViewportSize({ width: 1440, height: 900 })
   await app.goto('/')
   await app.expectHome()
   await app.drawer.hover()
   await app.drawer.getByRole('link', { name: 'Settings' }).click()
   await expect(page).toHaveURL(/\/settings$/)
 
-  // Customize Navigation Drawer Items: the shell's pins dialog
+  // the first screen: the quick rows, then the nine subjects, each naming its first rows
+  const ids = await page.locator('[data-settings-list] [data-pref-id]').evaluateAll((els) => els.map((el) => el.getAttribute('data-pref-id')))
+  expect(ids).toEqual([
+    'ThemeColors',
+    'UserInterfaceLanguage',
+    'WebInterfaceScale',
+    'SubtitleStyle',
+    'CustomizeHome',
+    ...['profile', 'interface', 'home', 'playback', 'subtitles', 'audio', 'video', 'screensaver', 'about'].map((t) => `Topic-${t}`),
+  ])
+  // each subject lists its rows under its name, one to a line and none cut short
+  const listed = (subject: string) =>
+    page.locator(`[data-pref-id="Topic-${subject}"] [data-subject-row]`).evaluateAll((els) =>
+      els.map((el) => ({ text: el.textContent, top: Math.round(el.getBoundingClientRect().top), cut: el.scrollWidth > el.clientWidth + 1 || getComputedStyle(el).textOverflow === 'ellipsis' })),
+    )
+  const subtitles = await listed('subtitles')
+  expect(subtitles.map((r) => r.text)).toEqual(['Preferred subtitle language', 'Subtitle mode', 'Subtitle style', 'SSA/ASS subtitle playback', 'Direct play PGS subtitles'])
+  expect(new Set(subtitles.map((r) => r.top)).size).toBe(5)
+  expect(subtitles.some((r) => r.cut)).toBe(false)
+  expect((await listed('playback')).length).toBe(14)
+  // the quick rows stand two beside each other with the slider across both columns; the subjects flow down two
+  // columns, the first ones in the first
+  const box = async (id: string) => (await page.locator(`[data-pref-id="${id}"]`).boundingBox())!
+  const [theme, language, scale, profile, iface, about] = await Promise.all(['ThemeColors', 'UserInterfaceLanguage', 'WebInterfaceScale', 'Topic-profile', 'Topic-interface', 'Topic-about'].map(box))
+  expect(language.y).toBe(theme.y)
+  expect(language.x).toBeGreaterThan(theme.x + theme.width - 1)
+  expect(scale.width).toBeGreaterThan(theme.width + language.width - 1)
+  expect(iface.x).toBe(profile.x)
+  expect(iface.y).toBeGreaterThan(profile.y + profile.height - 1)
+  expect(about.x).toBeGreaterThan(profile.x + profile.width - 1)
+  // one column in a narrow panel
+  await page.setViewportSize({ width: 390, height: 844 })
+  await expect.poll(async () => (await box('Topic-about')).x).toBe((await box('Topic-profile')).x)
+  expect((await box('UserInterfaceLanguage')).y).toBeGreaterThan((await box('ThemeColors')).y)
+  await page.setViewportSize({ width: 1440, height: 900 })
+
+  // a subject, then a row of it. Customize Navigation Drawer Items: the shell's pins dialog
+  await page.locator('[data-pref-id="Topic-home"] [data-focusable]').first().click()
+  await expect(page).toHaveURL(/\/settings\/topic\/home$/)
+  await expect(page.getByRole('region', { name: 'Home' })).toBeVisible()
   await page.locator('[data-pref-id="UserPinnedNavDrawerItems"] [data-focusable]').first().click()
   const pins = page.getByRole('dialog', { name: 'Customize Navigation Drawer Items' })
   await expect(pins).toBeVisible()
@@ -91,7 +131,7 @@ test('the drawer opens Settings; its rows lead to the user, subtitle, Home and d
   for (const [id, path] of [
     ['SubtitleStyle', /\/settings\/subtitles$/],
     ['CustomizeHome', /\/home\/settings$/],
-    ['UserProfileSettings', /\/settings\/user$/],
+    ['Topic-profile', /\/settings\/topic\/profile$/],
   ] as const) {
     await app.goto('/settings')
     await page.locator(`[data-pref-id="${id}"] [data-focusable]`).first().click()
@@ -100,8 +140,138 @@ test('the drawer opens Settings; its rows lead to the user, subtitle, Home and d
   }
 })
 
-test('a dialog opened from a choice dialog gives focus back to the settings row', { tag: [TAG.keyboard] }, async ({ page, app }) => {
+test('every subject shows its rows, and the addresses of the upstream screens that became subjects lead there', { tag: [TAG.desktop] }, async ({ page, app }) => {
+  const rows = () => page.locator('[data-settings-list] [data-pref-id]').evaluateAll((els) => els.map((el) => el.getAttribute('data-pref-id')))
+  const SUBJECTS: Record<string, string[]> = {
+    profile: ['ProtectProfilePreference', 'SignInAuto', 'QuickConnect', 'WebSignOut'],
+    interface: ['ThemeColors', 'WebInterfaceScale', 'UserInterfaceLanguage', 'BackdropStylePref', 'ShowClock', 'ShowLogos', 'DisplayTogglesPref', 'ManageMedia', 'RememberSelectedTab', 'PlayThemeMusic'],
+    home: ['CustomizeHome', 'UserPinnedNavDrawerItems', 'SeerrIntegration'],
+    playback: ['SkipForward', 'SkipBack', 'SkipBackOnResume', 'OneClickPause', 'ControllerTimeout', 'WebPlayerDimVideo', 'GlobalContentScale', 'DpadSeekModePref', 'CinemaMode', 'SkipSegments', 'ShowNextUpTiming', 'AutoPlayNextUp', 'AutoPlayNextDelay', 'PassOutProtection'],
+    subtitles: ['PreferredSubtitleLang', 'SubtitleModePref', 'SubtitleStyle', 'AssSubtitleMode', 'DirectPlayPgs'],
+    audio: ['PreferredAudioLang', 'DownMixStereo', 'Ac3Supported'],
+    video: ['MaxBitrate', 'MaxResolutionPref', 'DecodeAv1', 'HdrFormatSettings'],
+    screensaver: ['ScreensaverSettings', 'SlideshowDuration', 'SlideshowPlayVideos'],
+    about: ['InstalledVersion', 'OssLicenseInfo', 'PlaybackDebugInfo', 'DebugLogging', 'SendAppLogs', 'ClearImageCache', 'ExperimentalEnable', 'WebResetPreferences'],
+  }
+  for (const [subject, expected] of Object.entries(SUBJECTS)) {
+    await app.goto(`/settings/topic/${subject}`)
+    await expect.poll(rows, subject).toEqual(expected)
+  }
+
+  // the experimental row shows under Audio once "Experimental settings" (About) is on
+  await app.setPreference('experimentalEnable', true)
+  await app.goto('/settings/topic/audio')
+  await expect.poll(rows).toEqual([...SUBJECTS.audio, 'PreferAc3ForSurround'])
+  await expect(page.getByRole('heading', { name: 'Experimental settings' })).toBeVisible()
+  await app.setPreference('experimentalEnable', false)
+
+  // a row of a subject leads on (Skip behavior), and Back comes back to the subject
+  await app.goto('/settings/topic/playback')
+  await page.locator('[data-pref-id="SkipSegments"] [data-focusable]').first().click()
+  await expect(page).toHaveURL(/\/settings\/skip_segments$/)
+  await page.goBack()
+  await expect(page).toHaveURL(/\/settings\/topic\/playback$/)
+
+  // old addresses, and one that names no subject
+  for (const [old, now] of [
+    ['/settings/advanced', /\/settings$/],
+    ['/settings/experimental', /\/settings\/topic\/audio$/],
+    ['/settings/user', /\/settings\/topic\/profile$/],
+    ['/settings/topic/nothing', /\/settings$/],
+  ] as const) {
+    await app.goto(old)
+    await expect(page).toHaveURL(now)
+    await expect(app.routeStub).toHaveCount(0)
+  }
+})
+
+test('keyboard on the first screen: down through the quick rows into the two columns of subjects, sideways between the columns, Enter opens a subject and Escape comes back to its row', { tag: [TAG.keyboard] }, async ({ page, app }) => {
+  await page.setViewportSize({ width: 1440, height: 900 })
   await app.goto('/settings')
+  const focusedRow = () => page.evaluate(() => document.activeElement?.closest('[data-pref-id]')?.getAttribute('data-pref-id') ?? null)
+  await expect.poll(focusedRow).toBe('ThemeColors')
+  await app.press('ArrowRight')
+  await expect.poll(focusedRow).toBe('UserInterfaceLanguage')
+  await app.press('ArrowLeft')
+  // the subjects flow down the first column, then the second
+  for (const id of ['WebInterfaceScale', 'SubtitleStyle', 'Topic-profile', 'Topic-interface']) {
+    await app.press('ArrowDown')
+    await expect.poll(focusedRow).toBe(id)
+  }
+  // sideways: to a subject of the other column and back into the first
+  await app.press('ArrowRight')
+  const SECOND_COLUMN = ['Topic-subtitles', 'Topic-audio', 'Topic-video', 'Topic-screensaver', 'Topic-about']
+  await expect.poll(focusedRow).toMatch(/^Topic-(subtitles|audio|video|screensaver|about)$/)
+  const other = (await focusedRow())!
+  expect(SECOND_COLUMN).toContain(other)
+  await app.press('ArrowLeft')
+  await expect.poll(focusedRow).toMatch(/^Topic-(profile|interface|home|playback)$/)
+  await app.press('ArrowRight')
+  await expect.poll(focusedRow).toMatch(/^Topic-(subtitles|audio|video|screensaver|about)$/)
+  const opened = (await focusedRow())!.slice('Topic-'.length)
+  await page.keyboard.press('Enter')
+  await expect(page).toHaveURL(new RegExp(`/settings/topic/${opened}$`))
+  await expect.poll(async () => ((await focusedRow()) ?? '').startsWith('Topic-')).toBe(false)
+  await expect.poll(focusedRow).not.toBeNull()
+  await page.keyboard.press('Escape')
+  await expect(page).toHaveURL(/\/settings$/)
+  await expect.poll(focusedRow).toBe(`Topic-${opened}`)
+  // Up from the first row wraps to the last subject, Down from there to the first row
+  await page.locator('[data-pref-id="ThemeColors"] [data-focusable]').first().focus()
+  await expect.poll(focusedRow).toBe('ThemeColors')
+  await app.press('ArrowUp')
+  await expect.poll(focusedRow).toBe('Topic-about')
+  await app.press('ArrowDown')
+  await expect.poll(focusedRow).toBe('ThemeColors')
+})
+
+test('the language list is in a solid box like every other choice, over the page that shows behind Settings too', { tag: [TAG.desktop, TAG.engines] }, async ({ page, app }) => {
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await app.goto('/')
+  await app.expectHome()
+  await app.drawer.hover()
+  await app.drawer.getByRole('link', { name: 'Settings' }).click()
+  await expect(page).toHaveURL(/\/settings$/)
+  await page.locator('[data-pref-id="UserInterfaceLanguage"] [data-focusable]').first().click()
+  const dialog = page.getByRole('dialog', { name: 'User interface language' })
+  await expect(dialog).toBeVisible()
+  const look = await dialog.evaluate((el) => {
+    const s = getComputedStyle(el)
+    // "rgb(r, g, b)", "rgba(r, g, b, a)" or "color(srgb r g b / a)", depending on the engine
+    const m = /^rgba\(.*,\s*([\d.]+)\)$/.exec(s.backgroundColor) ?? /\/\s*([\d.]+)\)$/.exec(s.backgroundColor)
+    const r = el.getBoundingClientRect()
+    return {
+      transparent: s.backgroundColor === 'transparent' || s.backgroundColor === 'rgba(0, 0, 0, 0)',
+      alpha: m ? Number(m[1]) : 1,
+      radius: parseFloat(s.borderTopLeftRadius),
+      padding: parseFloat(s.paddingTop),
+      // the long list leaves a gap above and below (the TV's dialog runs from the top of the screen to its bottom)
+      inside: r.top >= 16 && r.bottom <= document.documentElement.clientHeight - 16 && r.left >= 0 && r.right <= document.documentElement.clientWidth,
+    }
+  })
+  // upstream draws this one list without the popup's container; on the web it has it (owner request)
+  expect(look).toEqual({ transparent: false, alpha: 1, radius: look.radius, padding: look.padding, inside: true })
+  expect(look.radius).toBeGreaterThan(8)
+  expect(look.padding).toBeGreaterThan(8)
+  // the box is as wide as the longest name needs, not the TV's fixed 440dp: no empty half beside the names
+  const fit = await dialog.evaluate((el) => {
+    const dp = parseFloat(getComputedStyle(document.documentElement).fontSize) / 16
+    const names = Array.from(el.querySelectorAll('[lang]'), (n) => n.getBoundingClientRect().width)
+    const list = el.querySelector('[data-focusable]')!.parentElement!
+    return { widthDp: el.getBoundingClientRect().width / dp, longestDp: Math.max(...names) / dp, cut: list.scrollWidth > list.clientWidth + 1 }
+  })
+  expect(fit.widthDp).toBeLessThan(400)
+  expect(fit.widthDp - fit.longestDp).toBeLessThan(160)
+  expect(fit.cut).toBe(false)
+  // the long list scrolls inside the box
+  expect(await dialog.locator('[role="menuitemradio"], [data-focusable]').count()).toBeGreaterThan(20)
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+  await expect(page).toHaveURL(/\/settings$/)
+})
+
+test('a dialog opened from a choice dialog gives focus back to the settings row', { tag: [TAG.keyboard] }, async ({ page, app }) => {
+  await app.goto('/settings/topic/profile')
   const row = page.locator('[data-page-root] [data-focusable]').filter({ hasText: 'Profile protection' }).first()
   await row.focus()
   await page.keyboard.press('Enter')
@@ -114,7 +284,7 @@ test('a dialog opened from a choice dialog gives focus back to the settings row'
   await page.keyboard.press('Escape')
   await expect(page.getByRole('dialog')).toHaveCount(0)
   await expect(row).toBeFocused()
-  await expect(page).toHaveURL(/\/settings$/)
+  await expect(page).toHaveURL(/\/settings\/topic\/profile$/)
 })
 
 test('License page: arrows on the page scroll it, then hand focus to a row in view without jumping back', { tag: [TAG.keyboard] }, async ({ page, app }) => {
@@ -139,8 +309,8 @@ test('License page: arrows on the page scroll it, then hand focus to a row in vi
 })
 
 test('a finger that starts on a slider scrolls the settings list; only a sideways drag or a tap changes the slider', { tag: [TAG.phone] }, async ({ page, app }) => {
-  await app.goto('/settings/advanced')
-  const slider = page.getByRole('slider', { name: 'Slideshow duration' })
+  await app.goto('/settings/topic/playback')
+  const slider = page.getByRole('slider', { name: 'Skip forward' })
   await expect(slider).toBeInViewport()
   const start = await fraction(slider)
   expect(await listTop(slider)).toBe(0)
@@ -155,7 +325,7 @@ test('a finger that starts on a slider scrolls the settings list; only a sideway
     await expect.poll(() => listTop(slider)).toBe(0)
   }
   await expect(page.getByRole('dialog')).toHaveCount(0)
-  await expect(page).toHaveURL(/\/settings\/advanced$/)
+  await expect(page).toHaveURL(/\/settings\/topic\/playback$/)
 
   // a sideways drag takes the slider: the thumb ends under the finger and the list stays where it is
   const from = await pointOn(slider, 0.3)
@@ -176,8 +346,8 @@ test('a finger that starts on a slider scrolls the settings list; only a sideway
 // produces (the browser's own part, panning on `touch-action: pan-y` and then pointercancel, is asserted as style).
 test('slider under touch pointer events: down, an up-and-down move and a cancel change nothing; a sideways drag and a tap do', { tag: [TAG.iphone, TAG.engines] }, async ({ page, app, guard }) => {
   guard.allow(NO_CAPTURE, 'a dispatched pointer is not an active one: the browser refuses to capture its id')
-  await app.goto('/settings/advanced')
-  const slider = page.getByRole('slider', { name: 'Slideshow duration' })
+  await app.goto('/settings/topic/playback')
+  const slider = page.getByRole('slider', { name: 'Skip forward' })
   await slider.scrollIntoViewIfNeeded()
   const start = await fraction(slider)
   expect(await slider.evaluate((el) => getComputedStyle(el).touchAction)).toMatch(/^pan-y( pinch-zoom)?$/)
@@ -356,7 +526,7 @@ test.describe('Hebrew interface', () => {
   test.use({ locale: 'he-IL' })
 
   test('a slider summary made of a number and a Latin unit reads left to right', { tag: [TAG.desktop, TAG.engines] }, async ({ page, app }) => {
-    await app.goto('/settings/advanced')
+    await app.goto('/settings/topic/video')
     await expect(page.locator('html')).toHaveAttribute('dir', 'rtl')
     const row = page.locator('[data-pref-id="MaxBitrate"]')
     const summary = row.getByText(/^\d+ [kM]bps$/)
@@ -366,6 +536,7 @@ test.describe('Hebrew interface', () => {
     expect(await app.drawnText(summary)).toBe(text)
     // a translated summary keeps the interface's direction: "5.00 seconds" in Hebrew starts at the right, so the
     // number is drawn to the right of the word
+    await app.goto('/settings/topic/playback')
     const translated = page.locator('[data-pref-id="ControllerTimeout"]').getByText(/\d [\u0590-\u05ff]/).last()
     expect(await app.drawnText(translated)).toMatch(/^[\u0590-\u05ff]+\d+\.\d+$/)
   })
@@ -515,9 +686,9 @@ test('a click beside the panel goes one step back: from a sub-screen to Settings
   await app.expectHome()
   const titles = await rowTitles(app.shell)
   await openSettingsFromDrawer(page, app)
-  const row = page.locator('[data-pref-id="UserProfileSettings"] [data-focusable]').first()
+  const row = page.locator('[data-pref-id="Topic-profile"] [data-focusable]').first()
   await row.click()
-  await expect(page).toHaveURL(/\/settings\/user$/)
+  await expect(page).toHaveURL(/\/settings\/topic\/profile$/)
   // a sub-screen is a panel over the same page
   await expect(settingsBack(page)).toHaveCount(0)
   expect(await rowTitles(underlay(page))).toEqual(titles)
@@ -553,10 +724,10 @@ test('Escape goes one step back: from a sub-screen to Settings, from Settings to
   expect(await copiedRailWidth(page)).toBeLessThan(100)
   await expect(settingsBack(page)).toHaveCount(0)
 
-  const row = page.locator('[data-pref-id="UserProfileSettings"] [data-focusable]').first()
+  const row = page.locator('[data-pref-id="Topic-profile"] [data-focusable]').first()
   await row.focus()
   await page.keyboard.press('Enter')
-  await expect(page).toHaveURL(/\/settings\/user$/)
+  await expect(page).toHaveURL(/\/settings\/topic\/profile$/)
   await expect.poll(() => focusInPanel(page)).toBe(true)
 
   await page.keyboard.press('Escape')
@@ -683,10 +854,10 @@ test('phone width: Settings is the whole width and keeps its Back button, which 
   const panel = page.getByRole('region', { name: 'Settings' })
   expect(Math.round((await panel.boundingBox())!.width)).toBe(await page.evaluate(() => innerWidth))
 
-  const row = page.locator('[data-pref-id="UserProfileSettings"] [data-focusable]').first()
+  const row = page.locator('[data-pref-id="Topic-profile"] [data-focusable]').first()
   await row.scrollIntoViewIfNeeded()
   await app.tap(row)
-  await expect(page).toHaveURL(/\/settings\/user$/)
+  await expect(page).toHaveURL(/\/settings\/topic\/profile$/)
   await expect(settingsBack(page)).toBeVisible()
   await app.tap(settingsBack(page))
   await expect(page).toHaveURL(/\/settings$/)
@@ -721,16 +892,16 @@ test.describe('with animations on', () => {
     const panel = page.getByRole('region', { name: 'Settings' })
     // at full strength and in place right away: the opening only uncovers the panel
     expect(await panel.evaluate((el) => `${getComputedStyle(el).opacity} ${getComputedStyle(el).transform} ${getComputedStyle(el.closest('[data-page-root]')!).opacity}`)).toBe('1 none 1')
-    await app.activate(page.locator('[data-pref-id="AdvancedSettings"] [data-focusable], [data-pref-id="AdvancedSettings"][data-focusable]').first())
-    await expect(page).toHaveURL(/\/settings\/advanced$/)
-    await expect(page.getByRole('region', { name: 'Advanced Settings' })).toBeVisible()
+    await app.activate(page.locator('[data-pref-id="Topic-playback"] [data-focusable], [data-pref-id="Topic-playback"][data-focusable]').first())
+    await expect(page).toHaveURL(/\/settings\/topic\/playback$/)
+    await expect(page.getByRole('region', { name: 'Playback' })).toBeVisible()
     await page.waitForTimeout(400)
     // the opening, played once when Settings opened (the names are hashed by the build): the ground behind the
     // panel slides out, and the header and the list fade in. Nothing else, and nothing on the next screen.
     const started = await page.evaluate(() => (window as unknown as { __started: string[] }).__started)
     expect(started.map((name) => /ground|content/.exec(name)?.[0]).sort()).toEqual(['content', 'content', 'ground'])
     // the ground is the drawer's colour with a soft end edge, one piece; on the next screen it is at rest
-    const advanced = page.getByRole('region', { name: 'Advanced Settings' })
+    const advanced = page.getByRole('region', { name: 'Playback' })
     expect(await advanced.evaluate((el) => getComputedStyle(el, '::before').animationName)).toBe('none')
     expect(await advanced.evaluate((el) => getComputedStyle(el, '::before').backgroundImage)).toContain('linear-gradient')
     expect(await advanced.evaluate((el) => getComputedStyle(el.querySelector('[data-settings-list]')!).opacity)).toBe('1')

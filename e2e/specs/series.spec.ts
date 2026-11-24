@@ -246,3 +246,77 @@ test('Down from the episode strip onto the buttons scrolls the overview (the sui
   await expect(episodeCard(page, eps[1].Id)).toBeFocused()
   await expect.poll(() => page.evaluate(() => scrollY)).toBe(0)
 })
+
+test('the mouse moves the episode strip: turning the wheel over it (at its end the wheel scrolls the page again) and holding and pulling it sideways, which plays nothing', { tag: [TAG.desktop, TAG.engines] }, async ({ page, app, api }) => {
+  // the interface follows the width of the window, so a narrower window alone makes no card fall out of it: at
+  // 150 % of the automatic size the six cards of the season do not fit
+  await page.setViewportSize({ width: 1280, height: 720 })
+  await app.goto('/')
+  await app.setPreference('webInterfaceScale', 150)
+  const series = await api.findSeries('Orbital Drift')
+  // its first season proper (the list starts with the two specials)
+  const s1 = (await seasonsOf(api, series.Id)).find((s) => s.Name === 'Season 1')!
+  const eps = await episodesOf(api, series.Id, s1.Id)
+  expect(eps.length).toBe(6)
+  await app.goto(`/series/${series.Id}?season=${s1.Id}&episode=${eps[0].Id}`)
+  await expect(episodeCard(page, eps[0].Id)).toBeVisible()
+  await app.settle()
+  const strip = page.locator('[data-ep-index]').first().locator('xpath=../..')
+  // distance from the start of the strip, in either writing direction
+  const at = () => strip.evaluate((el) => Math.round(Math.abs(el.scrollLeft)))
+  const max = await strip.evaluate((el) => el.scrollWidth - el.clientWidth)
+  expect(max).toBeGreaterThan(300)
+  expect(await at()).toBe(0)
+  const box = (await strip.boundingBox())!
+  const middle = { x: box.x + box.width / 2, y: box.y + box.height / 2 }
+
+  await test.step('the wheel: a notch down runs the strip towards its end and the page stays; a notch up runs it back', async () => {
+    await page.mouse.move(middle.x, middle.y)
+    await page.mouse.wheel(0, 100)
+    await expect.poll(at).toBeGreaterThan(120)
+    expect(await page.evaluate(() => scrollY)).toBe(0)
+    await page.mouse.wheel(0, -100)
+    await expect.poll(at).toBe(0)
+  })
+
+  await test.step('at the end of the strip the wheel is the page’s again', async () => {
+    const range = await page.evaluate(() => document.documentElement.scrollHeight - innerHeight)
+    expect(range, 'the overview is taller than this window').toBeGreaterThan(60)
+    for (let i = 0; i < 12 && (await at()) < max - 1; i++) {
+      await page.mouse.wheel(0, 100)
+      await app.settle()
+    }
+    await expect.poll(at).toBeGreaterThan(max - 2)
+    expect(await page.evaluate(() => scrollY)).toBe(0)
+    await page.mouse.wheel(0, 100)
+    await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(20)
+    await page.evaluate(() => scrollTo(0, 0))
+    await strip.evaluate((el) => el.scrollTo(0, 0))
+    await expect.poll(at).toBe(0)
+  })
+
+  await test.step('hold and pull: the strip follows the mouse, and the release on a card plays nothing', async () => {
+    await page.mouse.move(middle.x, middle.y)
+    await page.mouse.down()
+    await page.mouse.move(middle.x - 120, middle.y, { steps: 6 })
+    await expect(strip).toHaveAttribute('data-dragging', '')
+    await page.mouse.move(middle.x - 260, middle.y + 30, { steps: 6 })
+    const pulled = await at()
+    // it follows the pointer one to one, from the first pixel of the pull
+    expect(Math.abs(pulled - 260)).toBeLessThanOrEqual(2)
+    await page.mouse.up()
+    await expect(strip).not.toHaveAttribute('data-dragging')
+    await app.settle()
+    expect(await at()).toBe(pulled)
+    await expect(page).toHaveURL(/\/series\//)
+    // and back, the other way
+    await page.mouse.move(middle.x, middle.y)
+    await page.mouse.down()
+    await page.mouse.move(middle.x + 400, middle.y, { steps: 8 })
+    await page.mouse.up()
+    await expect.poll(at).toBe(0)
+    await expect(page).toHaveURL(/\/series\//)
+  })
+
+  await app.setPreference('webInterfaceScale', 100)
+})

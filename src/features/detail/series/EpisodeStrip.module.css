@@ -19,6 +19,12 @@
   display: none;
 }
 
+/* being pulled sideways with the mouse (src/ui/lib/dragScroll.ts) */
+.scroller[data-dragging] {
+  cursor: grabbing;
+  user-select: none;
+}
+
 @media (pointer: coarse) {
   .scroller {
     scroll-snap-type: x proximity;

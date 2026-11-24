@@ -7,6 +7,18 @@ div.panel {
   overflow: hidden;
 }
 
+/*
+ * `fit` (web, owner request; the language list): the box is as wide as its longest row, between a width a short
+ * list still reads at and the TV's 440dp, and a long list leaves a gap above and below instead of running from the
+ * top of the window to its bottom.
+ */
+div.fit {
+  width: max-content;
+  min-width: min(240px, 100%);
+  max-width: min(440px, 100%);
+  max-height: calc(100% - 64px);
+}
+
 .column {
   display: flex;
   flex-direction: column;
@@ -50,22 +62,3 @@ div.panel {
   background: linear-gradient(var(--fx-m3-outline-variant), var(--fx-m3-outline-variant)) top / 100% 1px no-repeat;
 }
 
-/* `bare` (LocaleChoiceDialog.kt calls DialogPopupContent without DialogPopup's shadow / clip / background /
-   padding modifiers): the 440dp column on the dimmed page, from the top of the window when the list is long
-   (refshots 22-settings-sub-language: title centre 13dp, focused row 249..711dp). */
-@media (min-width: 720px) {
-  div.bare {
-    /* the Dialog sets its surface colour inline */
-    background: transparent !important;
-    box-shadow: none;
-    border-radius: 0;
-    padding: 0;
-    overflow: visible;
-  }
-
-  /* room for the focused row's 1.05 scale beside the 440dp column */
-  .bare .list {
-    margin-inline: -16px;
-    padding-inline: 16px;
-  }
-}

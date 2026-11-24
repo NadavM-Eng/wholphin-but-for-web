@@ -13,9 +13,11 @@ import { uiLocaleOptions } from './uiLocales'
  * (the user's choice, else the active browser-derived language) is marked and is the row's summary.
  * Choosing one stores the per-user value; src/app/applyPreferences switches i18next and `<html lang dir>`.
  * Like upstream there is no "follow the system" entry.
- * LocaleChoiceDialog.kt draws DialogPopupContent without the popup's container (no background, clip or padding),
- * so the list floats on the dimmed page: `bare` does the same from 720px of width up; narrower windows keep the
- * container, because the list would sit on the settings rows that fill the whole page there.
+ * Web (owner request): the list is in the popup's container like every other choice. LocaleChoiceDialog.kt draws
+ * DialogPopupContent without it (no background, clip or padding), so on the TV the list floats on the dimmed
+ * page; over the page that stays visible behind Settings on the web, the names ran through the picture.
+ * The box is as wide as the longest name and keeps a gap to the top and bottom of the window (`fit`), where the
+ * TV's 440dp column runs from edge to edge.
  */
 export function LanguagePreference({ id, title }: { id: string; title: string }) {
   const { i18n } = useTranslation()
@@ -29,7 +31,7 @@ export function LanguagePreference({ id, title }: { id: string; title: string })
       <ClickPreference id={id} title={title} summary={info?.name ?? current} onClick={() => setOpen(true)} />
       <DialogPopup
         open={open}
-        bare
+        fit
         title={title}
         onClose={() => setOpen(false)}
         items={options.map((l) => ({

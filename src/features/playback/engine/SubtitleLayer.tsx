@@ -41,14 +41,15 @@ export function SubtitleLayer({ raised = false, hidden = false }: SubtitleLayerP
         <PgsSubtitles key={subtitle.streamIndex} data={subtitle.data} delayMs={delayMs} raised={raised} hidden={hidden} />
       </Suspense>
     )
-  if (hidden) return null
-  if (subtitle.kind === 'text') return <TextSubtitles key={subtitle.streamIndex} cues={subtitle.cues} delayMs={delayMs} raised={raised} sample={sample} />
   if (subtitle.kind === 'ass')
+    // stays mounted while hidden, like the PGS renderer
     return (
       <Suspense fallback={null}>
-        <AssSubtitles key={subtitle.streamIndex} content={subtitle.content} fonts={subtitle.fonts} delayMs={delayMs} />
+        <AssSubtitles key={subtitle.streamIndex} content={subtitle.content} fonts={subtitle.fonts} delayMs={delayMs} hidden={hidden} />
       </Suspense>
     )
+  if (hidden) return null
+  if (subtitle.kind === 'text') return <TextSubtitles key={subtitle.streamIndex} cues={subtitle.cues} delayMs={delayMs} raised={raised} sample={sample} />
   return null
 }
 
@@ -113,7 +114,7 @@ function TextSubtitles({ cues, delayMs, raised, sample = false }: { cues: Subtit
   const box: CSSProperties = raised ? { ...style.box, marginBottom: `calc(${subtitleBottomMargin(prefs.subMargin, rect.height)} + ${RAISED_BY})` } : style.box
   return (
     <div ref={ref} className={styles.layer} aria-live="off">
-      <div className={styles.area} style={area}>
+      <div className={styles.area} style={area} data-subtitle-area>
         {shown.length > 0 && (
           <div className={styles.box} style={box} data-subtitle-sample={shown !== active || undefined}>
             {shown.map((c) => {

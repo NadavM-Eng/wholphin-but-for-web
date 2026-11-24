@@ -165,3 +165,60 @@
   overflow-y: auto;
   min-height: 0;
 }
+
+/*
+ * The first Settings screen (SettingsHome, web-only). Its rows are a little lower than the TV's 64dp.
+ * - The quick rows stand two beside each other in a panel wide enough for it, a slider across both columns.
+ * - The subjects flow down two columns (the first half in the first column), each as tall as the list of rows
+ *   under its name (owner request: the rows as a list, not one line cut with an ellipsis).
+ * In a narrow panel (a phone) both are one column.
+ */
+.topicsBox {
+  container-type: inline-size;
+}
+
+.topics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 4px;
+}
+
+.subjects {
+  column-count: 2;
+  column-gap: 4px;
+}
+
+.subjects > .row {
+  break-inside: avoid;
+}
+
+/* in rem: the build converts px to rem in declarations only, and the threshold must follow the interface scale */
+@container (max-width: 27.5rem) {
+  .topics {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .subjects {
+    column-count: 1;
+  }
+}
+
+/* doubled class: outranks `.row > .item` above */
+.topics.topics .row > .item,
+.subjects.subjects .row > .item {
+  min-height: 56px;
+}
+
+.topics > :has([role='slider']) {
+  grid-column: 1 / -1;
+}
+
+/* two rows beside each other are equally tall, whatever their text: the arrow keys then see them side by side */
+.topics > .row > .item {
+  height: 100%;
+}
+
+/* one row of a subject: a line of its own */
+.subjectRow {
+  display: block;
+}

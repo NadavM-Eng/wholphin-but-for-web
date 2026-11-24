@@ -5,6 +5,8 @@ import { useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef, u
 import { nav } from '../../../app/nav'
 import { useDp } from '../../../theme/scale'
 import { BannerCard, MaterialIcon, lastInputWasTouch, observeResize } from '../../../ui'
+import { installDragScroll } from '../../../ui/lib/dragScroll'
+import { installWheelScroll } from '../../../ui/lib/wheelScroll'
 import { useCardContext } from '../../common/cardAdapters'
 import { isHoverPointer, useHoverIntent } from '../../common/hoverIntent'
 import { episodeCornerText } from '../../common/itemText'
@@ -49,7 +51,9 @@ type Props = {
  * Non-selected cards sit on black and fade to 40% while focus is elsewhere on the page.
  *
  * Web input: keyboard focus selects at once and Left / Right move along the strip; a mouse hover selects after
- * a short intent delay and a click plays (upstream click = play); on touch screens a tap on another card
+ * a short intent delay and a click plays (upstream click = play); the mouse also moves the strip, by holding and
+ * pulling it sideways (the click that ends such a pull plays nothing) and by turning the wheel over it (at either
+ * end of the strip the wheel scrolls the page again); on touch screens a tap on another card
  * selects it, a tap on the selected card plays, and a swipe selects the first card fully in view.
  */
 export function EpisodeStrip({ list, total, selected, onSelect, onPlay, menu, chosenSourceId, canClearChosenStreams, dimmed, listKey, onArrowDown, ref }: Props) {
@@ -154,9 +158,14 @@ export function EpisodeStrip({ list, total, selected, onSelect, onPlay, menu, ch
     }
     el.addEventListener('scroll', onScroll, { passive: true })
     const stopObserving = observeResize(el, updateEdges)
+    // mouse: hold and pull the strip sideways, or turn the wheel over it (owner request)
+    const stopDrag = installDragScroll(el)
+    const stopWheel = installWheelScroll(el)
     return () => {
       el.removeEventListener('scroll', onScroll)
       stopObserving()
+      stopDrag()
+      stopWheel()
       clearTimeout(swipeTimer.current)
     }
   }, [rtl, updateEdges])

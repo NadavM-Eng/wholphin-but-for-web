@@ -24,8 +24,8 @@
  * | /home/settings                    | home/HomeSettingsPage                 | HomeSettings                            | fullscreen |
  * | /settings                         | settings/SettingsPage                 | Settings(BASIC)                         | fullscreen |
  * | /settings/subtitles [?hdr]        | settings/SubtitleSettingsPage         | SubtitleSettings(hdr)                   | fullscreen |
- * | /settings/user                    | settings/UserProfileSettingsPage      | UserAppPreferences                      | fullscreen |
- * | /settings/:screen                 | settings/SettingsPage                 | Settings(screen) (advanced, screensaver, skip_segments, experimental, hdr_formats) | fullscreen |
+ * | /settings/topic/:topic            | settings/SettingsTopicPage            | (web: one subject of Settings; upstream's Advanced, Experimental and UserAppPreferences rows live here) | fullscreen |
+ * | /settings/:screen                 | settings/SettingsPage                 | Settings(screen) (screensaver, skip_segments, hdr_formats; advanced, experimental and user redirect to their subjects) | fullscreen |
  * | /play/:itemId [?t&transcode&shuffle] | playback/PlaybackPage              | Playback (t = start ms)                 | fullscreen |
  * | /play/list/:itemId [?index&shuffle&recursive&sort&order&filter] | playback/PlaybackListPage | PlaybackList     | fullscreen |
  * | /now-playing                      | music/NowPlayingPage                  | NowPlaying                              | fullscreen |
@@ -104,7 +104,7 @@ export const routes: RouteObject[] = [
                   { path: 'home/settings', ...page(() => import('../features/home/HomeSettingsPage')) },
                   { path: 'settings', ...page(() => import('../features/settings/SettingsPage')) },
                   { path: 'settings/subtitles', ...page(() => import('../features/settings/SubtitleSettingsPage')) },
-                  { path: 'settings/user', ...page(() => import('../features/settings/UserProfileSettingsPage')) },
+                  { path: 'settings/topic/:topic', ...page(() => import('../features/settings/SettingsTopicPage')) },
                   { path: 'settings/:screen', ...page(() => import('../features/settings/SettingsPage')) },
                   { path: 'play/:itemId', ...page(() => import('../features/playback/PlaybackPage')) },
                   { path: 'play/list/:itemId', ...page(() => import('../features/playback/PlaybackListPage')) },

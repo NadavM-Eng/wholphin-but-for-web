@@ -76,6 +76,9 @@ That was the state when this document was first written (2026-11-17). Since then
 - **Sign-in, the Home header and the player's settings** (2026-11-23 and 2026-11-24; phase 34): `27ab920` (O-41, T-71), `8d305b7` (O-42, T-72), `e31ba4b`, `cf29a99` and `509db33` (O-43, T-73, T-74).
 - **State on 2026-11-24:** `main` is at `509db33` and pushed to the private repository. The trial runs the image built from `509db33`. After it came the documentation catch-up (`3c66f2e`), the conversation export (`fda0c2b`, `0baf14f`; O-46), the repair of two Settings tests (`e9b96bf`) and the commit with the privacy sweep's fixes and phase 35. The second public release of 2026-11-24 (O-47, T-58) carries the tree of `main` after that commit, so the public repository holds the work up to and including phase 35.
 - **Phase 35** (2026-11-24; [PROJECT-LOG.md](PROJECT-LOG.md)): the conversation export on the owner's request (O-46), the privacy sweep and the second release after the owner's "Yes, publish" (O-47, T-58), and the lead's rule that every agent gets an explicit model (T-76).
+- **Phase 36** (2026-11-24, after the second release; [PROJECT-LOG.md](PROJECT-LOG.md)): the new order of Settings, quick rows and nine subjects, on the owner's requests (O-48, T-77), in `b7f3310`. It is not in the public repository yet.
+- **Phase 37** (2026-11-24, after phase 36; [PROJECT-LOG.md](PROJECT-LOG.md)): three small changes made by the lead alone on the fast path. The subtitle line that seemed to fly in after an arrow-key skip, on the owner's report (O-49, T-78), in `c92f5e6`. The episode strip moved by the mouse, on the owner's request (O-50, T-79), in `4d6b61e`. The language list of Settings in a solid box, on the owner's report (O-51, T-80), in `ce06734`. On 2026-11-24 the owner said yes to the first two, and the trial runs the image built from `4d6b61e` (a rollback image is kept), so it has the new order of Settings, the subtitle fix and the mouse on the episode strip. The owner said yes to the third the same day and it went onto the trial. None of the four changes of phases 36 and 37 is in the public repository. **Phase 38** (the same day, after phase 37; [PROJECT-LOG.md](PROJECT-LOG.md)): the language list's box made to fit its names, on the owner's request (O-52, T-81), in `d036067`, and a generated code map, on the owner's request (O-53, T-82), in `26273ae`; the owner's answer to keep all the stored images (O-54). The trial runs the image built from `d036067`.
+- **Phase 39** (the same day, after phase 38; [PROJECT-LOG.md](PROJECT-LOG.md)): the owner's question about announcing the project and the decision "Yes, publish first" (O-55), the privacy sweep and the checks before the third public release (T-83), which brought the work of phases 36 to 38 and this phase to the public repository, and the next project, an admin panel (O-56; nothing built). The trial is unchanged, at the image built from `d036067`.
 
 > **Landing state of the comparison pass:** landed. On `main` since 2026-11-18, commit `e1b7e04` (fast-forward of `main` to `final`, which holds the merge `3085fba` of `parity` at `2a25082` and the top-up merges `f27f68a` and `b120d5f`).
 
@@ -91,7 +94,7 @@ O-19 to O-25 come from the lead's conversation with the owner on 2026-11-17 and 
 
 O-26 to O-29 come from later on 2026-11-18, around the trial deployment and the owner's first test of the app. They are recorded the same way: in no file, reported by the lead, summarized and not quoted.
 
-O-30 to O-47 come from 2026-11-18 (after the touch fix) to 2026-11-24: the way to the first public release, the maintenance rounds after it and the second release, in which the owner tried each change on the trial and answered. They are in no file either; the lead reported them for this document. Here the words in quotation marks are the owner's own, with the spelling corrected; everything else is the lead's summary.
+O-30 to O-56 come from 2026-11-18 (after the touch fix) to 2026-11-24: the way to the first public release, the maintenance rounds after it, the second release, the order of Settings, the subtitle report after a skip, the mouse on the episode strip, the language list, the code map, the stored images, the third release and the admin panel, in which the owner tried each change on the trial and answered. They are in no file either; the lead reported them for this document. Here the words in quotation marks are the owner's own, with the spelling corrected; everything else is the lead's summary.
 
 ### O-1. Name and license
 
@@ -520,6 +523,72 @@ O-30 to O-47 come from 2026-11-18 (after the touch fix) to 2026-11-24: the way t
 - **What the owner decided (2026-11-24):** "Yes, publish".
 - **What it changed:** The privacy sweep and the second release were made the same day (T-58; phase 35 of [PROJECT-LOG.md](PROJECT-LOG.md)). For this release the owner was asked and gave the go; whether the owner wants to be asked before every later release is not recorded.
 
+### O-48. The order of Settings: quick rows, then nine subjects, each listing its rows
+
+- **Context:** After the second release the owner asked what comes next, and the lead proposed Settings navigation and categories, the item on the owner's list for later. The lead read the layout then in use: about 95 rows on 8 screens in the TV app's order, one subject spread over several screens (subtitles in three places, audio in three, the groups Interface, Playback and More each twice).
+- **What the owner asked (2026-11-24), in order:**
+  - "do a small research about settings and give me a few options for the order. make it as a tree like folder tree." The lead showed three orders as trees: A by subject (nine subjects on the first screen), B the TV's two levels tidied, and C a short first screen with the most used rows on top and five subjects.
+  - The owner asked for an example of a mixture of option C and option A, got one (five quick rows, then A's nine subjects) and said "do this".
+  - After the first build, in which each subject showed its first three rows on one line cut off with an ellipsis: "make the options inside each setting be in a list instead of just having ...". Each subject now lists all its rows, one to a line.
+- **What it changed:** T-77 and the Settings rows of [DEVIATIONS.md](DEVIATIONS.md). With the full lists the first screen is taller than a 16:9 window and scrolls; the owner chose the lists. A search box in Settings, which the lead had mentioned as an idea, was not asked for and not built.
+
+### O-49. Subtitles that seemed to fly in from the left after a skip
+
+- **Context:** The owner reported a problem with text subtitles after skipping with the arrow keys.
+- **What the owner reported (2026-11-24), in order** (summarized, not quoted):
+  - After a skip forward the subtitles seemed to fly into existence from the left.
+  - The owner wanted them to just appear.
+  - Then: it only happens in fullscreen, and when pressing the arrow keys forward and backward.
+  - And: with the skip button on the screen there is no problem.
+- **What it changed:** T-78, and the subtitle rows of [DEVIATIONS.md](DEVIATIONS.md). The last two remarks were the clue: with the on-screen button the controls are up and the subtitles are never taken away.
+
+### O-50. The mouse moves the episode strip
+
+- **Context:** The episode strip of a series page scrolled with a trackpad, a finger, the keyboard and its arrow buttons only.
+- **What the owner asked (2026-11-24):** to be able to move the episodes carousel by holding and dragging, and with the scroll of the mouse.
+- **What it changed:** T-79 and the series rows of [DEVIATIONS.md](DEVIATIONS.md). On 2026-11-24 the owner said yes and it went onto the trial (the image built from `4d6b61e`).
+
+### O-51. The language list is not transparent
+
+- **Context:** The language row of Settings opens a list of languages over the panel, and the page stays visible behind the panel (T-61).
+- **What the owner reported (2026-11-24), with a picture of Settings open over a page:** the language select should not be transparent.
+- **What it changed:** T-80 and the Settings row of [DEVIATIONS.md](DEVIATIONS.md). The language list now has the popup's surface like every other choice. The owner said yes the same day and it went onto the trial.
+
+### O-52. The language list's box: some margin, smaller
+
+- **Context:** After O-51 the language list had the popup's surface, at the TV's fixed width and, being a long list, from the top of the window to its bottom.
+- **What the owner asked (2026-11-24), with a picture of the list in its new box:** make some margin around it, make it smaller, not so much unused space.
+- **What it changed:** T-81 and the Settings row of [DEVIATIONS.md](DEVIATIONS.md). The owner said yes and it went onto the trial.
+
+### O-53. A folder tree that helps to find the element to change
+
+- **Context:** Looking for what makes the language list see-through (O-51), the owner found the Settings code but not the file responsible, and then asked whether a file with a similar name, the stylesheet of the preferred audio and subtitle language rows, was the one. It was not.
+- **What the owner asked (2026-11-24):** a folder tree for the project, and for the source folder in particular, to help the owner, others and the lead find the element that needs changing.
+- **What it changed:** T-82 and the code map, `docs/CODE-MAP.md`.
+
+### O-54. Keep all the stored images
+
+- **Context:** The trial's go-lives keep the previous image under a rollback tag (T-64), and many were stored.
+- **What the owner said (2026-11-24),** asked whether to delete the old rollback images and keep the last two: "Keep them all".
+- **What it changed:** it refines T-64: no image is pruned.
+
+### O-55. May the project be announced, and the go for the third public release
+
+- **Context:** The owner wanted to announce the project in the Jellyfin community's subreddit and asked whether anyone's permission is needed.
+- **What the lead answered (2026-11-24),** from the licence and from the Jellyfin project's published policies read that day:
+  - No permission is needed: the licence is GPL-2.0, the same as upstream's, the source is public, upstream is credited and the project is marked unofficial.
+  - The Jellyfin project's policy on large language models asks that a project developed mainly by one is clearly marked as such when it is shared in their communities (the root README already says how the project was built), that posts are in the poster's own words (so the lead does not write the announcement), and that licences and credit are respected. Their branding page asks third-party projects not to use the name Jellyfin as the product's name.
+  - The lead recommended telling Wholphin's author first as a courtesy, and bringing the public repository up to date before announcing.
+  - Not verified: the subreddit's own rules page, which could not be opened from the lead's tools.
+- **What the owner decided (2026-11-24):** "Yes, publish first".
+- **What it changed:** The privacy sweep and the third release were made the same day (T-83; phase 39 of [PROJECT-LOG.md](PROJECT-LOG.md)). Whether the owner wants to be asked before every later release is still not recorded; for the first three the owner gave a go.
+
+### O-56. The next project: an admin panel inside Wholphin Web
+
+- **Context:** After the third release the owner opened the next project.
+- **What the owner asked (2026-11-24):** an admin panel inside Wholphin Web that is to replace the frontend of Jellyfin's stock dashboard, starting with research (what pages exist, how they connect, what can be merged or improved, what is needed), then a mockup. The owner's constraint: where the research looks at a running server's dashboard, only the lead looks, and nothing is changed.
+- **What it changed:** nothing in the code. Research is under way; nothing is built and no file of it is in the third release.
+
 ---
 
 ## Part 2: Technical decisions made by the lead
@@ -538,7 +607,7 @@ Where the sources do not record which alternatives were weighed, the "Rejected" 
 
 T-27 to T-32 each came out of an incident on the development machine. What happened, in order and with the commits, is in [PROJECT-LOG.md](PROJECT-LOG.md) phase 15. T-33 to T-36 are the lead's decisions from the later phases (phases 13 to 17 of the log). T-37 to T-42 are the lead's decisions of 2026-11-17 and 2026-11-18: stage 2 of the final merge, the run in which the usage limit was reached, the TV-comparison pass and the way to landing. T-48 to T-51 are the lead's decisions at the landing of the polish round, the same day. T-52 to T-57 are the lead's later decisions of that day: the trial deployment, the touch fix after the owner's first test, and the clean-up.
 
-T-58 to T-64 are the lead's decisions around the first public release and the maintenance rounds after it (2026-11-18 to 2026-11-24; phases 31 to 34 of the log): how the project is published, the direct-play work, the web player's layout, the Settings panel, and three working rules. T-65 to T-75 record the smaller technical choices of the same days that have a visible effect, one entry per change. T-76 is the lead's rule of 2026-11-24 about the model each agent runs on. Part 3 ends with the touch fix, so these entries also hold the choices of the agents that built the work of 2026-11-18 and 2026-11-22; the lead kept those choices when it committed, and each entry says who built it where that is recorded. The work of 2026-11-23 and 2026-11-24 was the lead's own, on the fast path (T-63).
+T-58 to T-64 are the lead's decisions around the first public release and the maintenance rounds after it (2026-11-18 to 2026-11-24; phases 31 to 34 of the log): how the project is published, the direct-play work, the web player's layout, the Settings panel, and three working rules. T-65 to T-75 record the smaller technical choices of the same days that have a visible effect, one entry per change. T-76 is the lead's rule of 2026-11-24 about the model each agent runs on. T-77 is the new order of Settings of the same day, after the second release. T-78 to T-80 are the three small changes after it: the subtitle line after an arrow-key skip, the mouse on the episode strip and the language list in a solid box. T-81 and T-82 are the language box fitted to its names and the generated code map. T-83 is the privacy sweep and the checks before the third public release. Part 3 ends with the touch fix, so these entries also hold the choices of the agents that built the work of 2026-11-18 and 2026-11-22; the lead kept those choices when it committed, and each entry says who built it where that is recorded. The work of 2026-11-23 and 2026-11-24 was the lead's own, on the fast path (T-63).
 
 ### T-1. Stack: Vite, React, TypeScript and a small set of libraries
 
@@ -1489,6 +1558,7 @@ T-58 to T-64 are the lead's decisions around the first public release and the ma
   - The commit hashes named in these documents belong to the private repository and cannot be looked up in the public one.
   - The public repository shows no development history; these documents are the history.
   - The second release was made on 2026-11-24 (O-47; phase 35 of [PROJECT-LOG.md](PROJECT-LOG.md)): one new commit on the public branch on top of the first release's commit, whose tree is the tree of `main` at the release, made with a no-reply identity and UTC dates, and pushed to the public repository; the private history was not pushed. The public repository now holds the work of phases 32 to 35.
+  - The third release was made the same day, after the owner's "Yes, publish first" (O-55; T-83; phase 39): one new commit on top of the second (`b9d0037`), with the tree of `main` after the documentation commit of that phase, made the same way. The public repository then held the work of phases 32 to 39.
   - Its sweep followed the procedure above with five readers, one per part of the difference between the first release and `main` (the documents, the end-to-end tests, the player, the rest of the code and tools, and a pattern search over the whole tracked tree), and a second reader for every finding who was told to refute it. 51 findings were reported; the readers that tried to refute them let about 30 stand, all of low severity (none was a name, an address, a credential or a path), and about half of those were in text that the first release had already published. What was found, in general terms: statements that described the owner's use or the real server rather than the software, local clock times of the work, sample data in a unit test taken from a real response, and a table of the stream types of real items. All were reworded or removed before the release. The lead also searched the whole tree for the real private values themselves; none was present.
   - It cost more than announced: see T-76.
 - **Code:** none. `README.md` carries the status line of the first public release (commit `1003992`).
@@ -1618,7 +1688,8 @@ T-58 to T-64 are the lead's decisions around the first public release and the ma
 - **Why:** If a build turns out wrong on the trial, the way back is one step and does not need a rebuild. The label answers "which commit is running" without guessing.
 - **Rejected (implied):** replacing the image in place.
 - **Consequences:**
-  - On 2026-11-24 the trial runs the image built from `509db33`.
+  - On 2026-11-24 the trial ran the image built from `509db33`; later the same day, on the owner's yes, the image built from `4d6b61e`; later still, the image built from `d036067`.
+  - No image is pruned: asked whether to delete the old rollback images and keep only the last two, the owner said to keep them all (O-54).
   - The reverse-proxy route of the trial is still the temporary one (O-27, T-53); making it permanent is the owner's decision (Q-1).
 - **Code:** none in the repository. Neither the rollback tag nor the commit label is written down in `Dockerfile` or `docs/deploy.md`; the lead sets them at each go-live.
 - **Status:** In use.
@@ -1775,8 +1846,125 @@ T-58 to T-64 are the lead's decisions around the first public release and the ma
 - **Why:** An agent that inherits the lead's model runs on the most expensive one whatever its task, and a stage that starts one agent per finding has a size nobody announced.
 - **Rejected:** leaving the model to be inherited.
 - **Consequences:** The two jobs of 2026-11-24 (the documentation catch-up and the privacy sweep, 10 and 56 agents) ran entirely on the most expensive model. The fix-up of the sweep's findings in the documents ran on Claude Sonnet, the first job started under the rule.
+  - The sweep and the documentation of the third release (phase 39) followed it: five readers and the documentation agent, all on Claude Sonnet.
 - **Code:** none.
 - **Status:** In use.
+
+### T-77. Settings regrouped into quick rows and nine subjects, with a test that no row is lost
+
+- **Context:** The owner chose the order of Settings (O-48). Upstream sorts its rows into "Settings" and "Advanced Settings" (and Experimental and User Profile) by how often a TV user needs them. That spreads one subject over several screens.
+- **Decision** (`b7f3310`):
+  - `/settings` is a new first screen (`SettingsHome`). A "Quick settings" group holds five shortcut rows (Application Theme, User interface language, Interface scale, Subtitle style, Customize home page), two beside each other with the slider across both columns. Under "All settings" stand nine subjects (Profile, Interface, Home, Playback, Subtitles, Audio, Video, Screensaver, About), flowing down two columns. Each subject is a row that opens it and lists the rows inside it under its name, one to a line. In a narrow panel (a phone) both parts are one column.
+  - `/settings/topic/:topic` (`SettingsTopicPage`) shows one subject. The model is `topics.ts`: `TOPICS`, `QUICK_ROWS`, `NAVIGATION_ONLY`, `buildTopic`, `resolveRow` and `topicPreview`. A row keeps the visibility condition of its entry on the upstream screen it came from (`resolveRow` uses that entry). The experimental row under Audio shows only while "Experimental settings" (About) is on, because upstream reaches its Experimental screen only then.
+  - No row was removed. Every web-visible row of upstream's Settings (BASIC), Advanced, Experimental and User Profile screens has exactly one home in a subject. A unit test (`topics.test.ts`) fails if a row is missing, placed twice or never shown. Three upstream rows that only led from one of these screens to another are dropped: Advanced Settings, More user profile settings and the Experimental settings link. The five quick rows are shortcuts: each is also in its subject.
+  - One row was added to Settings: "Reset preferences" (About), which until now was only a button on the Debug page.
+  - Upstream's sub-screens Screensaver settings, Skip behavior, HDR formats and the subtitle style editor are unchanged and are reached from their subject. Old addresses redirect: `/settings/advanced` to `/settings`, `/settings/experimental` to the Audio subject, `/settings/user` to the Profile subject; an unknown subject goes to `/settings`. `UserProfileSettingsPage.tsx` is gone: its rows (preferred audio language, preferred subtitle language, subtitle mode, profile protection with "Change PIN") moved to Audio, Subtitles and Profile.
+  - Names: the nine subjects use strings the TV app already has (`profile`, `ui_interface`, `home`, `playback`, `subtitles`, `audio`, `video`, `screensaver`, `about`), so they are translated in every language the TV app is translated into. That is why they are not the names of the lead's first tree (Account, Appearance, Home and sidebar, Video quality, Screensaver and photos, About and support). The two group headings "Quick settings" and "All settings" are new web-only strings (`web_quick_settings`, `web_all_settings`), English until the web-only strings are translated (O-22).
+  - Layout: two columns, because one column needed scrolling on a 16:9 window; rows of the first screen 56dp instead of the TV's 64dp; the subjects as CSS columns (flow down, then across), so the keyboard order equals the reading order; the narrow-panel threshold is written in rem, because the build's px-to-rem step does not touch at-rule conditions and the threshold must follow the interface scale (found by the reviewer).
+- **Why:** The owner chose this order (O-48). A list of every row of a subject on the first screen finds a row without opening each subject. A test over the model is the cheap way to keep a regrouping from losing a setting.
+- **Rejected:** the other two trees (A alone, B the TV's two levels tidied, C alone); a search box in Settings (the lead's idea, not asked for); keeping upstream's navigation-only rows (they lead to screens that no longer exist); the subjects' own names from the lead's first tree (not translated).
+- **Consequences:**
+  - With the full lists the first screen is taller than a 16:9 window and scrolls.
+  - A change to upstream's rows (a new one) must be given a home in `topics.ts`; the unit test fails until it is.
+  - An independent reviewer (Claude Sonnet, read-only, T-76) found nothing lost in the regrouping and two things that were fixed: the threshold in raw px (see above) and the lookup of old addresses, which matched inherited object keys such as "constructor" (now own keys only, also in `screenFromParam`). Its smaller points (a stronger unit test, an unused string) were taken too.
+  - Not verified: the new screens on real Safari or a real phone; the screenshot crawler was not run.
+  - A deviation from upstream.
+- **Code:** `src/features/settings/topics.ts`, `topics.test.ts`, `SettingsHome.tsx`, `SettingsTopicPage.tsx`, `TopicRows.tsx`, `ProfileLanguagePreference.tsx`, `SubtitleModePreference.tsx`, `ResetPreferencesPreference.tsx`, `SettingsPage.tsx`, `PreferenceList.tsx`, `prefModel.ts`, `Preference.module.css`; `src/app/nav.ts`, `routes.tsx`; `src/i18n/extra/en.json`; `e2e/specs/settings.spec.ts`, `slider-mouse.spec.ts`; `tools/shots/scenes.ts`, `tvScenes.ts`.
+- **Status:** Done. On the trial since the build of `c92f5e6`; in the public repository since the third release (2026-11-24; O-55).
+
+### T-78. No transition on the subtitle area, and the ASS renderer kept over a skip
+
+- **Context:** The owner saw text subtitles fly in from the left after an arrow-key skip (O-49). With the controls hidden, an arrow-key skip shows the skip indicator, and `PlayerView.tsx` passes `hidden={skip.total !== 0 && !visible}` to the subtitle layer, which took the text subtitles away for that time. When the text renderer was put back, its area started without a size at the left edge and was measured at once, and a 200 ms transition on its `left`, `width` and `height` drew that as the line flying in. The transition was a leftover of upstream's shrinking subtitle view (the TV animates the view's size fraction when the controls show), which the web no longer uses: the text keeps its size and steps up by the height of the control strip. With the on-screen skip button the controls are up, so the subtitles are never taken away; in fullscreen with the arrow keys they are hidden.
+- **Decision** (`c92f5e6`):
+  - The transition on the text subtitle area (`SubtitleLayer.module.css`) is removed: the line is in its place from its first frame.
+  - The ASS renderer (`AssSubtitles.tsx`) is kept over a skip and only hidden for it (`visibility: hidden`), as the PGS renderer already was. Before, a new one (worker, libass, fonts, script parse) was started after every arrow-key skip.
+  - A new end-to-end spec, `subtitles-skip.spec.ts`, records every frame after the key press with animations running.
+- **Why:** The owner wanted the line to just appear. The test is how it was found and kept found: the end-to-end fixture switches animations and transitions off, which is why this went unseen. This is the second find of that kind (see T-62). Before the fix the spec saw the area at 14, 34, 58 and 89 px wide, growing from the left edge.
+- **Rejected:** none recorded.
+- **Consequences:**
+  - The text area no longer animates when the picture's box changes; the PGS picture keeps its own 200 ms transform.
+  - Checks: the new spec passed on repeat runs; the other subtitle and direct-play specs (19 tests) and the playback unit tests (265) passed. Not verified: real media (only a generated test film was used), a real fullscreen window (the test plays a test film with a cue it supplies through the development hook).
+  - Live on the trial since 2026-11-24 on the owner's yes (a rollback image is kept; the trial now runs the image of `4d6b61e`, which includes it).
+- **Code:** `src/features/playback/engine/SubtitleLayer.tsx`, `SubtitleLayer.module.css`, `AssSubtitles.tsx`; `e2e/specs/subtitles-skip.spec.ts`.
+- **Status:** Done. On the trial; in the public repository since the third release (2026-11-24; O-55).
+
+### T-79. The wheel is taken only on the episode strip, and only for the notches of a mouse wheel
+
+- **Context:** The owner asked to move the episode strip by holding and dragging and with the mouse wheel (O-50). The item rows already had drag-scroll (`src/ui/lib/dragScroll.ts`) and their wheel scrolls the page.
+- **Decision** (`4d6b61e`):
+  - Hold and pull moves the strip with the mouse, by the shared `dragScroll`. The click that ends a pull plays nothing.
+  - A new `src/ui/lib/wheelScroll.ts` (with `wheelScroll.test.ts`) lets a wheel notch down run the strip towards its end, in both writing directions, about one card a notch (`WHEEL_GAIN`). Quick notches add up while it glides; there is no glide under reduced motion. At either end of the strip the wheel scrolls the page again.
+  - Only the notches of a mouse wheel are taken. The fine steps of a trackpad, Shift+wheel and Ctrl+wheel are left alone (`isMouseWheelNotch` holds the exact rule).
+  - Other rows are unchanged.
+- **Why:** On a page of many rows, a wheel that moved whichever row is under the pointer would stop the page from scrolling; so the wheel is taken on the episode strip only, which is the owner's request. The trackpad rule is a guess from the size of the wheel step and cannot be exact.
+- **Rejected:** the wheel on every row (the page could not be scrolled with the pointer over a row).
+- **Consequences:**
+  - A deviation from upstream: the TV has no pointer and no wheel.
+  - Checks: unit tests 103 files, 910 tests, all pass (were 102 and 903). The series end-to-end spec passes in all seven projects (20 tests), with a new test of the wheel, the end of the strip and hold-and-pull using a real mouse in Chromium, Firefox and WebKit. The lead recorded frames of the glide with motion on: one notch moved 200 px in about a quarter of a second, and three quick notches added up to 600 px.
+  - Not verified: a real trackpad; a real mouse with a free-spinning or high-resolution wheel.
+- **Code:** `src/ui/lib/wheelScroll.ts`, `wheelScroll.test.ts`; `src/features/detail/series/EpisodeStrip.tsx`, `EpisodeStrip.module.css`; `e2e/specs/series.spec.ts`.
+- **Status:** Done. On the trial since 2026-11-24, on the owner's yes (the image built from `4d6b61e`; a rollback image is kept); in the public repository since the third release (2026-11-24; O-55).
+
+### T-80. The language list gets the popup's container
+
+- **Context:** The owner reported that the language select was transparent (O-51). Upstream draws its language list without the popup's container (`LocaleChoiceDialog.kt` calls `DialogPopupContent` without the container's background, clip and padding), so on the TV the names float on the dimmed page. The web had copied that faithfully as a `bare` variant of `DialogPopup`, from 720 px of window width up. Since Settings became a panel over a page that stays visible behind it (T-61), the names ran through the page's picture and the dialog looked broken.
+- **Decision** (`ce06734`):
+  - The language list has the popup's surface, corners and padding, like every other choice.
+  - The `bare` variant of `DialogPopup` (the prop and its styles), which nothing else used, is removed.
+  - A new test in `settings.spec.ts` checks that the list has a solid background, rounded corners and padding, that it stays inside the window, and that the long list scrolls inside the box.
+- **Why:** The owner asked for it, and the container-less look only works on the TV's dimmed page.
+- **Rejected:** none recorded.
+- **Consequences:**
+  - A deviation from upstream, made on the owner's request.
+  - Checks (the lead's): the Settings and preferences end-to-end specs pass in all seven projects (76 tests), with the new test in Chromium, Firefox and WebKit; the type check and the lint pass.
+- **Code:** `src/features/settings/LanguagePreference.tsx`; `src/ui/overlays/DialogPopup.tsx`, `DialogPopup.module.css`; `e2e/specs/settings.spec.ts`.
+- **Status:** Done. On the trial since 2026-11-24, on the owner's yes (O-52 and T-81 changed the box's size the same day); in the public repository since the third release (2026-11-24; O-55).
+
+### T-81. The language list's box fits its names
+
+- **Context:** The owner, with a picture of the list in its new box, asked for some margin around it and for it to be smaller, with not so much unused space (O-52). The box had the TV's fixed 440 dp width and, being a long list, ran from the top of the window to its bottom; the shared `Dialog` backdrop gives a popup the whole height on purpose, as on the TV.
+- **Decision** (`d036067`): a `fit` option of `DialogPopup` (the prop and the class `div.fit` in `DialogPopup.module.css`): the width is `max-content` between 240 dp and 440 dp, and the height is at most the window's less 64 px, so the box keeps a gap above and below. Only the language list uses it; the other popups keep the TV's size.
+- **Why:** The owner asked for it. It is an option, so the other popups keep the TV's size.
+- **Rejected:** none recorded.
+- **Consequences:**
+  - A deviation from upstream, made on the owner's request.
+  - Checks (the lead's): the Settings and preferences end-to-end specs pass in all seven projects (76 tests); the language test (Chromium, Firefox, WebKit) now also asserts the gap above and below, a width under 400 dp and that no name is cut.
+- **Code:** `src/ui/overlays/DialogPopup.tsx`, `DialogPopup.module.css`; `src/features/settings/LanguagePreference.tsx`; `e2e/specs/settings.spec.ts`.
+- **Status:** Done. On the trial since 2026-11-24, on the owner's yes (the image built from `d036067`); in the public repository since the third release (2026-11-24; O-55).
+
+### T-82. A generated code map says which file is responsible for what one sees
+
+- **Context:** The owner asked for a folder tree of the project, and of the source folder in particular, to help the owner, others and the lead find the element that needs changing (O-53). The example: looking for what makes the language list see-through, the owner found the Settings code but not the file responsible, and then a file with a similar name that belongs to another list.
+- **Decision** (`26273ae`): `docs/CODE-MAP.md`, written by `tools/gen-code-map.mjs` (`npm run map`).
+  - A "Where is ... ?" section of 560 rows: what a person sees or does, the files responsible, what each file decides, the marker to look for with the browser's Inspect tool, and a note. Kept by hand in `tools/code-map/where.json`; one line per folder in `tools/code-map/folders.json`.
+  - Read from the code on every run: the screens (the table in `src/app/routes.tsx`), the `data-*` markers with the files that set them, the folder trees of the project and of `src/`, and every file of `src/` with the first sentence of its own comment.
+  - `tools/gen-code-map.test.ts` (part of `npm run test`) fails when the page is out of date or a hand-kept row names a file that is gone. `CLAUDE.md` tells every agent to use the map, to add a row for anything new a person can see, and to start every new file with a one-sentence comment.
+- **Who:** the lead wrote the generator. Eight read-only readers on Claude Sonnet, one per part of the source, wrote the rows (559 rows; one row named a file that does not exist and was dropped; about 1.1 million tokens, under three minutes). A ninth agent on Claude Sonnet, allowed to open nothing but the map, was given 18 problems in the owner's words and named the right files for all 18 (sure of 13). What slowed it down was corrected: the rows became short lines instead of table rows, because search tools skip very long lines; each file is labelled with what it decides; rows about similar things got notes that point at each other; a row for the darkening of the video was added, making 560.
+- **Why:** Generated rather than hand-written so it cannot go stale silently (the test). The "what you see" rows are hand-kept because no script can know how a person describes a thing. The descriptions of files come from the files' own comments, so improving a comment improves the map.
+- **Rejected:** none recorded.
+- **Consequences:**
+  - Cost: every added, moved or renamed source file now needs `npm run map`, or the unit tests fail.
+  - Checks: unit tests 104 files, 911 tests, all pass.
+  - Not verified: all 560 rows by hand. Every path is checked by the script; the wording and the markers are the readers' work, spot-checked.
+- **Code:** `docs/CODE-MAP.md`; `tools/gen-code-map.mjs`, `tools/gen-code-map.test.ts`, `tools/code-map/`; `CLAUDE.md` ("Finding things").
+- **Status:** Done. Committed on `main`; in the public repository since the third release (2026-11-24; O-55).
+
+### T-83. The privacy sweep and the checks before the third public release
+
+- **Context:** The owner said "Yes, publish first" (O-55). The public repository held the second release; `main` was ahead of it by phases 36 to 38. T-58 requires a privacy sweep of the difference before every release.
+- **Decision** (2026-11-24; phase 39):
+  - The sweep: five readers on Claude Sonnet (T-76), find only, each on a different part of what changed since the second release (49 files, about 11,800 added lines): the two halves of `tools/code-map/where.json`, the rest of the code map and its generator, the documents, and the code and tests. Seven points were reported; none was a credential, an address, a name or a path. Five sentences in `DECISIONS.md` and `PROJECT-LOG.md` were reworded: one that told what the owner was doing when a bug was seen, one that spoke of the owner's own media, and three that gave a count taken from the trial deployment.
+  - Left as they were: an example clock time inside the code map's description of the "Ends at" text (an example of interface text, with no date beside it), and one sentence in `TOOLING.md` about the trial's temporary reverse-proxy route (the same wording was already public).
+  - The release: one new commit on top of the second (`b9d0037`), with the tree of `main` after the documentation commit of phase 39 (T-58).
+- **Why:** The release is one commit with no history (T-58), so the sweep has only the tree to read. A smaller sweep than the second release's (five readers, no second reader per finding) fitted a difference of this size, and the rule of T-76 kept its cost as announced.
+- **Rejected:** none recorded.
+- **Consequences:**
+  - Gaps the readers stated: the long list of source files in `docs/CODE-MAP.md` and the generator script were pattern-searched, not read line by line. The lead's own search of the whole tracked tree for the real private values found none.
+  - Checks on the release tree (the lead): the type check passes; lint has 0 errors; the unit tests pass (104 files, 911 tests); the production build passes. The whole end-to-end suite ran once in all seven projects with two workers: 345 tests, 345 passed, in 14.0 minutes (the first whole-suite run since the one before the second release, which had 336 tests). The screenshot crawler was run for the Settings scenes only (one theme, desktop size): 26 pictures, 26 ok, no warnings, no page errors.
+  - Not verified: anything on real Safari or a real phone; CI results on GitHub for this release are not recorded; the full crawl.
+  - The root README's status paragraph was rewritten for the release, and the Settings picture in `docs/screenshots/` was taken again with the crawler because it showed the old order of Settings; the other eight pictures are from 2026-11-18.
+- **Code:** none; documents only.
+- **Status:** Done (2026-11-24).
 
 ---
 
@@ -1797,7 +1985,7 @@ These choices were made by agents, usually to resolve something the specs left o
 
 Since 2026-11-18, `main` holds everything marked (wave3a), (integration) and (stage 2), because it was fast-forwarded to `integration` (commit `c14b168`), and, since a second fast-forward the same day (commit `e1b7e04`, T-47), everything marked (parity) and (final) as well. Everything marked (polish) reached `main` with the merge commit `f1fb308` the same day (T-48), and everything marked (closing) with the commits `692715f` and `7ad52ba` later that day. The marks are kept to show where each decision was made; the branches themselves were deleted on 2026-11-18 (T-57).
 
-Part 3 ends with the touch fix (A-166). The choices made after it, by agents on 2026-11-18 and 2026-11-22 and by the lead working alone after that, are recorded in Part 2 as T-58 to T-76. Where one of them changed an entry below, the entry says so.
+Part 3 ends with the touch fix (A-166). The choices made after it, by agents on 2026-11-18 and 2026-11-22 and by the lead working alone after that, are recorded in Part 2 as T-58 to T-83. Where one of them changed an entry below, the entry says so.
 
 **Decisions that were made more than once.** Several things were decided by one agent and changed by a later one. Such an entry gives the decisions in order and says which one stands. In a few cases the fix pass (on `main`) and the repair (on `integration`) each changed the same thing in their own way. Those entries say so. Stage 2 of the final merge settled which version remains; A-107 lists how, and the entries concerned were updated.
 
@@ -1835,7 +2023,7 @@ Part 3 ends with the touch fix (A-166). The choices made after it, by agents on 
 | A-15 | **Add server has no network-discovery step.** Browsers cannot broadcast to find servers, so the dialog opens straight on "Enter server address". | `src/features/setup/ServerListPage.tsx` |
 | A-16 | **Sign-in details:**<br>• every failed attempt counts toward the "Show debug info" button (upstream does not count wrong passwords);<br>• an expired Quick Connect code says so and offers a new code (upstream polls forever);<br>• server and user circles wrap and center instead of scrolling sideways;<br>• the most recent server is highlighted;<br>• a user-list error offers Retry and Switch servers;<br>• user avatars are requested only when the user has one. | `src/features/setup/LoginDialog.tsx`, `src/features/setup/` |
 | A-17 | **How PIN entry works on touch and keyboard.**<br>• The upstream arrow-and-digit entry is kept, plus Backspace and an on-screen keypad (digits, arrows, OK).<br>• A wrong PIN of full length shakes and clears.<br>• On touch-only devices the hint row about remote keys is hidden, and "Press center to confirm" becomes a web wording.<br>• PINs are stored as plain text, as upstream does (Q-16). | `src/features/setup/PinEntryDialog.tsx`, `src/features/setup/pin.ts`; wave3a settings PIN screens |
-| A-18 | **Profile protection is also offered in the user list's context menu** (upstream: Settings only). Changing an existing PIN to None or Login asks for the PIN first. **(wave3a)** Settings also has a "Change PIN" row, which upstream lacks. | `src/features/setup/ProfileProtectionDialog.tsx`; wave3a `src/features/settings/UserProfileSettingsPage.tsx` |
+| A-18 | **Profile protection is also offered in the user list's context menu** (upstream: Settings only). Changing an existing PIN to None or Login asks for the PIN first. **(wave3a)** Settings also has a "Change PIN" row, which upstream lacks. | `src/features/setup/ProfileProtectionDialog.tsx`; wave3a `src/features/settings/UserProfileSettingsPage.tsx` (since 2026-11-24 the row is in the Profile subject of Settings, T-77: `TopicRows.tsx`) |
 | A-37 | **Where sign-out is offered, in the order it was decided.** Upstream has no sign-out at all. The reason given each time: a browser may be shared.<br>1. Wave 2: none in the drawer; wave 3a put it on the Debug page (A-13).<br>2. Wave 3b builder: "Sign out" in the user list's context menu, for the signed-in user only.<br>3. Wave 3b integrator: that entry could not be reached, because the drawer's profile entry leaves the current user before it shows the list. Sign-out is now offered for every saved user that has a token, and it revokes that user's token. The integrator asked the lead to confirm this widening; the sources record no explicit answer, and it was committed with wave 3b.<br>4. **(wave3a)** Wave 4 merge agent: a "Sign out" row at the end of the profile group on the main settings screen.<br>All of these stand. A checker of the final merge observed that the settings row signs out without asking for confirmation. Wave 4 did not exercise that row, because it would have revoked the shared test token. | `src/api/session.ts` (`signOut`), `src/features/setup/SwitchUserScreen.tsx`; wave3a `src/features/settings/SignOutPreference.tsx` |
 | A-38 | **(integration) Signing in from the user list replaces the list in the browser history.** Before the repair, Back from Home after such a sign-in returned to the user list. A browser cannot clear its history, so the list's entry is replaced by Home. Back from Home then goes to whatever came before the user list. | `src/features/setup/SwitchUserScreen.tsx` |
 | A-39 | **The "server will not be supported soon" warning is dropped.** Upstream shows it for every server below version 12.0.0, which today is every Jellyfin server. The web keeps only the hard minimum-version check. Reason given: that schedule belongs to the TV app, not to this port. Since the stage 2 repair this holds in Settings too, through one shared helper. | `src/lib/serverVersion.ts` |
@@ -2117,7 +2305,7 @@ These wait on the owner or on the lead. The numbers of earlier questions are kep
 
 ### Waiting on the lead
 
-Most of these were deferred by fixer agents with a recorded reason. The follow-up polish round for the open items of `docs/final-merge-notes.md` section 12.7 and the audit's minor points (T-44) has run and landed (T-48); it settled Q-39, Q-41 and Q-42 (see the third table). What it left open (section 13.7 of the notes) is defects and checks rather than choices, so it is tracked in [STATUS.md](STATUS.md), not here. The closing round then took four of those points: one is fixed, three are closed with their cause (A-158 to A-161). One task for the lead came out of the clean-up of that day and is not a question: capturing the Android TV reference pictures again before the next comparison work (T-57). On 2026-11-24 more tasks were owed that are not questions either: a privacy sweep and the next public release (done the same day, O-47, T-58), the slow checks that the fast path postponed (they ran once before that release, T-63; a second whole run after their repairs is still owed), and the items the owner listed for later (Settings navigation and categories, a better sign-in and welcome page, the defaults of a deployment (Q-44), microphone search at low priority, then phone and touch polish). [STATUS.md](STATUS.md) tracks them.
+Most of these were deferred by fixer agents with a recorded reason. The follow-up polish round for the open items of `docs/final-merge-notes.md` section 12.7 and the audit's minor points (T-44) has run and landed (T-48); it settled Q-39, Q-41 and Q-42 (see the third table). What it left open (section 13.7 of the notes) is defects and checks rather than choices, so it is tracked in [STATUS.md](STATUS.md), not here. The closing round then took four of those points: one is fixed, three are closed with their cause (A-158 to A-161). One task for the lead came out of the clean-up of that day and is not a question: capturing the Android TV reference pictures again before the next comparison work (T-57). On 2026-11-24 more tasks were owed that are not questions either: a privacy sweep and the next public release (done the same day, O-47, T-58), the slow checks that the fast path postponed (they ran once before that release, T-63; a second whole run after their repairs is still owed), and the items the owner listed for later (Settings navigation and categories, since done: O-48, T-77; a better sign-in and welcome page, the defaults of a deployment (Q-44), microphone search at low priority, then phone and touch polish). [STATUS.md](STATUS.md) tracks them.
 
 | # | Question | Notes |
 |---|---|---|
@@ -2203,7 +2391,7 @@ The update of 2026-11-24 (the first public release and the maintenance rounds) a
 
 - the git log of `main` from `7ad52ba` to `509db33`, whose commit messages the lead wrote, and the code on `main` at `509db33` for the entries T-59 to T-61 and T-65 to T-75 (the files named there were read);
 - the index of the agent log archive for the jobs of 2026-11-18 and 2026-11-22 (which agents each job had), and the notes of an unfinished documentation update of 2026-11-18 for details of the player layout and the direct-play work;
-- the lead's account of the owner's decisions and words (O-30 to O-47), of the publication and the second release (T-58), of the review of the Settings panel (T-61), of the working rules T-62 to T-64, and of the state on 2026-11-24. None of these is in a file. Where a number of agents or a count of a test run was not recorded, the entry says so and gives none.
+- the lead's account of the owner's decisions and words (O-30 to O-56), of the publication and the second and third releases (T-58, T-83), of the new order of Settings (T-77), of the subtitle fix, the mouse on the episode strip, the language list and the code map (T-78 to T-82), of the review of the Settings panel (T-61), of the working rules T-62 to T-64, and of the state on 2026-11-24. None of these is in a file. Where a number of agents or a count of a test run was not recorded, the entry says so and gives none.
 
 The items that the earlier update could not yet record (the comparison pass's notes, section 11 of the final merge notes, the outcome of T-41) are now in T-40, T-41 and T-43. The result of the lead's last full end-to-end run is in [STATUS.md](STATUS.md), not here.
 

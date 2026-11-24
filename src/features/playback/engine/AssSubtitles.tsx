@@ -4,8 +4,12 @@ import { getPlaybackEngine } from './engine'
 import styles from './SubtitleLayer.module.css'
 import { assWithLineDirections } from './subtitles/assDirection'
 
-/** ASS/SSA subtitles through JASSUB (libass in a worker). Loaded lazily by SubtitleLayer. */
-export function AssSubtitles({ content, fonts, delayMs }: { content: string; fonts: Uint8Array[]; delayMs: number }) {
+/**
+ * ASS/SSA subtitles through JASSUB (libass in a worker). Loaded lazily by SubtitleLayer.
+ * `hidden` keeps the renderer and only stops showing its canvas (the skip indicator): a new renderer would start a
+ * worker, load libass and the fonts and parse the script again after every skip.
+ */
+export function AssSubtitles({ content, fonts, delayMs, hidden = false }: { content: string; fonts: Uint8Array[]; delayMs: number; hidden?: boolean }) {
   const holder = useRef<HTMLDivElement>(null)
   const instance = useRef<JASSUB | null>(null)
 
@@ -45,5 +49,5 @@ export function AssSubtitles({ content, fonts, delayMs }: { content: string; fon
     }
   }, [delayMs])
 
-  return <div ref={holder} className={styles.layer} data-subtitle-renderer="ass" />
+  return <div ref={holder} className={styles.layer} style={hidden ? { visibility: 'hidden' } : undefined} data-subtitle-renderer="ass" />
 }

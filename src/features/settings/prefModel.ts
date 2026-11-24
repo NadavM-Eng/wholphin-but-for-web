@@ -32,16 +32,15 @@ export type ScreenId =
 
 export const URL_SCREENS: Record<SettingsScreen, ScreenId> = {
   basic: 'BASIC',
-  advanced: 'ADVANCED',
   screensaver: 'SCREENSAVER',
   skip_segments: 'SKIP_SEGMENTS',
-  experimental: 'EXPERIMENTAL',
   hdr_formats: 'HDR_FORMATS',
 }
 
 export function screenFromParam(param: string | undefined): ScreenId | null {
   if (!param) return 'BASIC'
-  return (URL_SCREENS as Record<string, ScreenId | undefined>)[param] ?? null
+  // own keys only: "constructor" and the like are not screens
+  return Object.hasOwn(URL_SCREENS, param) ? (URL_SCREENS as Record<string, ScreenId>)[param] : null
 }
 
 export function screenTitleKey(screen: ScreenId, hdrPage = false): string {
@@ -306,12 +305,13 @@ const DESTINATIONS: Record<string, () => string> = {
   'SubtitleSettings(hdr=false)': () => nav.subtitleSettings(),
   'SubtitleSettings(hdr=true)': () => nav.subtitleSettings({ hdr: true }),
   'Settings(SCREENSAVER)': () => nav.settings('screensaver'),
-  'Settings(ADVANCED)': () => nav.settings('advanced'),
+  // upstream's Advanced, Experimental and User Profile screens are subjects of the first screen on the web (topics.ts)
+  'Settings(ADVANCED)': () => nav.settings(),
   'Settings(SKIP_SEGMENTS)': () => nav.settings('skip_segments'),
-  'Settings(EXPERIMENTAL)': () => nav.settings('experimental'),
+  'Settings(EXPERIMENTAL)': () => nav.settingsTopic('audio'),
   'Settings(HDR_FORMATS)': () => nav.settings('hdr_formats'),
   HomeSettings: () => nav.homeSettings(),
-  UserAppPreferences: () => nav.userSettings(),
+  UserAppPreferences: () => nav.settingsTopic('profile'),
   License: () => nav.license(),
 }
 

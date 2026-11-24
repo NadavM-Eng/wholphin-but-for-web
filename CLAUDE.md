@@ -31,6 +31,8 @@ Do not add dependencies without a clear need; never add a UI kit, Tailwind, or a
 | `tools/` | Node/TS scripts: token + string generators, screenshot crawler, reference-shot capture |
 | `server/` | small Hono server for production: serves `dist/`, proxies Seerr (and optionally Jellyfin) |
 
+**Finding things.** `docs/CODE-MAP.md` says which file is responsible for what a person sees or does in the app ("Where is … ?"), lists every screen with its page file, every `data-*` marker with the files that set it, and every file of `src/` with a line about it. Look there before searching the tree. It is generated: `npm run map` writes it, and `npm run test` fails when it is out of date, so run `npm run map` after adding, moving or renaming a file or changing the comment at its top. When you add something a person can see, or had to search for something the map did not lead you to, add a row to `tools/code-map/where.json`. Start every new file with a comment that says what it is in one sentence: that sentence is its line in the map.
+
 Stay inside the paths your task assigns. If you need something from another area (a new shared component, a store field, a route), add the smallest thing that works in the owning folder and say so in your final report; do not restructure code you do not own. Several agents work in this tree at the same time.
 
 ## Conventions
@@ -63,6 +65,7 @@ npm run typecheck    # tsc -b, must pass before you report done
 npm run test         # vitest run
 npm run lint         # oxlint
 npm run gen          # regenerate tokens.css, preferences, locales from docs/spec + reference
+npm run map          # regenerate docs/CODE-MAP.md (which file is responsible for what)
 npm run shots        # Playwright crawler: screenshots of every route into shots/out/
 ```
 

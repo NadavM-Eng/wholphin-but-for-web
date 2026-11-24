@@ -20,10 +20,10 @@ export type DialogPopupProps = {
   /** Element to give focus back to on close (see Dialog). */
   returnFocus?: HTMLElement | null
   /**
-   * Upstream's bare `DialogPopupContent` in a Dialog (LocaleChoiceDialog.kt): title and list straight on the dimmed
-   * page, no container, padding or shadow. Phones keep the container (the list would sit on the page's own text).
+   * Web: a long list in a box as wide as its longest row (not the TV's fixed 440dp) that keeps a gap to the top
+   * and the bottom of the window (the TV's dialog may run from edge to edge). Owner request, for the language list.
    */
-  bare?: boolean
+  fit?: boolean
 }
 
 /**
@@ -34,14 +34,14 @@ export type DialogPopupProps = {
  * OK button does not select the first item; a right-click or tap cannot leak into the dialog, so the
  * web version does not need that.
  */
-export function DialogPopup({ open, title, items, onClose, dismissOnClick = true, elevation = 1, initialFocusIndex, returnFocus, bare }: DialogPopupProps) {
+export function DialogPopup({ open, title, items, onClose, dismissOnClick = true, elevation = 1, initialFocusIndex, returnFocus, fit }: DialogPopupProps) {
   const list = useRef<HTMLDivElement>(null)
   return (
     <Dialog
       open={open}
       onClose={onClose}
       variant="popup"
-      className={bare ? `${styles.panel} ${styles.bare}` : styles.panel}
+      className={fit ? `${styles.panel} ${styles.fit}` : styles.panel}
       elevation={elevation}
       label={title}
       returnFocus={returnFocus}

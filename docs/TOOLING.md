@@ -41,6 +41,7 @@ Nothing was run for this update either: it was written from the commits `7ad52ba
 | Quiet test browsers | `tools/quiet-playwright.mjs` | Patches the installed Playwright so every browser it launches is headless (no window) and muted | runs on `npm install` |
 | Low-priority keeper | `tools/low-priority.ps1` | Keeps the processes of the project's tooling at below-normal priority on a Windows machine that someone is using | Windows PowerShell |
 | Agent-log archiver | `tools/archive-agent-logs.mjs` | Copies agent briefs and reports into a readable local archive for documentation | a Claude Code session folder |
+| Code map | `tools/gen-code-map.mjs`, `tools/code-map/` | Writes `docs/CODE-MAP.md`: what a person sees or does and the files responsible (`where.json`, kept by hand; every path is checked), one line per folder (`folders.json`), and, read from the code on every run, the folder trees, every source file with the first sentence of its own comment, the screens and the `data-*` markers | git, the source tree |
 | Conversation export | `tools/export-conversation.mjs` | Writes the whole working session (the chat, every subagent's chat, workflow runs, pictures) as local Markdown pages | a Claude Code session of this project |
 | Production server and Docker image | `server/`, `Dockerfile`, `docker-compose.example.yml` | Serve the built app, publish runtime configuration, proxy Seerr | Node 24 or Docker |
 
@@ -90,6 +91,7 @@ All scripts are in `package.json`. Run them from the repository root. Flags for 
 | `npm run gen:strings` | `tsx tools/gen-strings.ts` | After updating the upstream checkout. |
 | `npm run gen:preferences` | `tsx tools/gen-preferences.ts` | After editing `docs/spec/preferences.json` or the web-only list in the generator. |
 | `npm run gen:licenses` | `tsx tools/gen-licenses.ts` | After adding, removing or updating a production dependency. |
+| `npm run map` | `node tools/gen-code-map.mjs` | After adding, moving or renaming a source file, changing the comment at the top of one, or editing `tools/code-map/`. Writes [CODE-MAP.md](CODE-MAP.md), the page that says which file is responsible for what a person sees. `node tools/gen-code-map.mjs --check` only checks; `npm run test` runs that check (`tools/gen-code-map.test.ts`). |
 | `npm run shots` | `tsx tools/shots/cli.ts` | Photograph the app. Section 9. |
 | `npm run shots:quick` | `tsx tools/shots/cli.ts --theme PURPLE --viewport desktop,phone` | A faster crawl: one theme, two window sizes. |
 | `npm run shots:compare` | `tsx tools/shots/cli.ts --compare` | Web pictures next to the Android TV reference pictures: one TV-canvas web scene per reference picture, in headless Edge. Section 9. |
@@ -494,7 +496,7 @@ The app's own scenes are defined in `tools/shots/scenes.ts`; every route in `src
 | Library | 26 | Each library type; tabs; sort, filter and view options; letter jump; list views; genre and studio pages |
 | Live TV | 13 | Guide, program and channel dialogs, view options, DVR schedule, recordings, empty and error states |
 | Discover | 11 | The Seerr sign-in gate, and ten Discover scenes that run on a real server only |
-| Settings | 22 | Main and sub-screens, dialogs, subtitle style, License, Debug |
+| Settings | 28 | The first screen, the nine subjects (`settings-topic-profile` to `settings-topic-about`; since 2026-11-24 they replace `settings-advanced`, `settings-experimental` and `settings-user`), the sub-screens (Screensaver, Skip behavior, HDR formats), dialogs, subtitle style, License, Debug. The scenes `settings-advanced-quick-connect` and `settings-advanced-bottom` are now `settings-quick-connect` and `settings-playback-bottom`. The scenes were updated for the new order of Settings and the crawler was not run afterwards |
 | Playback | 12 | Player, paused state, every settings sheet, the shortcut sheet |
 | Music | 15 | Music library tabs, genre, album and playlist menus, mini player, Now Playing (five run on the test server only) |
 | Photos | 9 | Photo library, album, viewer, slideshow, photo screensaver |
@@ -547,7 +549,7 @@ The crawler does not wait a fixed time for a page to load. A picture is taken af
 { name: 'item-movie-4k', path: async (jf) => { const m = await jf.first({ includeItemTypes: 'Movie', sortBy: 'Random' }); return m && `/item/${m.Id}` } },
 
 // an interaction scene: prepare runs after the page settled, then settling runs again before the picture
-{ name: 'settings-about-dialog', path: '/settings', prepare: async (page, ctx) => { await page.getByText(uiText(ctx.lang, 'about')).first().click() } },
+{ name: 'settings-version', path: '/settings/topic/about', prepare: (page) => clickPref(page, 'InstalledVersion') },
 ```
 
 - `ctx.lang` is the run's interface language (`en`, or `he` with `--rtl`); find controls by name only through `uiText` or `uiPattern`, never by a literal English text.
@@ -1027,7 +1029,7 @@ docker image inspect wholphin-web:latest --format '{{json .Config.Labels}}'     
 docker inspect <container> --format '{{.Image}}'                                  # which image a container runs
 ```
 
-Then the container is replaced as above. State on 2026-11-24: the trial runs the image built from `509db33`. Its route in the reverse proxy is still the temporary one of the trial ([DECISIONS.md](DECISIONS.md) O-27, T-53). The smoke test in the table above was the one of `7ad52ba`; for the later builds the lead's record names the checks made before each go (section 21), not a new smoke test through the reverse proxy.
+Then the container is replaced as above. State on 2026-11-24: the trial ran the image built from `509db33`, and later that day, on the owner's yes, the image built from `4d6b61e`. Its route in the reverse proxy is still the temporary one of the trial ([DECISIONS.md](DECISIONS.md) O-27, T-53). The smoke test in the table above was the one of `7ad52ba`; for the later builds the lead's record names the checks made before each go (section 21), not a new smoke test through the reverse proxy.
 
 ## 17. npm audit state
 
@@ -1067,7 +1069,7 @@ Tooling gaps:
 - There is no script for creating or removing a worktree, and running the test server commands from a worktree would detach the container from its data (section 14). Removing a worktree that still holds a directory link deletes the folder the link points at; the rule and the commands are in section 14.
 - The Android TV reference pictures are gone from the build machine since 2026-11-18 and have to be captured again before `npm run shots:compare` is of use (sections 8 and 9). The new capture is still owed on 2026-11-24 ([DECISIONS.md](DECISIONS.md) T-57).
 - Three procedures of the lead have no script in the repository, and their exact commands were not recorded: a release to the public repository (section 20), the labelled image build with its rollback tag (section 16), and the recording of frames to judge motion (section 12).
-- The public repository holds two releases; the second, of 2026-11-24, came after a privacy sweep (section 20).
+- The public repository holds three releases; the second and the third, both of 2026-11-24, came after a privacy sweep (section 20).
 - `app.touchDrag` works in Chromium only; no engine other than Chromium can be sent a moving touch (section 12).
 - The low-priority keeper is Windows only and does not match Playwright's WebKit processes (section 14).
 - `npm run e2e:flaky` repeats the Firefox and WebKit playback spec, which the e2e README says not to repeat (section 12).
@@ -1113,7 +1115,7 @@ The project lives in two repositories ([DECISIONS.md](DECISIONS.md) O-33, O-35, 
 
 **The rule that must never be broken: the private history is never pushed to the public remote.** A plain `git push` of `main` to the wrong remote would publish every old commit. Only the release commit of step 2 goes there.
 
-There is no script for a release, and the lead's commands were not recorded. With standard git commands, step 2 can be written like this (a sketch from the rule, not run for this document; the names in angle brackets are placeholders). The first release was one fresh commit; the second (2026-11-24) was one more commit on top of it, with the tree of `main`. The sketch is the same for both:
+There is no script for a release, and the lead's commands were not recorded. With standard git commands, step 2 can be written like this (a sketch from the rule, not run for this document; the names in angle brackets are placeholders). The first release was one fresh commit; the second and the third (both 2026-11-24) were one more commit each on top of the one before, with the tree of `main`. The sketch is the same for all three:
 
 ```bash
 git rev-parse 'main^{tree}'                      # the tree to publish

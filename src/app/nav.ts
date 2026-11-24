@@ -21,10 +21,8 @@ const seg = (s: string) => encodeURIComponent(s)
 /** Settings screens (upstream PreferenceScreenOption), lower-case in URLs. */
 export type SettingsScreen =
   | 'basic'
-  | 'advanced'
   | 'screensaver'
   | 'skip_segments'
-  | 'experimental'
   | 'hdr_formats'
 
 /** FilteredCollection parameters (Destination.FilteredCollection). */
@@ -120,7 +118,8 @@ export const nav = {
     }),
   settings: (screen?: SettingsScreen) => (screen && screen !== 'basic' ? `/settings/${screen}` : '/settings'),
   subtitleSettings: (opts: { hdr?: boolean } = {}) => withQuery('/settings/subtitles', { hdr: opts.hdr }),
-  userSettings: () => '/settings/user',
+  /** one subject of Settings (web-only regrouping: src/features/settings/topics.ts) */
+  settingsTopic: (topic: string) => `/settings/topic/${seg(topic)}`,
   license: () => '/license',
   debug: () => '/debug',
 

@@ -85,8 +85,8 @@ async function drag(page: Page, slider: Locator, from: number, to: number, messa
 
 // Interface scale applies at the release and re-lays out the page (`onDragValue`); Skip forward applies on the way.
 const SETTINGS_SLIDERS = [
-  { id: 'WebInterfaceScale', what: 'the interface scale (applied at the release)' },
-  { id: 'SkipForward', what: 'skip forward (applied on the way)' },
+  { id: 'WebInterfaceScale', path: '/settings', what: 'the interface scale (applied at the release)' },
+  { id: 'SkipForward', path: '/settings/topic/playback', what: 'skip forward (applied on the way)' },
 ] as const
 
 for (const language of [
@@ -97,9 +97,9 @@ for (const language of [
     // the app follows the browser's language
     test.use({ locale: language.locale })
 
-    for (const { id, what } of SETTINGS_SLIDERS) {
+    for (const { id, path, what } of SETTINGS_SLIDERS) {
       test(`${what} follows the mouse whatever is selected on the page`, { tag: [TAG.desktop, TAG.engines] }, async ({ page, app }) => {
-        await app.goto('/settings')
+        await app.goto(path)
         await expect(page.locator('html')).toHaveAttribute('dir', language.dir)
         const row = page.locator(`[data-pref-id="${id}"]`)
         const slider = row.getByRole('slider')

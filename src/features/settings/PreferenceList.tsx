@@ -1,4 +1,4 @@
-import { Fragment, type ReactNode } from 'react'
+import { Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSession } from '../../api/session'
 import { ListItem } from '../../ui'
@@ -12,12 +12,10 @@ export type PreferenceListProps = {
   hdrPage?: boolean
   /** Show the server version warning first (every PreferencesContent screen does). */
   serverBanner?: boolean
-  /** Rows appended to a group, by group title key (web additions). */
-  extraRows?: Partial<Record<string, ReactNode>>
 }
 
 /** Group headers (titleMedium, 8/4dp) and rows, as PreferencesContent's LazyColumn. */
-export function PreferenceList({ groups, hdrPage, serverBanner, extraRows }: PreferenceListProps) {
+export function PreferenceList({ groups, hdrPage, serverBanner }: PreferenceListProps) {
   const { t } = useTranslation()
   const session = useSession()
   const banner = serverBanner && session ? settingsServerNotice(t, session.server.version) : null
@@ -34,7 +32,6 @@ export function PreferenceList({ groups, hdrPage, serverBanner, extraRows }: Pre
           {g.entries.map((m) => (
             <PreferenceRow key={m.id} meta={m} hdrPage={hdrPage} />
           ))}
-          {extraRows?.[g.titleKey]}
         </Fragment>
       ))}
     </>

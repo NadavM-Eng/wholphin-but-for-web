@@ -11,11 +11,12 @@
   flex-direction: column;
   justify-content: flex-end;
   align-items: center;
-  /* animateFloatAsState on the view's size fraction */
-  transition:
-    height 200ms ease,
-    width 200ms ease,
-    left 200ms ease;
+  /*
+   * No transition on its place or size. Upstream animates the subtitle view's size fraction when the controls show;
+   * here the text keeps its size and steps up instead (style.ts RAISED_BY), so the area only changes when the
+   * picture's box does. A transition made the line fly in from the left edge whenever the renderer was put back
+   * (after an arrow-key skip with the controls hidden): its area starts without a size and is measured at once.
+   */
 }
 
 .box {
@@ -48,7 +49,7 @@
   pointer-events: none;
 }
 
-/* PGS (image) subtitles: with the controls up the whole picture shrinks to the top-center 70%, like the text area */
+/* PGS (image) subtitles: with the controls up the picture steps up by the height of the control strip (RAISED_SHIFT) */
 .pgs {
   transform-origin: 50% 0;
   transition: transform 200ms ease;

@@ -11,8 +11,8 @@ Related documents: [README.md](README.md) (index), [DECISIONS.md](DECISIONS.md) 
 - The state labels below are the ones defined in [README.md](README.md#status-labels).
 - **Built** means an agent wrote the code and its own checks passed. **Reviewed** means a separate agent examined it afterwards. **Verified in a browser** means someone drove it in a real browser and recorded the result. **Planned** means nothing exists yet.
 - Numbers come from the agents' own final reports, which are kept in a local archive that is not part of the repository. Where a report is missing or incomplete, this log says so. Phases 33 and 34 had no build agents; their numbers are the lead's own.
-- Phases 1 to 17 happened on 2026-11-17. Phases 18 to 30 ran from 2026-11-17 into 2026-11-18. Phase 31 is the rest of 2026-11-18, up to the first public release; phase 32 is 2026-11-22; phases 33 and 34 are 2026-11-23 and 2026-11-24; phase 35 is the rest of 2026-11-24, up to the second public release. Most commits were made by the lead in batches, so a commit's time is when work was saved, not when it was done.
-- Model tiers: **top tier** is Claude Opus, **mid tier** is Claude Sonnet. No agent so far ran on the smallest tier (Haiku). For phases 18 to 28 the workflow runner's records name each agent's model: the merge, repair, area, shared-kit, shared-code fixer and integrator agents ran on Claude Fable, a top-tier model; after the usage limit of phase 20, checkers, reviewers, area fixers, verifiers and auditors ran on Claude Opus instead (phase 20 says why). Which model the top-tier agents of phases 14 to 17 used is not recorded in this log. For phase 29, only the integrator's model is recorded here; for phase 30, no agent's model is. For phases 31 and 32 the workflow scripts name a model for some agents only: the privacy finders and re-checkers ran on Claude Sonnet, the privacy fixer and every verifier and checker on Claude Opus; the model of the fixers and builders is not recorded. Phases 33 and 34 were the lead's own work, apart from one review job whose models are not recorded. In phase 35 the lead had set no model on the agents of the documentation job or of the privacy sweep, so all of them (10 and 56) ran on Claude Fable, the lead's own model; only the fix-up of the sweep's findings in the documents ran on Claude Sonnet (T-76).
+- Phases 1 to 17 happened on 2026-11-17. Phases 18 to 30 ran from 2026-11-17 into 2026-11-18. Phase 31 is the rest of 2026-11-18, up to the first public release; phase 32 is 2026-11-22; phases 33 and 34 are 2026-11-23 and 2026-11-24; phase 35 is the rest of 2026-11-24, up to the second public release; phase 36 is the new order of Settings, made on 2026-11-24 after that release; phase 37 is three small changes of the same day (the subtitle line after a skip, the mouse on the episode strip, the language list in a solid box); phase 38 is the fitted language box and the code map, also of that day; phase 39 is the question about announcing, the privacy sweep and the third public release, also of that day. Most commits were made by the lead in batches, so a commit's time is when work was saved, not when it was done.
+- Model tiers: **top tier** is Claude Opus, **mid tier** is Claude Sonnet. No agent so far ran on the smallest tier (Haiku). For phases 18 to 28 the workflow runner's records name each agent's model: the merge, repair, area, shared-kit, shared-code fixer and integrator agents ran on Claude Fable, a top-tier model; after the usage limit of phase 20, checkers, reviewers, area fixers, verifiers and auditors ran on Claude Opus instead (phase 20 says why). Which model the top-tier agents of phases 14 to 17 used is not recorded in this log. For phase 29, only the integrator's model is recorded here; for phase 30, no agent's model is. For phases 31 and 32 the workflow scripts name a model for some agents only: the privacy finders and re-checkers ran on Claude Sonnet, the privacy fixer and every verifier and checker on Claude Opus; the model of the fixers and builders is not recorded. Phases 33 and 34 were the lead's own work, apart from one review job whose models are not recorded. In phase 35 the lead had set no model on the agents of the documentation job or of the privacy sweep, so all of them (10 and 56) ran on Claude Fable, the lead's own model; only the fix-up of the sweep's findings in the documents ran on Claude Sonnet (T-76). In phase 36 the reviewer and the documentation agent ran on Claude Sonnet. In phase 38 the nine agents of the code map ran on Claude Sonnet, and so did that phase's documentation agent. In phase 39 the five readers of the privacy sweep and the documentation agent ran on Claude Sonnet.
 - From phase 9 on, several phases ran at the same time. Phases 11 to 17 are listed in the order in which their work landed in git, and each one states how long its workflow ran. Those durations are taken from the workflow runner's own run records; the table at the start of phase 11 puts them side by side. Phases 18 to 29 overlap as well (the comparison pass of phase 23 ran beside phases 18 to 22, and the backdrop colours job of phase 27 beside the final check of phase 26); they are listed in the order in which each one started or, for the documents and decisions, in which it was settled.
 - Phases 6, 8, 9 and 10 were first written while some of their agents were still running. Where a later report or a later commit made a sentence wrong, the sentence was corrected in place and the correction says so.
 
@@ -2205,6 +2205,162 @@ The end-to-end fixture switches CSS animations off, so a test that passes says n
 
 **Commits of this phase** (on `main`): `3c66f2e`, `fda0c2b`, `0baf14f`, `e9b96bf`, and the commit with the sweep's fixes and this phase (no hash yet when this was written).
 
+## Phase 36: The new order of Settings
+
+**What this phase is.** The rest of 2026-11-24, after the second public release: the item "Settings navigation and categories" of the owner's list, done on the owner's requests (O-48) as one change, on the fast path (T-63). The technical decisions are T-77.
+
+**Who:** the lead alone, with one independent reviewer (read-only) and one documentation agent, both on Claude Sonnet (T-76).
+
+**The owner's requests, in order** (O-48):
+- Asked what comes next, the lead proposed Settings navigation and categories. The owner: "do a small research about settings and give me a few options for the order. make it as a tree like folder tree."
+- The lead read the layout then in use (about 95 rows on 8 screens in the TV app's order; one subject spread over several screens: subtitles in three places, audio in three, the groups Interface, Playback and More each twice) and showed three orders as trees: A by subject (nine subjects on the first screen), B the TV's two levels tidied, C a short first screen with the most used rows on top and five subjects.
+- The owner asked for an example of a mixture of C and A, got one (five quick rows, then A's nine subjects) and said "do this".
+- After the first build, where each subject showed its first three rows on one line cut with an ellipsis: "make the options inside each setting be in a list instead of just having ...". Each subject now lists all its rows, one to a line.
+
+**What was built** (T-77):
+- `/settings` is a new first screen (`SettingsHome`): "Quick settings", five shortcut rows (Application Theme, User interface language, Interface scale, Subtitle style, Customize home page), two beside each other with the slider across both columns; then "All settings", nine subjects (Profile, Interface, Home, Playback, Subtitles, Audio, Video, Screensaver, About) flowing down two columns, each a row that opens the subject and lists its rows under its name. One column in a narrow panel (a phone).
+- `/settings/topic/:topic` (`SettingsTopicPage`) shows one subject. The model is `topics.ts`. Rows keep the upstream visibility conditions; the experimental row under Audio shows only while "Experimental settings" is on.
+- No row was removed: every web-visible row of upstream's Settings, Advanced, Experimental and User Profile screens has exactly one home, and a unit test fails if one is missing, placed twice or never shown. Three navigation-only upstream rows are dropped (Advanced Settings, More user profile settings, the Experimental settings link). One row was added: "Reset preferences" (About), until now only a button on the Debug page.
+- Screensaver settings, Skip behavior, HDR formats and the subtitle style editor are unchanged. Old addresses redirect (`/settings/advanced` to `/settings`, `/settings/experimental` to Audio, `/settings/user` to Profile; an unknown subject goes to `/settings`). `UserProfileSettingsPage.tsx` is gone; its rows moved to Audio, Subtitles and Profile.
+- The nine subject names are strings the TV app already has, so they are translated; the two group headings are new web-only strings, English until O-22 is done. Layout: two columns because one column needed scrolling on a 16:9 window; first-screen rows 56dp; CSS columns so the keyboard order equals the reading order; the narrow-panel threshold in rem. With the full lists the first screen is taller than a 16:9 window and scrolls; the owner chose the lists.
+- Not built: a search box in Settings, an idea the lead had mentioned.
+
+**What the review found.** One reviewer (Claude Sonnet, read-only) found nothing lost in the regrouping and two defects, both fixed: the container threshold written in raw px (the build's px-to-rem step does not touch at-rule conditions, so it did not follow the interface scale) and the lookup of old addresses matching inherited object keys such as "constructor" (now own keys only, also in `screenFromParam`). Its smaller points (a stronger unit test, an unused string) were taken too.
+
+**Checks at the end** (the lead): the type check, the end-to-end type check and lint pass; the unit tests pass (102 files, 903 tests; 101 files and 897 tests before); the Settings and slider end-to-end specs pass in the desktop, keyboard and phone projects after the last change, and the wider set (settings, slider-mouse, layout, preferences, home-settings, shell, signin) was run again after it in all seven projects (113 tests, all passed). The end-to-end specs changed: `settings.spec.ts` (the first-screen test, the every-subject-and-old-addresses test, the keyboard test of the first screen; other tests open the subject their row lives in) and `slider-mouse.spec.ts` (the Skip forward slider test opens the Playback subject); see [e2e/README.md](../e2e/README.md).
+
+**Not verified:**
+- the new screens on real Safari or a real phone;
+- the screenshot crawler: its scenes were updated (nine `settings-topic-*` scenes replace `settings-advanced`, `settings-experimental` and `settings-user`; the Settings scenes go from 22 to 28) but it was not run;
+- the TV comparison scenes for Settings (`tools/shots/tvScenes.ts`) now point at the subject each row lives in, so a TV picture of the Settings or Advanced list is compared with a differently ordered web list, by design.
+
+**State at the end of this phase, on 2026-11-24:** built and, as the lead's next step, committed on `main`; not on the trial and not in the public repository (the second public release was made before this change).
+
+**Commits of this phase** (on `main`): `b7f3310`.
+
+## Phase 37: The subtitle line after a skip, the mouse on the episode strip, and the language list
+
+**What this phase is.** Three small changes of 2026-11-24, after phase 36, each on the owner's word and each on the fast path (T-63): a report about subtitles that seemed to fly in after an arrow-key skip (O-49, T-78), a request to move the episode strip with the mouse (O-50, T-79), and a report that the language list of Settings was transparent (O-51, T-80).
+
+**Who:** the lead alone. This documentation was written by one agent on Claude Sonnet (T-76).
+
+### The subtitle line that flew in
+
+**The owner's report, in order** (O-49):
+- After a skip forward the subtitles seemed to fly into existence from the left.
+- The owner wanted them to just appear.
+- Then: it only happens in fullscreen and when pressing the arrow keys forward and backward.
+- And: with the skip button on the screen there is no problem.
+
+**Cause.** With the controls hidden, an arrow-key skip shows the skip indicator, and `PlayerView.tsx` hands the subtitle layer `hidden={skip.total !== 0 && !visible}`, which took the text subtitles away for the indicator's time. When the text renderer was put back, its area started without a size at the left edge and was measured at once, and a 200 ms transition on its `left`, `width` and `height` (`SubtitleLayer.module.css`) drew that as the line flying in. The transition was a leftover of upstream's shrinking subtitle view, which the TV animates when the controls show; the web no longer uses it, because the text steps up by the height of the control strip. With the on-screen skip button the controls are up, so the subtitles are never taken away; in fullscreen with the arrow keys they are hidden. That is exactly what the owner had found.
+
+**What was built** (T-78, `c92f5e6`):
+- The transition is removed: the line is in its place from its first frame.
+- The ASS renderer (`AssSubtitles.tsx`) is kept over a skip and only hidden for it, as the PGS renderer already was. Before, a new one (worker, libass, fonts, script parse) was started after every arrow-key skip.
+- A new end-to-end spec, `e2e/specs/subtitles-skip.spec.ts`, records every frame after the key press with animations running. The suite's fixture switches animations and transitions off, which is why this went unseen; it is the second find of that kind (T-62). Before the fix the spec saw the area 14, 34, 58 and 89 px wide, growing from the left edge.
+
+**Checks:** the new spec passed on repeat runs; the other subtitle and direct-play specs (19 tests) and the playback unit tests (265) passed. **Not verified:** real media, a real fullscreen window (the test plays a test film with a cue it supplies through the development hook).
+
+### The mouse on the episode strip
+
+**The owner's request** (O-50): to be able to move the episodes carousel by holding and dragging and with the scroll of the mouse.
+
+**What was built** (T-79, `4d6b61e`):
+- Hold and pull moves the strip with the mouse (the existing `dragScroll.ts`); the click that ends a pull plays nothing.
+- A new `src/ui/lib/wheelScroll.ts` (with `wheelScroll.test.ts`): a wheel notch down runs the strip towards its end in both writing directions, about one card a notch; quick notches add up while it glides; no glide under reduced motion; at either end of the strip the wheel scrolls the page again. Only the notches of a mouse wheel are taken: the fine steps of a trackpad, Shift+wheel and Ctrl+wheel are left alone.
+- The wheel is taken on the episode strip only. Other rows are unchanged: they already had drag-scroll and their wheel still scrolls the page.
+
+**Checks:** unit tests 103 files, 910 tests, all pass (102 and 903 before); the series end-to-end spec passes in all seven projects (20 tests), with a new test of the wheel, the end of the strip and hold-and-pull using a real mouse in Chromium, Firefox and WebKit; the lead recorded frames of the glide with motion on (one notch: 200 px in about a quarter of a second; three quick notches add up to 600 px). **Not verified:** a real trackpad, a real mouse with a free-spinning or high-resolution wheel.
+
+### The language list in a solid box
+
+**The owner's report** (O-51), with a picture of Settings open over a page: the language select should not be transparent.
+
+**What it was.** Upstream draws its language list without the popup's container (`LocaleChoiceDialog.kt` calls `DialogPopupContent` without the container's background, clip and padding), so on the TV the names float on the dimmed page. The web had copied that faithfully as a `bare` variant of `DialogPopup`, from 720 px of window width up. Since Settings became a panel over a page that stays visible behind it (phase 33, T-61), the names ran through the page's picture and it read as a broken dialog.
+
+**What was built** (T-80, `ce06734`):
+- The language list has the popup's surface, corners and padding like every other choice.
+- The `bare` variant of `DialogPopup` (the prop and its styles), which nothing else used, is removed.
+- A new test in `e2e/specs/settings.spec.ts` checks that the list has a solid background, rounded corners and padding, that it stays inside a 1440 x 900 window, and that the long list scrolls inside the box.
+
+**Checks** (the lead): the Settings and preferences end-to-end specs pass in all seven projects (76 tests), with the new test in Chromium, Firefox and WebKit; the type check and the lint pass.
+
+**State at the end of this phase, on 2026-11-24:** the three commits are on `main` and pushed to the private repository. On the owner's yes the trial runs the image built from `4d6b61e` (a rollback image is kept), so it has the new order of Settings of phase 36, the subtitle fix and the mouse on the episode strip. `ce06734` was committed and pushed with its image being built; the owner said yes the same day and it went onto the trial (phase 38 says so too). Neither phase 36 nor these three changes are in the public repository.
+
+**Commits of this phase** (on `main`): `c92f5e6`, `4d6b61e`, `ce06734`.
+
+## Phase 38: The language box fitted, and a code map
+
+**What this phase is.** Two more changes of 2026-11-24, after phase 37, each on the owner's word and each on the fast path (T-63): the box of the language list made to fit its names (O-52, T-81), and a map of the code that says which file is responsible for what a person sees (O-53, T-82). The owner's answer about the stored images (O-54) is recorded at the end.
+
+**Who:** the lead, for the fitted box and for the generator of the map. For the map's rows, eight read-only readers on Claude Sonnet, one per part of the source, and a ninth agent on Claude Sonnet, allowed to open nothing but the map, as a test of it. This documentation was written by one agent on Claude Sonnet (T-76).
+
+### The language list's box, fitted
+
+**The owner's request** (O-52), with a picture of the list in its new box: make some margin around it, make it smaller, not so much unused space.
+
+**What it was.** The box that phase 37 gave the list had the TV's fixed 440 dp width and, being a long list, ran from the top of the window to its bottom (the shared `Dialog` backdrop gives a popup the whole height on purpose, as on the TV).
+
+**What was built** (T-81, `d036067`): a `fit` option of `DialogPopup` (the prop and the class `div.fit` in `DialogPopup.module.css`): the width is as wide as the longest name needs, between 240 dp and 440 dp, and the height is at most the window's less 64 px, so the box keeps a gap above and below. Only the language list (`LanguagePreference.tsx`) uses it; the other popups keep the TV's size. The language test of `e2e/specs/settings.spec.ts` now also asserts the gap above and below, a width under 400 dp and that no name is cut.
+
+**Checks** (the lead): the Settings and preferences end-to-end specs pass in all seven projects (76 tests), with the language test in Chromium, Firefox and WebKit. The owner said yes and it is on the trial.
+
+### The code map
+
+**The owner's request** (O-53): a folder tree of the project, and of the source folder in particular, to help the owner, others and the lead find the element that needs changing. The example was what makes the language list see-through: searching for it, the owner found the Settings code but not the file responsible. The owner then asked whether a file with a similar name, the stylesheet of the rows of the preferred audio and subtitle language, was the one; it was not.
+
+**What was built** (T-82, `26273ae`): `docs/CODE-MAP.md`, written by `tools/gen-code-map.mjs` (`npm run map`).
+- A "Where is ... ?" section of 560 rows: what a person sees or does, the files responsible, what each file decides, the marker to look for with the browser's Inspect tool, and a note. The rows are kept by hand in `tools/code-map/where.json`; one line per folder is in `tools/code-map/folders.json`.
+- Read from the code on every run: the screens (from the table in `src/app/routes.tsx`), the `data-*` markers with the files that set them, the folder trees of the project and of `src/`, and every file of `src/` with the first sentence of its own comment.
+- `tools/gen-code-map.test.ts` (part of `npm run test`) fails when the page is out of date or a hand-kept row names a file that is gone. `CLAUDE.md` tells every agent to use the map, to add a row for anything new a person can see, and to start every new file with a one-sentence comment.
+
+**How the rows were written.** Eight read-only readers on Claude Sonnet, one per part of the source, wrote 559 rows (one row named a file that does not exist and was dropped); this took about 1.1 million tokens and under three minutes.
+
+**The test of the map.** A ninth agent on Claude Sonnet, allowed to open nothing but the map, was given 18 problems in the owner's words and named the right files for all 18 (sure of 13). What slowed it down was corrected: the rows became short lines instead of table rows (search tools skip very long lines); each file is labelled with what it decides; rows about similar things got notes that point at each other; a row for the darkening of the video was added, making 560.
+
+**Checks:** unit tests 104 files, 911 tests, all pass. **Not verified:** all 560 rows by hand. Every path is checked by the script; the wording and the markers are the readers' work, spot-checked.
+
+### The stored images
+
+**The owner's answer** (O-54): asked whether to delete the old rollback images of the trial and keep only the last two, the owner said to keep them all. T-64 stands: no image is pruned.
+
+**State at the end of this phase, on 2026-11-24:** `main` is at `d036067` plus this documentation update. The trial runs the image built from `d036067`, so it has everything of phases 36 and 37 and the two language-list changes. The public repository has none of the work after the second release (the order of Settings, the subtitle fix, the episode strip, the language list, the code map).
+
+**Commits of this phase** (on `main`): `d036067`, `26273ae`.
+
+## Phase 39: The question about announcing, the privacy sweep and the third public release
+
+**What this phase is.** The rest of 2026-11-24, after phase 38: the owner asked whether the project may be announced in the Jellyfin community's subreddit and whether anyone's permission is needed; the lead answered, and the owner said "Yes, publish first" (O-55). The public repository was brought up to date with a third release after a privacy sweep (T-58, T-83). The owner also opened the next project, an admin panel (O-56), which has no code yet.
+
+**Who:** the lead, five readers for the sweep and one documentation agent, all on Claude Sonnet (T-76).
+
+**1. The question about announcing** (O-55). The lead's answer, from the licence and from the Jellyfin project's published policies read that day:
+- No permission is needed: the licence is GPL-2.0, the same as upstream's, the source is public, upstream is credited and the project is marked unofficial.
+- The Jellyfin project's policy on large language models asks that a project developed mainly by one is clearly marked as such when it is shared in their communities (the root README already says how the project was built), that posts are in the poster's own words (so the lead does not write the announcement), and that licences and credit are respected. Their branding page asks third-party projects not to use the name Jellyfin as the product's name.
+- The lead recommended telling Wholphin's author first as a courtesy, and bringing the public repository up to date before announcing.
+- Not verified: the subreddit's own rules page, which could not be opened from the lead's tools.
+
+The owner's decision: "Yes, publish first".
+
+**2. The privacy sweep before the third release** (T-58's procedure, T-83). Five readers on Claude Sonnet, find only, each on a different part of what changed since the second release (49 files, about 11,800 added lines): the two halves of `tools/code-map/where.json`, the rest of the code map and its generator, the documents, and the code and tests. Seven points were reported; none was a credential, an address, a name or a path. Five sentences in `DECISIONS.md` and `PROJECT-LOG.md` were reworded: one that told what the owner was doing when a bug was seen, one that spoke of the owner's own media, and three that gave a count taken from the trial deployment. Left as they were: an example clock time inside the code map's description of the "Ends at" text (an example of interface text, with no date beside it), and one sentence in `TOOLING.md` about the trial's temporary reverse-proxy route (the same wording was already public). Gaps the readers stated: the long list of source files in `docs/CODE-MAP.md` and the generator script were pattern-searched, not read line by line. The lead's own search of the whole tracked tree for the real private values found none.
+
+**3. Checks on the release tree** (the lead): the type check passes; lint has 0 errors; the unit tests pass (104 files, 911 tests); the production build passes. The whole end-to-end suite ran once in all seven projects with two workers: 345 tests, 345 passed, in 14.0 minutes. It is the first whole-suite run since the one before the second release (336 tests). The screenshot crawler was run for the Settings scenes only (one theme, desktop size): 26 pictures, 26 ok, no warnings, no page errors. The full crawl was not run.
+
+**4. The root README and its picture.** The status paragraph of the root `README.md` was rewritten for this release (it still said "first public release" and carried the numbers of the first release). The Settings picture in `docs/screenshots/` was taken again with the crawler, because it showed the old order of Settings. The other eight README pictures are unchanged, from 2026-11-18.
+
+**5. The third release** (O-55, T-58). One new commit on the public branch, on top of the second release's commit (`b9d0037`), whose tree is the tree of `main` as it stands after this documentation commit, made with a no-reply identity and UTC dates; the private history is not pushed. It brings to the public repository everything of phases 36 to 38 (the new order of Settings, the subtitle fix after an arrow-key skip, the mouse on the episode strip, the language list in a solid fitted box, the code map) and this phase.
+
+**6. The next project** (O-56): an admin panel inside Wholphin Web that is to replace the frontend of Jellyfin's stock dashboard. It starts with research (what pages exist, how they connect, what can be merged or improved, what is needed), then a mockup. The owner's constraint: where the research looks at a running server's dashboard, only the lead looks, and nothing is changed. State: research under way, nothing built, no file of it in this release.
+
+**Not verified:**
+- anything on real Safari or a real phone;
+- CI results on GitHub for this release are not recorded;
+- the full crawl, and all 560 rows of the code map by hand.
+
+**State at the end of this phase, on 2026-11-24:** `main` is at `d036067` plus the code map and the documentation updates after it; the trial still runs the image built from `d036067`. The public repository holds three commits, one per release, and the third carries the tree of `main` after this documentation commit.
+
+**Commits of this phase** (on `main`): the documentation commit that carries this phase, the root README's status paragraph and its Settings picture (a commit cannot name its own hash; the next phase records it).
+
 ## What comes next
 
 *Rewritten on 2026-11-24 after phases 31 to 35. The earlier versions listed stage 2 of the final merge, the comparison pass, the README, merging and landing the comparison pass, the polish round, a small-fix round, the trial behind the reverse proxy, the removal of the merged branches, the question of what the finished desktop version includes and the publication as still to come; they are now phases 18, 23, 19, 25 to 28, 29, 30 and 31.*
@@ -2214,12 +2370,17 @@ The end-to-end fixture switches CSS animations off, so a test that passes says n
 - **Publication:** the first public release was made on 2026-11-18, as a clean copy (O-33, O-35, T-58; phase 31).
 - **The first maintenance rounds,** desktop browser first: four bugs and the player's strips (phase 32), the shell and Settings (phase 33), sign-in, the Home header and the player's settings (phase 34).
 - **The second public release** was made on 2026-11-24 after a privacy sweep, on the owner's "Yes, publish" (O-47, T-58; phase 35). The whole end-to-end suite, Firefox and WebKit included, ran over phases 33 and 34 before it (phase 35).
+- **Settings navigation and categories:** the new order of Settings, quick rows and nine subjects, was built on 2026-11-24 after the second release (O-48, T-77; phase 36).
+- **Three small changes after that** (2026-11-24; phase 37): the subtitle line no longer flies in after an arrow-key skip (O-49, T-78; on the trial), the mouse moves the episode strip by hold and pull and with the wheel (O-50, T-79; on the trial), and the language list of Settings is in a solid box (O-51, T-80; on the trial).
+- **The language list's box fitted, and a code map** (2026-11-24; phase 38): the box is as wide as its names and keeps a gap to the window's edges (O-52, T-81; on the trial); `docs/CODE-MAP.md` says which file is responsible for what a person sees (O-53, T-82). The owner's answer about the stored images: keep them all (O-54).
+- **The third public release** (2026-11-24; phase 39): after the owner's "Yes, publish first" (O-55) and a privacy sweep (T-83), with the whole end-to-end suite passing once (345 of 345). The admin panel was opened as the next project (O-56).
 
 **Still open** (no dates set):
 - **Polish, one item at a time, desktop browser first.** That is the owner's priority since the release (O-31, O-35): the owner hands over items and looks at each on the trial.
-- **The next public release.** The public repository holds the work up to and including phase 35 (the second release, O-47). Whatever is made after it reaches the public repository only with a later release, which needs a privacy sweep of the difference first (T-58).
+- **The next public release.** The third release (phase 39; O-55, T-83) brought the public repository up to date with everything up to and including phase 39. Whatever is made after it reaches the public repository only with a later release, which needs a privacy sweep of the difference first (T-58).
+- **The admin panel** (O-56): research under way, then a mockup; nothing built.
 - **The slow checks owed after the fast path** (T-63): a second whole end-to-end run after the two test repairs and the privacy fixes of phase 35 (only the affected tests and the unit tests were re-run).
-- **Items the owner listed for later:** the navigation and the categories of Settings; a better sign-in and welcome page; defaults set by the owner of a deployment for all its users, first example the default interface language (O-31, O-36; the lead's idea of a deployment setting served through `/config.json` instead of a fork is not agreed); search by microphone, at low priority.
+- **Items the owner listed for later:** a better sign-in and welcome page; defaults set by the owner of a deployment for all its users, first example the default interface language (O-31, O-36; the lead's idea of a deployment setting served through `/config.json` instead of a fork is not agreed); search by microphone, at low priority.
 - **Global view options** (one setting for every library; O-36): set aside by the owner on 2026-11-24 (O-44; phase 34). Not built.
 - **Remote control from another device:** "nice to have", not required (O-30).
 - **Phone and touch polish,** after the desktop version (O-28). No list exists yet beyond the slider problems the owner named, which are fixed. The player's Settings sheets were not reviewed at phone width (phase 34).
@@ -2248,9 +2409,9 @@ Known bugs, deferred findings and what cannot be tested are kept in [STATUS.md](
 
 ## Phases still to be recorded
 
-*Placeholders for later updates. Fill in each one with the same shape as above (goal, who, what was built, what the reviews found, numbers, what was left open, commits) when the phase happens. The phases recorded since the first version of this log (the end of wave 3a, wave 3b, wave 4, both stages of the final merge, the documents, the comparison pass, its merge, the final check and repair, the backdrop colours, the landing, the polish round, the closing round with the trial, the touch fix and the clean-up, the owner's requests before the release with the privacy sweep, the new player and the publication, the first three maintenance rounds, and the second public release) are no longer listed here.*
+*Placeholders for later updates. Fill in each one with the same shape as above (goal, who, what was built, what the reviews found, numbers, what was left open, commits) when the phase happens. The phases recorded since the first version of this log (the end of wave 3a, wave 3b, wave 4, both stages of the final merge, the documents, the comparison pass, its merge, the final check and repair, the backdrop colours, the landing, the polish round, the closing round with the trial, the touch fix and the clean-up, the owner's requests before the release with the privacy sweep, the new player and the publication, the first three maintenance rounds, the second public release, and the new order of Settings) are no longer listed here.*
 
-- **Further maintenance rounds,** as the owner hands over items: desktop browser first (O-35). Named so far for later: the navigation and the categories of Settings, a better sign-in and welcome page, defaults set by the owner of a deployment (O-31), search by microphone at low priority.
+- **Further maintenance rounds,** as the owner hands over items: desktop browser first (O-35). Named so far for later: a better sign-in and welcome page, defaults set by the owner of a deployment (O-31), search by microphone at low priority.
 - **A later public release,** with its privacy sweep of the difference since the second (T-58).
 - **The new capture of the TV reference pictures,** before any comparison work (T-57).
 - **Phone and touch interface work,** after the desktop version (O-28).
@@ -2296,3 +2457,6 @@ The final documentation pass of 2026-11-18 is not a phase of its own: it wrote p
 | 33. Shell and Settings round | the lead alone, on the fast path; one review job of 2 reviewers (a third agent stopped) | No Back button on the pages the drawer leads to; the open drawer lies over the page; Settings opens as a panel on the drawer's side over a lifeless copy of the page it was opened from, with no Back button where the area beside it can be clicked; no darkening for the drawer or behind Settings; the opening redone until it had one moving piece (a clip, a mask and a two-transform version did not hold); the actor rows of a series stay between episodes; review: one real defect, fixed; rule since: motion is judged from recorded frames; whole end-to-end suite not run | `32a0101`, `bb76c45`, `ec7ed5c`, `dc3c877`, `ba1526e`, `398f168`, `5ab9fd6`, `d1be200`, `7454e4c`, `732e409`, `630c7e9`, `445a739` |
 | 34. Sign-in, Home header, the player's settings | the lead alone, on the fast path | A listed user without a password is signed in by the click; the Home header's overview uses the room the header has; subtitle style options inside the player's settings, with a note for subtitles that cannot be restyled; the player's Settings menus compact, as wide as their longest label and 92 percent opaque; image subtitle opacity applied to PGS in the player; view options for every library set aside by the owner; type check and 897 unit tests pass on `509db33`; whole end-to-end suite, Firefox and WebKit not run at the time (phase 35 ran them); the trial runs the image of `509db33`; the public repository still held only the first release at the end of this phase | `27ab920`, `8d305b7`, `e31ba4b`, `cf29a99`, `509db33` |
 | 35. The documents caught up, the conversation export, the privacy sweep, the second public release | 10 for the documents (5 writers, 5 checkers, all Claude Fable), 5 readers and their second readers (56 agents in the sweep, all Claude Fable), a fix-up of the findings in the documents (Claude Sonnet); the lead with the owner | Documents brought from `7ad52ba` to 2026-11-24 (about 28 minutes); conversation export tool; privacy sweep: 51 findings, about 30 stood, all low severity, all reworded or removed; whole end-to-end suite 336 tests, 334 passed, the 2 failures were faults of two Settings tests on WebKit, repaired; the rule that every agent gets an explicit model (T-76); one release commit on top of the first, on the owner's "Yes, publish" | `3c66f2e`, `fda0c2b`, `0baf14f`, `e9b96bf`, and the commit with the sweep's fixes and this phase (no hash yet) |
+| 36. The new order of Settings | the lead alone, on the fast path; one read-only reviewer and one documentation agent (both Claude Sonnet) | Settings regrouped on the owner's requests: a first screen of five quick rows and nine subjects, each listing its rows, one page per subject; no row lost (a unit test guards it), three navigation-only rows dropped, "Reset preferences" added to About, old addresses redirect; review: two defects, fixed; type check, lint and 903 unit tests (102 files) pass, the Settings and slider end-to-end specs pass in the desktop, keyboard and phone projects and the wider set was run in all seven projects (113 tests, all passed); crawler not run; not on the trial, not in the public repository | `b7f3310` |
+| 37. The subtitle line after a skip, the mouse on the episode strip, the language list | the lead alone, on the fast path; one documentation agent (Claude Sonnet) | Text subtitles no longer fly in from the left after an arrow-key skip with the controls hidden (a transition on the area is removed; the ASS renderer is kept over a skip); a new spec records every frame with animations running (before the fix: 14, 34, 58, 89 px wide); the episode strip follows the mouse by hold and pull and moves with the wheel, for mouse-wheel notches only, on that strip only; 910 unit tests (103 files) pass, the series spec passes in all seven projects (20 tests); the language list of Settings gets the popup's solid container like every other choice, and the container-less variant of the popup is removed, with a new test, and the Settings and preferences specs pass in all seven projects (76 tests); the first two are on the trial (the image built from `4d6b61e`, on the owner's yes), the third went onto the trial the same day on the owner's yes; none is in the public repository | `c92f5e6`, `4d6b61e`, `ce06734` |
+| 38. The language box fitted, and a code map | the lead; 8 readers and 1 tester (all Claude Sonnet); one documentation agent (Claude Sonnet) | The language list's box is as wide as its longest name (240 to 440 dp) and keeps a gap above and below (a `fit` option of the popup; Settings and preferences specs pass in all seven projects, 76 tests); `docs/CODE-MAP.md`, written by `npm run map`: 560 "Where is ... ?" rows plus the screens, markers, folder trees and every file of `src/`, checked by a unit test; a tester allowed to open only the map named the right files for 18 of 18 problems; the owner keeps all stored images; 911 unit tests (104 files) pass; on the trial (image of `d036067`), not in the public repository | `d036067`, `26273ae` |
