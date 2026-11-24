@@ -1954,7 +1954,7 @@ test.describe('player layout: mouse clicks on the picture', () => {
     await page.goto(`/play/${item.Id}?t=10000`)
     await expect.poll(() => page.locator('video').evaluate((v: HTMLVideoElement) => v.currentTime), { timeout: 30_000 }).toBeGreaterThan(10.3)
     const cursor = () => page.locator('video').evaluate((v) => {
-      let el: HTMLElement | null = v
+      let el: Element | null = v
       while (el && getComputedStyle(el).position !== 'fixed') el = el.parentElement
       return getComputedStyle(el ?? v).cursor
     })
