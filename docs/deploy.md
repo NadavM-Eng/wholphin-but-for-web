@@ -31,7 +31,7 @@ Caddy configuration without touching the Caddy that is running.
 | `CSP_EXTRA_ORIGINS` | optional | Extra origins (space/comma separated) the app may connect to, e.g. a second Jellyfin address. |
 | `MAX_BODY_MB` / `SEERR_TIMEOUT_SECONDS` | optional | Seerr proxy limits. Defaults `10` and `30`. |
 | `ACCESS_LOG` | optional | `true` logs one line per request (paths only, never query strings). |
-| `DIST_DIR` | optional | Folder with the built app. Default `./dist`. |
+| `DIST_DIR` | optional | Folder with the built app. Default: the `dist` folder next to `server/` (the Docker image sets `/app/dist`). |
 
 The app reads these from `GET /config.json`, so you change them by restarting the server, not by rebuilding.
 

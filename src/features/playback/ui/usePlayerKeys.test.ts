@@ -21,6 +21,7 @@ function setup(over: Partial<PlayerKeyContext> = {}) {
       durationMs: 600_000,
       dpadSeek: vi.fn(),
       showControls: vi.fn(),
+      adjustVolume: vi.fn(),
       pulseControls: vi.fn(),
       clearDpadSeek: vi.fn(),
       back: vi.fn(),
@@ -31,7 +32,8 @@ function setup(over: Partial<PlayerKeyContext> = {}) {
     },
   }
   const hook = renderHook(() => usePlayerKeys(ctx))
-  const key = (type: 'keydown' | 'keyup', k: string) => window.dispatchEvent(new KeyboardEvent(type, { key: k, cancelable: true }))
+  const key = (type: 'keydown' | 'keyup', k: string, target: EventTarget = window) =>
+    target.dispatchEvent(new KeyboardEvent(type, { key: k, cancelable: true, bubbles: true }))
   return { ctx, key, unmount: hook.unmount }
 }
 
@@ -63,6 +65,64 @@ describe('usePlayerKeys Enter', () => {
     key('keydown', 'Enter')
     key('keyup', 'Enter')
     expect(ctx.current.showControls).toHaveBeenCalledTimes(1)
+    unmount()
+  })
+})
+
+describe('usePlayerKeys volume', () => {
+  it('ArrowUp raises and ArrowDown lowers the volume, hidden or shown by the mouse, and does not show the controls', () => {
+    for (const controlsVisible of [false, true]) {
+      const { ctx, key, unmount } = setup({ controlsVisible })
+      key('keydown', 'ArrowUp')
+      key('keyup', 'ArrowUp')
+      key('keydown', 'ArrowDown')
+      key('keyup', 'ArrowDown')
+      expect(ctx.current.adjustVolume).toHaveBeenNthCalledWith(1, 1)
+      expect(ctx.current.adjustVolume).toHaveBeenNthCalledWith(2, -1)
+      expect(ctx.current.showControls).not.toHaveBeenCalled()
+      unmount()
+    }
+  })
+
+  it('a held key repeats', () => {
+    const { ctx, unmount } = setup()
+    for (let i = 0; i < 3; i++) window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', repeat: i > 0, cancelable: true }))
+    expect(ctx.current.adjustVolume).toHaveBeenCalledTimes(3)
+    unmount()
+  })
+
+  it('with the focus inside the strip the arrows are left to the navigation', () => {
+    const strip = document.createElement('div')
+    strip.setAttribute('data-focus-trap', '')
+    const btn = document.createElement('button')
+    strip.appendChild(btn)
+    document.body.appendChild(strip)
+    const { ctx, key, unmount } = setup({ controlsVisible: true })
+    key('keydown', 'ArrowUp', btn)
+    expect(ctx.current.adjustVolume).not.toHaveBeenCalled()
+    unmount()
+    strip.remove()
+  })
+
+  it('with a dialog open the arrows are left to the dialog', () => {
+    const { ctx, key, unmount } = setup({ dialogOpen: true })
+    key('keydown', 'ArrowDown')
+    expect(ctx.current.adjustVolume).not.toHaveBeenCalled()
+    unmount()
+  })
+
+  it('Tab with the controls hidden shows them, with Play focus requested', () => {
+    const { ctx, key, unmount } = setup()
+    key('keydown', 'Tab')
+    expect(ctx.current.showControls).toHaveBeenCalledTimes(1)
+    unmount()
+  })
+
+  it('Enter with one-click pause toggles play and does not show the controls', () => {
+    const { ctx, key, unmount } = setup({ oneClickPause: true })
+    key('keydown', 'Enter')
+    key('keyup', 'Enter')
+    expect(ctx.current.showControls).not.toHaveBeenCalled()
     unmount()
   })
 })

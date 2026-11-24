@@ -286,6 +286,53 @@ async function fromEpisode(
   return entries.slice(start)
 }
 
+const normId = (s: string | null | undefined) => s?.replace(/-/g, '').toLowerCase() ?? ''
+
+/**
+ * The same media as `a`: the same id, or the same episode of the same season (another version of it under its
+ * own id, as servers that merge versions or library plugins can list one).
+ */
+export function isSameMedia(a: BaseItemDto | null | undefined, b: BaseItemDto | null | undefined): boolean {
+  if (!a || !b) return false
+  if (a.Id && b.Id && normId(a.Id) === normId(b.Id)) return true
+  return (
+    a.Type === 'Episode' &&
+    b.Type === 'Episode' &&
+    a.IndexNumber != null &&
+    a.IndexNumber === b.IndexNumber &&
+    (a.IndexNumberEnd ?? null) === (b.IndexNumberEnd ?? null) &&
+    a.ParentIndexNumber != null &&
+    a.ParentIndexNumber === b.ParentIndexNumber &&
+    !!a.SeriesId &&
+    normId(a.SeriesId) === normId(b.SeriesId)
+  )
+}
+
+/**
+ * Whether the queue has an entry before / after `index`: the enabled state of the Previous and Next buttons (Next:
+ * PlaybackPage.kt `nextEnabled = state.hasNext`). Upstream keeps Previous always enabled because it restarts the
+ * item after 3 s; here it is greyed out on the first entry like Next on the last (owner request).
+ */
+export function queuePosition(index: number, length: number): { hasPrevious: boolean; hasNext: boolean } {
+  return { hasPrevious: index > 0 && index < length, hasNext: index >= 0 && index + 1 < length }
+}
+
+/**
+ * Queue for a playable item started directly: the item, then the contextual entries that follow it. The list
+ * the server returns is cut after the item; when the item is not in it under its own id, an entry that is the
+ * same episode under another id stands for it, and every other copy of the item is dropped, so the entry after
+ * the item is never the item again. (Upstream PlaybackViewModel.kt appends the whole contextual list after the
+ * item, which repeats it when the list does not start with exactly that id.)
+ */
+export function queueForPlayedItem(item: BaseItemDto, contextual: QueueEntry[]): QueueEntry[] {
+  const self: QueueEntry = { kind: 'media', item }
+  const at = contextual.findIndex((e) => normId(e.item.Id) === normId(item.Id))
+  if (at >= 0) return contextual.slice(at)
+  const twin = contextual.findIndex((e) => isSameMedia(e.item, item))
+  if (twin >= 0) return [self, ...contextual.slice(twin + 1)]
+  return [self, ...contextual.filter((e) => !isSameMedia(e.item, item))]
+}
+
 /** `convertAndAddParts`: drop virtual items, expand multi-part videos. */
 async function addParts(api: Api, items: BaseItemDto[], userId: string | undefined): Promise<QueueEntry[]> {
   const out: QueueEntry[] = []

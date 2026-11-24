@@ -3119,6 +3119,7 @@ Attributes the components put on their elements. Right-click the thing in the br
 | `data-player-error` | `features/playback/PlayerView.tsx` |
 | `data-player-group` | `features/playback/ui/Controller.tsx` |
 | `data-player-panel` | `features/playback/ui/PlayerPanel.tsx` |
+| `data-player-root` | `features/playback/PlayerView.tsx` |
 | `data-player-sheet` | `features/playback/ui/PlayerSheet.tsx` |
 | `data-player-skip` | `features/playback/ui/Controller.tsx` |
 | `data-player-time` | `features/playback/ui/Controller.tsx` |
@@ -3164,6 +3165,7 @@ Attributes the components put on their elements. Right-click the thing in the br
 
 ```text
 .
+├── .claude/
 ├── .github/  GitHub's own files: the checks that run on every push, the issue and pull-request forms
 ├── dev/  Things for the development machine only
 ├── docs/  The project's documents: what was done, decided and changed from the TV app, and this map
@@ -3797,8 +3799,10 @@ The player page: the video screen with its overlay, keys, pointer and touch hand
 
 - [`playbackErrors.ts`](../src/features/playback/playbackErrors.ts) ([`test`](../src/features/playback/playbackErrors.test.ts)): User-facing message for an engine error.
 - [`PlaybackListPage.tsx`](../src/features/playback/PlaybackListPage.tsx): Route page for `nav.playList(id, { index, shuffle, recursive, sort, order, filter })` (Destination.PlaybackList).
-- [`PlaybackPage.tsx`](../src/features/playback/PlaybackPage.tsx): Route page for `nav.play(id, { t, transcode, shuffle })` (upstream Destination.Playback).
+- [`PlaybackPage.tsx`](../src/features/playback/PlaybackPage.tsx) ([`test`](../src/features/playback/PlaybackPage.test.tsx)): Route page for `nav.play(id, { t, transcode, shuffle })` (upstream Destination.Playback).
 - [`PlayerView.tsx`](../src/features/playback/PlayerView.tsx) ([`styles`](../src/features/playback/PlayerView.module.css)): The playback screen (W/ui/playback/PlaybackPage.kt PlaybackPageContent + overlay/PlaybackOverlay.kt): the video with subtitles, the controls overlay, D-pad seek feedback, pause and buffering indicators, the floating…
+- [`useSeekHold.ts`](../src/features/playback/useSeekHold.ts): A hook that says "a seek is in flight": true from a skip press (or any seek of the video) until the latest seek has landed and one frame was drawn.
+- [`AGENT-NOTES.md`](../src/features/playback/AGENT-NOTES.md)
 
 ### src/features/playback/engine/
 
@@ -3819,9 +3823,10 @@ The player's brain with no screen of its own: loads the stream, picks tracks, re
 - [`playbackInfo.ts`](../src/features/playback/engine/playbackInfo.ts): PlaybackInfo request body and response interpretation (PlaybackViewModel.changeStreams, spec 05 §1.3).
 - [`PlayerSurface.tsx`](../src/features/playback/engine/PlayerSurface.tsx) ([`styles`](../src/features/playback/engine/PlayerSurface.module.css)): Positioned black box that hosts the engine's single <video> element.
 - [`probeMedia.ts`](../src/features/playback/engine/probeMedia.ts): Real playback probes (capabilities.ts): three clips of a fraction of a second, embedded so that probing needs no server. canPlayType answers "would you play this type"; these answer "did you just play it", which is…
-- [`queue.ts`](../src/features/playback/engine/queue.ts): Queue construction: port of W/services/PlaylistCreator.kt plus the item kind sets of PlaybackConstants.kt / Constants.kt (spec 05 §1.1).
+- [`queue.ts`](../src/features/playback/engine/queue.ts) ([`test`](../src/features/playback/engine/queue.test.ts)): Queue construction: port of W/services/PlaylistCreator.kt plus the item kind sets of PlaybackConstants.kt / Constants.kt (spec 05 §1.1).
 - [`reporting.ts`](../src/features/playback/engine/reporting.ts): Session reporting, port of W/util/TrackActivityPlaybackListener.kt (spec 05 §5).
 - [`seekAcceleration.ts`](../src/features/playback/engine/seekAcceleration.ts): Port of W/ui/playback/SeekAcceleration.kt (spec 05 §9.7). Used by the controls for hold-to-seek.
+- [`seekHoldState.ts`](../src/features/playback/engine/seekHoldState.ts) ([`test`](../src/features/playback/engine/seekHoldState.test.ts)): The sequencing of "a seek is in flight" for the subtitle layer: hidden at the skip, shown again once the latest seek has landed and a frame was drawn.
 - [`segments.ts`](../src/features/playback/engine/segments.ts): Media segment handling (PlaybackViewModel.listenForSegments / updateSegment, spec 05 §6).
 - [`streamChoice.ts`](../src/features/playback/engine/streamChoice.ts) ([`test`](../src/features/playback/engine/streamChoice.test.ts)): Port of W/services/StreamChoiceService.kt, W/data/model/RelativeMediaStream.kt and TrackFlag (W/data/model/SeriesTrackChoice.kt).
 - [`SubtitleLayer.tsx`](../src/features/playback/engine/SubtitleLayer.tsx) ([`styles`](../src/features/playback/engine/SubtitleLayer.module.css)): Minimal on-video subtitle renderer: text cues styled from the subtitle preferences, ASS/SSA through JASSUB, PGS (image) subtitles through libpgs.
@@ -3888,10 +3893,12 @@ Everything drawn over the video: control strip, buttons, seek bar, menus and she
 - [`TrickplayPreview.tsx`](../src/features/playback/ui/TrickplayPreview.tsx) ([`styles`](../src/features/playback/ui/TrickplayPreview.module.css)): `TrickplayPreview` + `SeekPreviewImage` (overlay/TrickplayPreview.kt, SeekPreviewImage.kt): a 160dp tall thumbnail cropped from the sprite sheet with a 1.5dp border, and the time chip below it.
 - [`types.ts`](../src/features/playback/ui/types.ts): Dialogs of the player (PlaybackDialogType + the subtitle search, the web shortcuts sheet and the web layout's chapters and queue panels, which replace the CHAPTERS / QUEUE states of upstream's `OverlayViewState`).
 - [`useControllerView.ts`](../src/features/playback/ui/useControllerView.ts): Port of W/ui/playback/ControllerViewState.kt: controls visibility with a debounced auto-hide.
+- [`useMouseClickGate.ts`](../src/features/playback/ui/useMouseClickGate.ts) ([`test`](../src/features/playback/ui/useMouseClickGate.test.ts)): Delays a mouse click's play/pause by a moment so a double click (fullscreen) never leaves the video paused.
 - [`usePlayerKeys.ts`](../src/features/playback/ui/usePlayerKeys.ts) ([`test`](../src/features/playback/ui/usePlayerKeys.test.ts)): Keyboard handling of the player: PlaybackKeyHandler.onKeyEvent (spec 05 §9.8) mapped to the keyboard, plus the web shortcuts of §B7.
 - [`useScreenModes.ts`](../src/features/playback/ui/useScreenModes.ts): Fullscreen and picture-in-picture for the player (web additions, spec 05 §B4).
 - [`useSeekRange.ts`](../src/features/playback/ui/useSeekRange.ts): Position and range for the seek bar, refreshed every 250 ms like upstream (PlaybackControls.kt:256-263).
 - [`VolumeControl.tsx`](../src/features/playback/ui/VolumeControl.tsx) ([`styles`](../src/features/playback/ui/VolumeControl.module.css)): Web addition (the TV has hardware volume): mute button plus a volume slider that opens on hover, built from the strip's PlaybackButton and the kit Slider.
+- [`volumeStep.ts`](../src/features/playback/ui/volumeStep.ts) ([`test`](../src/features/playback/ui/volumeStep.test.ts)): Pure rule of the volume keys (ArrowUp / ArrowDown of the video player): 5 percent per press between 0 and 100.
 - [`playerLayout.test.tsx`](../src/features/playback/ui/playerLayout.test.tsx)
 - [`rtlValues.test.tsx`](../src/features/playback/ui/rtlValues.test.tsx)
 - [`ui.test.ts`](../src/features/playback/ui/ui.test.ts)

@@ -16,7 +16,9 @@ const PgsSubtitles = lazy(() => import('./PgsSubtitles').then((m) => ({ default:
 export interface SubtitleLayerProps {
   /** controls are visible: text subtitles move into the top-center 70% of the video (PlaybackPage.kt:520) */
   raised?: boolean
-  /** hide subtitles (e.g. while the seek indicator is shown) */
+  /** a skip indicator or seek bar is on the picture: ASS lines step up by the strip height too (text and PGS use `raised`) */
+  lifted?: boolean
+  /** hide subtitles (a seek is in flight); every renderer stays mounted and is only hidden */
   hidden?: boolean
 }
 
@@ -25,7 +27,7 @@ export interface SubtitleLayerProps {
  * PGS (image) subtitles through libpgs.
  * Must be rendered inside the same positioned container as the engine's <video> (see PlayerSurface).
  */
-export function SubtitleLayer({ raised = false, hidden = false }: SubtitleLayerProps) {
+export function SubtitleLayer({ raised = false, lifted = false, hidden = false }: SubtitleLayerProps) {
   const subtitle = usePlaybackStore((s) => s.subtitle)
   const delayMs = usePlaybackStore((s) => s.subtitleDelayMs)
   // the subtitle style sheet is open: text subtitles show a sample line while no cue is on screen, also when
@@ -45,11 +47,10 @@ export function SubtitleLayer({ raised = false, hidden = false }: SubtitleLayerP
     // stays mounted while hidden, like the PGS renderer
     return (
       <Suspense fallback={null}>
-        <AssSubtitles key={subtitle.streamIndex} content={subtitle.content} fonts={subtitle.fonts} delayMs={delayMs} hidden={hidden} />
+        <AssSubtitles key={subtitle.streamIndex} content={subtitle.content} fonts={subtitle.fonts} delayMs={delayMs} lifted={lifted} hidden={hidden} />
       </Suspense>
     )
-  if (hidden) return null
-  if (subtitle.kind === 'text') return <TextSubtitles key={subtitle.streamIndex} cues={subtitle.cues} delayMs={delayMs} raised={raised} sample={sample} />
+  if (subtitle.kind === 'text') return <TextSubtitles key={subtitle.streamIndex} cues={subtitle.cues} delayMs={delayMs} raised={raised} hidden={hidden} sample={sample} />
   return null
 }
 
@@ -73,7 +74,7 @@ function useVideoRect(ref: React.RefObject<HTMLElement | null>) {
 
 const NO_CUES: SubtitleCue[] = []
 
-function TextSubtitles({ cues, delayMs, raised, sample = false }: { cues: SubtitleCue[]; delayMs: number; raised: boolean; sample?: boolean }) {
+function TextSubtitles({ cues, delayMs, raised, hidden = false, sample = false }: { cues: SubtitleCue[]; delayMs: number; raised: boolean; hidden?: boolean; sample?: boolean }) {
   const { t } = useTranslation()
   const ref = useRef<HTMLDivElement>(null)
   const rect = useVideoRect(ref)
@@ -113,7 +114,7 @@ function TextSubtitles({ cues, delayMs, raised, sample = false }: { cues: Subtit
   const shown = active.length === 0 && sample ? sampleCue : active
   const box: CSSProperties = raised ? { ...style.box, marginBottom: `calc(${subtitleBottomMargin(prefs.subMargin, rect.height)} + ${RAISED_BY})` } : style.box
   return (
-    <div ref={ref} className={styles.layer} aria-live="off">
+    <div ref={ref} className={styles.layer} style={hidden ? { visibility: 'hidden' } : undefined} aria-live="off">
       <div className={styles.area} style={area} data-subtitle-area>
         {shown.length > 0 && (
           <div className={styles.box} style={box} data-subtitle-sample={shown !== active || undefined}>

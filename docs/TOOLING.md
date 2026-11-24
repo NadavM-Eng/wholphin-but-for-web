@@ -22,6 +22,10 @@ Related documents: [README.md](README.md) (index), [PROJECT-LOG.md](PROJECT-LOG.
 
 Nothing was run for this update either: it was written from the commits `7ad52ba..509db33`, the source and the lead's record of the checks.
 
+**The update for phase 41** (2026-11-24, `main` at `5734cae`). The crawler has a new scene, `play-controls` (`tools/shots/scenes.ts`): a film playing with the control strip shown, which the player picture of the root README is taken from (the older player scene showed a paused film). Section 14 now names the playback engineer, a separate Opus session with a project role file (`.claude/agents/playback.md`) and its own notes, next to the documents agent. The trial runs the image of `5734cae` (section 16); the public repository holds the fourth release (section 20). No npm script and no environment key was added.
+
+**The update for phase 40** (2026-11-24, `main` at `e6dece7`). Between `162b44d` and `e6dece7` no npm script, no environment key and no tool under `tools/` was added and `package.json` did not change; `docs/spec/admin/` holds three documents of the admin panel's research and plan, which no tool reads. What changed for tools: the player specs `playback`, `playback-layout` and `subtitles-skip` grew tests for the click gate, the pointer rule, the volume keys, the subtitle timing after a skip (measured with animations running, as T-62 requires) and the move to the next episode (section 12); the last recorded unit-test run is 109 files and 941 tests (section 11); the trial runs the image of `e6dece7` (section 16); and section 14 has a new part, "Agents: which model, who does what". Nothing was run for this update: it was written from the commits `162b44d..e6dece7` and the lead's record.
+
 **Shell.** Commands are written for a POSIX shell (Git Bash works on Windows). Where a command sets an environment variable inline, the PowerShell form is given as well.
 
 ## 1. Overview
@@ -799,6 +803,20 @@ The crawler and the end-to-end suite set this for the servers they start.
 
 From [CLAUDE.md](../CLAUDE.md): play one video at a time and keep media tests to seconds; stop the playback session afterwards so the server stops transcoding; do codec-heavy work on the throwaway server, which is capped at three processor cores (section 7); keep transcodes on a real server to the minimum a check needs; stop the emulator whenever it is not capturing; do not run the full crawler, a Docker build or the whole test suite more often than a task needs; and never create anything that keeps writing data on its own, such as a Live TV recording.
 
+### Agents: which model, who does what
+
+Since 2026-11-24 the lead does not do the work itself; it reviews ([DECISIONS.md](DECISIONS.md) O-59, T-87, with T-76):
+
+| Who | Does |
+|---|---|
+| The lead | Writes each agent's brief, reviews what comes back, talks to the owner, makes the commits, publishes (the releases of section 20) and does the go-lives (section 16). Edits a few lines itself only where it already knows the exact place (the fast path, section 21). |
+| The playback engineer | A kept Claude Opus agent for the player, a separate session under the lead's chat (an agent started inside the chat was stopped by the owner). Role: `.claude/agents/playback.md`; its notes: `src/features/playback/AGENT-NOTES.md`, which it reads first and updates after each task. It owns `src/features/playback/` and the player's end-to-end specs and does not edit `docs/` (DECISIONS O-66, T-89). |
+| Claude Opus agents | In the work so far: the two planners and the writer of the admin panel's build plan, and the fix of the next-episode bug. The owner's example of a kept agent: one Opus agent for the player. |
+| Claude Sonnet agents | In the work so far: the readers and checkers of the admin panel's research, the builders and reviewers of its mockup, the critic of its plan, the investigators and checkers of the player bugs, the sweeps, and the documentation. The owner's example of a kept agent: one Sonnet agent for Settings. The documents agent is the first kept agent (the playback engineer is the second): it writes each documentation round from the facts the lead sends it and from git, and edits only `docs/` (not `docs/CODE-MAP.md`, which `npm run map` writes, and not `docs/spec/`). |
+| Claude Haiku agents | Pinpoint tasks: a lookup, a one-place edit. Not kept. The admin panel's build plan names six runs for them; none had run by the end of phase 40. |
+
+**Kept agents.** One agent per area stays alive after its task and gets the area's next task as a follow-up, so it need not learn the project again. A follow-up carries what the agent cannot read in git or in the files it already knows (the owner's words, measurements, what was decided). Haiku agents are started fresh each time. Every agent still gets an explicit model (T-76), and the rules of this section (muted and headless test browsers, one dev server, nothing left running, the disk rule of [CLAUDE.md](../CLAUDE.md)) hold for all of them.
+
 ### Worktrees for parallel lines of work
 
 A git worktree is a second working folder of the same repository on its own branch. Two groups that edit the same files at the same time would overwrite each other in one folder; in separate worktrees they cannot. The project keeps worktrees under `.worktrees/`, which is git-ignored, excluded from lint and excluded from the main checkout's file watching. State on 2026-11-18: no worktree exists. All seven lines of work are in `main`, their worktrees are removed and their local branches deleted; this section describes how to set one up, and how to remove one without the damage the first removal did.
@@ -1029,7 +1047,7 @@ docker image inspect wholphin-web:latest --format '{{json .Config.Labels}}'     
 docker inspect <container> --format '{{.Image}}'                                  # which image a container runs
 ```
 
-Then the container is replaced as above. State on 2026-11-24: the trial ran the image built from `509db33`, and later that day, on the owner's yes, the image built from `4d6b61e`. Its route in the reverse proxy is still the temporary one of the trial ([DECISIONS.md](DECISIONS.md) O-27, T-53). The smoke test in the table above was the one of `7ad52ba`; for the later builds the lead's record names the checks made before each go (section 21), not a new smoke test through the reverse proxy.
+Then the container is replaced as above. State on 2026-11-24: the trial ran the image built from `509db33`, and later that day, on the owner's yes, the images built from `4d6b61e`, from `d036067` and, after the five player changes of phase 40 (each on the owner's "Yes, go live", each with the previous image kept under a rollback tag), from `e6dece7`, and, after the episode change of phase 41, from `5734cae`, which it runs at the end of that day. Its route in the reverse proxy is still the temporary one of the trial ([DECISIONS.md](DECISIONS.md) O-27, T-53). The smoke test in the table above was the one of `7ad52ba`; for the later builds the lead's record names the checks made before each go (section 21), not a new smoke test through the reverse proxy.
 
 ## 17. npm audit state
 
@@ -1069,7 +1087,7 @@ Tooling gaps:
 - There is no script for creating or removing a worktree, and running the test server commands from a worktree would detach the container from its data (section 14). Removing a worktree that still holds a directory link deletes the folder the link points at; the rule and the commands are in section 14.
 - The Android TV reference pictures are gone from the build machine since 2026-11-18 and have to be captured again before `npm run shots:compare` is of use (sections 8 and 9). The new capture is still owed on 2026-11-24 ([DECISIONS.md](DECISIONS.md) T-57).
 - Three procedures of the lead have no script in the repository, and their exact commands were not recorded: a release to the public repository (section 20), the labelled image build with its rollback tag (section 16), and the recording of frames to judge motion (section 12).
-- The public repository holds three releases; the second and the third, both of 2026-11-24, came after a privacy sweep (section 20).
+- The public repository holds four releases; the second, the third and the fourth, all of 2026-11-24, came after a privacy sweep (section 20).
 - `app.touchDrag` works in Chromium only; no engine other than Chromium can be sent a moving touch (section 12).
 - The low-priority keeper is Windows only and does not match Playwright's WebKit processes (section 14).
 - `npm run e2e:flaky` repeats the Firefox and WebKit playback spec, which the e2e README says not to repeat (section 12).
@@ -1095,6 +1113,7 @@ Never verified, or not verified for the merged app:
 - The full end-to-end suite after each of the small changes of 2026-11-22 to 24: it was run once, over all of them, before the second release (section 12), and not again after the two test repairs and the privacy fixes; only the affected tests and the unit tests were re-run (sections 12 and 21).
 - The image builds after `7ad52ba`, inside the container or through the reverse proxy, by the lead (section 16).
 - A compare run with the changed player scenes (section 9).
+- The whole end-to-end suite after the five player changes of phase 40 (their specs ran in the writes project, headless Edge, only); the slow double click and the seek bar's scrubbing mode in a browser (section 12).
 
 ## 20. Releases to the public repository
 
@@ -1125,7 +1144,7 @@ TZ=UTC git -c user.name='<no-reply name>' -c user.email='<no-reply address>' \
 git push '<public remote>' '<new commit>:refs/heads/<public branch>'
 ```
 
-**State on 2026-11-24.** The first release was published on 2026-11-18 at about 21:30 UTC (O-35); `1003992` is the README commit made for it. A second release was made on 2026-11-24 ([PROJECT-LOG.md](PROJECT-LOG.md) phase 35; O-47): one new commit on the public branch on top of the first release's commit, with the tree of `main` at that day, made with a no-reply identity and UTC dates, and pushed to the public repository; the private history was not pushed. The public repository now holds the work of phases 32 to 35.
+**State on 2026-11-24.** The first release was published on 2026-11-18 (O-35); `1003992` is the README commit made for it. A second release was made on 2026-11-24 ([PROJECT-LOG.md](PROJECT-LOG.md) phase 35; O-47): one new commit on the public branch on top of the first release's commit, with the tree of `main` at that day, made with a no-reply identity and UTC dates, and pushed to the public repository; the private history was not pushed. The public repository then held the work of phases 32 to 35. A third release followed the same day (phase 39; O-55, T-83): one more commit on top of the second (`b9d0037`), public commit `66b94ca`, with the tree of `main` at `162b44d`; the CI run on GitHub for the public repository succeeded on it in 1 min 18 s. The public repository then held the work of phases 32 to 39. A fourth release followed the same day (phase 41; O-68, T-90): one more commit on top of `66b94ca`, with the tree of `main` after the documentation commit of phase 41, after a sweep by four readers; it holds the work up to and including phase 41, the admin panel's mockup excepted, which is outside the repository. What is made after it is in the private repository only until a later release and its sweep.
 
 Commit hashes in the documents are those of the private repository; a reader of the public repository will not find them there.
 

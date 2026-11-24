@@ -31,9 +31,12 @@ import { QueuePanel } from './ui/QueuePanel'
 import { SEEK_COMMIT_DEBOUNCE_MS } from './ui/SeekBar'
 import { ShortcutsDialog } from './ui/ShortcutsDialog'
 import { SkipIndicator } from './ui/SkipIndicator'
+import { useSeekHold } from './useSeekHold'
 import { SkipSegmentButton } from './ui/SkipSegmentButton'
 import { STRIP_SHEETS, type ContentScale, type PlayerDialog } from './ui/types'
 import { useControllerView } from './ui/useControllerView'
+import { isMouseClick, useMouseClickGate } from './ui/useMouseClickGate'
+import { stepVolume } from './ui/volumeStep'
 import { usePlayerKeys, type PlayerKeyContext } from './ui/usePlayerKeys'
 import { useFullscreen, usePersistentVolume, usePictureInPicture } from './ui/useScreenModes'
 
@@ -82,6 +85,7 @@ export function PlayerView({ onBack }: { onBack: () => void }) {
   const nextUp = usePlaybackStore((s) => s.nextUp)
   const segment = usePlaybackStore((s) => s.segment)
   const autoplayBlocked = usePlaybackStore((s) => s.autoplayBlocked)
+  const frameHeld = usePlaybackStore((s) => s.frameHeld)
   const durationMs = usePlaybackStore((s) => s.durationMs)
   const bufferedMs = usePlaybackStore((s) => s.bufferedMs)
   const allowDirectPlay = usePlaybackStore((s) => s.allowDirectPlay)
@@ -106,6 +110,10 @@ export function PlayerView({ onBack }: { onBack: () => void }) {
   useLayoutEffect(() => {
     skipRef.current = skip
   })
+  // Subtitles go at the skip and come back when the new position is on screen (the TV app keeps them). ASS draws on
+  // the video's frames, the others on animation frames.
+  const subtitleKind = usePlaybackStore((s) => s.subtitle?.kind)
+  const { held: seekHeld, press: pressSeek } = useSeekHold(subtitleKind === 'ass' ? 'video' : 'animation')
   const fullscreen = useFullscreen()
   const pip = usePictureInPicture()
   usePersistentVolume()
@@ -163,15 +171,17 @@ export function PlayerView({ onBack }: { onBack: () => void }) {
     if (error) controllerRef.current.hide()
   }, [error])
 
-  // Buffering spinner only after 250 ms (PlaybackPage.kt:194-205).
+  // Buffering spinner only after 250 ms (PlaybackPage.kt:194-205). The same small spinner stands over the held last
+  // picture while the next queue entry loads (web: the TV covers the surface in black, which read as a page reload).
+  const waiting = status === 'buffering' || (status === 'loading' && frameHeld)
   useEffect(() => {
-    if (status !== 'buffering') {
+    if (!waiting) {
       setShowBuffering(false)
       return
     }
     const id = setTimeout(() => setShowBuffering(true), 250)
     return () => clearTimeout(id)
-  }, [status])
+  }, [waiting])
 
   // Web addition: a toast when a segment was skipped automatically.
   const lastSkipToast = useRef<string | null>(null)
@@ -201,10 +211,11 @@ export function PlayerView({ onBack }: { onBack: () => void }) {
   )
   const seekImmediate = useCallback(
     (delta: number) => {
+      pressSeek()
       engine.seekBy(delta)
       updateIndicator(delta, engine.positionMs())
     },
-    [engine, updateIndicator],
+    [engine, updateIndicator, pressSeek],
   )
   const dpadSeek = useCallback(
     (delta: number) => {
@@ -217,10 +228,11 @@ export function PlayerView({ onBack }: { onBack: () => void }) {
       const dur = usePlaybackStore.getState().durationMs
       const position = Math.min(Math.max(0, from + delta), Math.max(0, dur))
       updateIndicator(delta, position)
+      pressSeek()
       if (commitTimer.current) clearTimeout(commitTimer.current)
       commitTimer.current = setTimeout(() => engine.seekTo(position), SEEK_COMMIT_DEBOUNCE_MS)
     },
-    [engine, trickplayMode, seekImmediate, updateIndicator],
+    [engine, trickplayMode, seekImmediate, updateIndicator, pressSeek],
   )
   useEffect(() => {
     if (!trickplayMode || skip.total === 0) return
@@ -334,6 +346,17 @@ export function PlayerView({ onBack }: { onBack: () => void }) {
     [engine, seekImmediate, skipBackMs, skipForwardMs, fullscreen, pip, controller, showControls, t],
   )
 
+  const adjustVolume = useCallback(
+    (dir: -1 | 1) => {
+      const st = usePlaybackStore.getState()
+      const next = stepVolume(st.volume, st.muted, dir)
+      engine.setVolume(next.volume)
+      engine.setMuted(next.muted)
+      setVolumeHud(Date.now())
+    },
+    [engine],
+  )
+
   const keyCtx = useRef<PlayerKeyContext>(null as unknown as PlayerKeyContext)
   const latestKeyCtx: PlayerKeyContext = {
     controlsVisible: visible,
@@ -346,6 +369,7 @@ export function PlayerView({ onBack }: { onBack: () => void }) {
     durationMs,
     dpadSeek,
     showControls: () => showControls(true),
+    adjustVolume,
     pulseControls: () => controller.pulse(),
     clearDpadSeek: clearSkip,
     back,
@@ -385,7 +409,9 @@ export function PlayerView({ onBack }: { onBack: () => void }) {
     engine.reportInteraction()
     // moving on the floating Skip button / Next Up card must not raise the controls, which hide them
     const onPanel = e.target instanceof Element && !!e.target.closest('[data-skip-segment],[data-next-up]')
-    if (!dialog && !error && !overlayHovered.current && !onPanel) controller.show()
+    // overlayHovered is only meaningful while the strip shows: a key (Escape, Back) can hide the controls with the
+    // pointer still on the strip, and the inert strip then never sends the pointer-leave that would clear it
+    if (!dialog && !error && !(controller.visible && overlayHovered.current) && !onPanel) controller.show()
   }
 
   const tap = useRef<{ t: number; x: number; side: -1 | 0 | 1; timer: ReturnType<typeof setTimeout> | null }>({ t: 0, x: 0, side: 0, timer: null })
@@ -422,11 +448,17 @@ export function PlayerView({ onBack }: { onBack: () => void }) {
     },
     [],
   )
+  // Web behaviour (the TV app has no mouse double click): a mouse click's play/pause waits CLICK_WAIT_MS so a double
+  // click (fullscreen) leaves the play state as it was. Touch is handled on pointer up.
+  const clickGate = useMouseClickGate({ isPaused: () => usePlaybackStore.getState().paused, togglePlay: () => engine.togglePlay() })
   const onCatcherClick = (e: ReactMouseEvent) => {
-    // mouse only (touch is handled on pointer up). Each click of a double click toggles, so a double click
-    // (fullscreen) leaves play/pause as it was, like other desktop players.
-    if ((e.nativeEvent as PointerEvent).pointerType && (e.nativeEvent as PointerEvent).pointerType !== 'mouse') return
-    engine.togglePlay()
+    if (!isMouseClick((e.nativeEvent as PointerEvent).pointerType)) return
+    clickGate.click()
+  }
+  const onCatcherDoubleClick = (e: ReactMouseEvent) => {
+    if (!isMouseClick((e.nativeEvent as PointerEvent).pointerType)) return
+    clickGate.doubleClick()
+    if (fullscreen.supported) fullscreen.toggle()
   }
   const onWheel = (e: WheelEvent) => {
     if (Math.abs(e.deltaY) < 1) return
@@ -441,7 +473,9 @@ export function PlayerView({ onBack }: { onBack: () => void }) {
   // ---------------------------------------------------------------------------------------------
   // Render
 
-  const loading = status === 'loading' && !error
+  // the black cover only while there is no picture yet (the first start, a track change); a move between entries
+  // keeps the last picture with the small spinner (frameHeld)
+  const loading = status === 'loading' && !error && !frameHeld
   // a chapter or queue entry was chosen: the panel closes and the controls hide (ChapterRowOverlay.kt:117-121)
   const pickedFromPanel = () => {
     setDialog(null)
@@ -451,24 +485,26 @@ export function PlayerView({ onBack }: { onBack: () => void }) {
   return (
     <div
       ref={root}
+      data-player-root
       className={clsx(styles.root, nextUp && styles.withNextUp, !visible && !dialog && styles.hideCursor)}
       onPointerMove={onPointerMove}
       onPointerDown={() => engine.reportInteraction()}
     >
       <div className={clsx(styles.player, nextUp && styles.shrunk)}>
         <PlayerSurface>
-          <SubtitleLayer raised={visible} hidden={skip.total !== 0 && !visible} />
+          {/* while the skip indicator or the seek bar shows, text and PGS lines step up as they do for the controls, so they do not sit under it */}
+          <SubtitleLayer raised={visible || skip.total !== 0} lifted={skip.total !== 0 && !visible} hidden={seekHeld} />
           <div
             className={styles.catcher}
             onClick={onCatcherClick}
-            onDoubleClick={() => fullscreen.supported && fullscreen.toggle()}
+            onDoubleClick={onCatcherDoubleClick}
             onPointerUp={onCatcherPointerUp}
             onWheel={onWheel}
             aria-hidden
           />
 
           {loading && (
-            <div className={styles.cover}>
+            <div className={styles.cover} data-player-cover>
               <CircularProgress />
             </div>
           )}
@@ -495,7 +531,7 @@ export function PlayerView({ onBack }: { onBack: () => void }) {
           )}
 
           {volumeHud > 0 && (
-            <div className={styles.hud} role="status">
+            <div className={styles.hud} role="status" aria-label={`${t('web_playback_volume')} ${Math.round((muted ? 0 : volume) * 100)}%`}>
               <MaterialIcon name={muted || volume === 0 ? 'volume_off' : 'volume_up'} size={20} />
               {`${Math.round((muted ? 0 : volume) * 100)}%`}
             </div>
@@ -580,8 +616,8 @@ export function PlayerView({ onBack }: { onBack: () => void }) {
       {nextUp && (
         <NextUpPanel
           onPlay={() => {
+            // the controls stay as they are: the next episode plays in the same player (owner request)
             engine.reportInteraction()
-            controller.hide()
             engine.playNextUp()
           }}
         />
@@ -609,7 +645,8 @@ export function PlayerView({ onBack }: { onBack: () => void }) {
       ) : dialog === 'chapters' ? (
         <ChaptersPanel onClose={() => setDialog(null)} onPicked={pickedFromPanel} />
       ) : dialog === 'queue' ? (
-        <QueuePanel onClose={() => setDialog(null)} onPicked={pickedFromPanel} />
+        // a queue entry plays in the same player and the controls stay up (the TV hides them: ChapterRowOverlay.kt)
+        <QueuePanel onClose={() => setDialog(null)} onPicked={() => setDialog(null)} />
       ) : dialog ? (
         <PlaybackDialogs
           key={dialog}

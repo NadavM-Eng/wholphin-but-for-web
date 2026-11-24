@@ -19,6 +19,8 @@ export interface PlayerKeyContext {
   /** controls hidden, Left/Right: seek per dpadSeekMode (immediate + indicator, or the trickplay overlay) */
   dpadSeek: (deltaMs: number) => void
   showControls: () => void
+  /** ArrowUp / ArrowDown with the focus outside the strip, panels and dialogs: change the volume by one step */
+  adjustVolume: (dir: -1 | 1) => void
   pulseControls: () => void
   clearDpadSeek: () => void
   back: () => void
@@ -44,6 +46,11 @@ function isTyping(t: EventTarget | null): boolean {
  */
 function inSidePanel(t: EventTarget | null): boolean {
   return t instanceof Element && !!t.closest('[data-next-up],[data-skip-segment],[data-player-prompt]')
+}
+
+/** Focus is inside the control strip or a sheet: there the arrows move between the controls. */
+function inControls(t: EventTarget | null): boolean {
+  return t instanceof Element && !!t.closest('[data-focus-trap],[data-player-sheet]')
 }
 
 function dirOf(key: string): -1 | 1 | 0 {
@@ -105,7 +112,19 @@ export function usePlayerKeys(ctx: RefObject<PlayerKeyContext>) {
         if (m != null) c.dpadSeek(dir * (dir < 0 ? c.skipBackMs : c.skipForwardMs) * m)
         return
       }
-      if (hidden && (e.key === 'ArrowUp' || e.key === 'ArrowDown' || ENTER_KEYS.has(e.key))) {
+      if (!inSidePanel(e.target) && !inControls(e.target) && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+        // Web behaviour that differs from the TV app (there Up shows the controls): Up/Down change the volume
+        e.preventDefault()
+        c.adjustVolume(e.key === 'ArrowUp' ? 1 : -1)
+        return
+      }
+      if (hidden && e.key === 'Tab') {
+        // keyboard users reach the hidden controls with Tab (Enter does so only when it is not "one click pause")
+        e.preventDefault()
+        if (!e.repeat) c.showControls()
+        return
+      }
+      if (hidden && ENTER_KEYS.has(e.key)) {
         // acted on at key up, like upstream; keep the hidden overlay's buttons from activating
         e.preventDefault()
         if (ENTER_KEYS.has(e.key)) armedEnter = e.key
@@ -136,11 +155,6 @@ export function usePlayerKeys(ctx: RefObject<PlayerKeyContext>) {
         e.preventDefault()
         const m = hold.keyUp(dir)
         if (m != null) c.dpadSeek(dir * (dir < 0 ? c.skipBackMs : c.skipForwardMs) * m)
-        return
-      }
-      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-        e.preventDefault()
-        c.showControls()
         return
       }
       if (ENTER_KEYS.has(e.key)) {

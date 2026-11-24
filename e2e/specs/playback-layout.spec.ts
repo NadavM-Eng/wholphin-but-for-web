@@ -1912,3 +1912,95 @@ test.describe('player layout: phone', () => {
     await leavePlayer(page)
   })
 })
+
+test.describe('player layout: mouse clicks on the picture', () => {
+  test('a single click pauses after a short wait; a fast double click goes fullscreen and the video keeps playing', { tag: [TAG.writes] }, async ({ page, app, api }) => {
+    test.setTimeout(120_000)
+    const item = await api.findMovie('Big Buck Bunny')
+    await api.snapshot(item.Id)
+    await app.goto('/')
+    await app.setPreference('oneClickPause', true)
+    await page.setViewportSize({ width: 1280, height: 720 })
+    await page.goto(`/play/${item.Id}?t=10000`)
+    const state = () => page.locator('video').evaluate((v: HTMLVideoElement) => ({ paused: v.paused, t: v.currentTime }))
+    await expect.poll(async () => (await state()).t, { timeout: 30_000 }).toBeGreaterThan(10.3)
+    const at = { x: 640, y: 360 }
+
+    // fast double click: fullscreen is entered, the play state is untouched
+    await page.mouse.dblclick(at.x, at.y)
+    await expect.poll(() => page.evaluate(() => !!document.fullscreenElement)).toBe(true)
+    await page.waitForTimeout(600)
+    const a = await state()
+    await page.waitForTimeout(800)
+    const b = await state()
+    expect(a.paused, 'still playing right after the double click').toBe(false)
+    expect(b.paused).toBe(false)
+    expect(b.t, 'the clock advances').toBeGreaterThan(a.t)
+    await page.keyboard.press('f')
+    await expect.poll(() => page.evaluate(() => !!document.fullscreenElement)).toBe(false)
+
+    // single click: the pause happens after the wait
+    await page.mouse.click(at.x, at.y)
+    await expect.poll(async () => (await state()).paused, { timeout: 3_000 }).toBe(true)
+    await leavePlayer(page)
+  })
+
+  test('mouse movement brings back the controls and the cursor after a key hid them while the pointer rested on the strip', { tag: [TAG.writes] }, async ({ page, app, api }) => {
+    test.setTimeout(120_000)
+    const item = await api.findMovie('Big Buck Bunny')
+    await api.snapshot(item.Id)
+    await app.goto('/')
+    await page.setViewportSize({ width: 1280, height: 720 })
+    await page.goto(`/play/${item.Id}?t=10000`)
+    await expect.poll(() => page.locator('video').evaluate((v: HTMLVideoElement) => v.currentTime), { timeout: 30_000 }).toBeGreaterThan(10.3)
+    const cursor = () => page.locator('video').evaluate((v) => {
+      let el: HTMLElement | null = v
+      while (el && getComputedStyle(el).position !== 'fixed') el = el.parentElement
+      return getComputedStyle(el ?? v).cursor
+    })
+    // the pointer goes onto the strip, then Escape hides the controls while it stays there
+    await page.mouse.move(640, 300, { steps: 6 })
+    await page.mouse.move(640, 680, { steps: 6 })
+    await expect(page.locator(strip)).toBeVisible()
+    await page.keyboard.press('Escape')
+    await expect(page.locator(strip)).toBeHidden()
+    await expect.poll(cursor).toBe('none')
+    // moving over the picture shows the controls and the cursor again
+    await page.mouse.move(640, 300, { steps: 6 })
+    await page.mouse.move(700, 340, { steps: 6 })
+    await expect(page.locator(strip)).toBeVisible()
+    await expect.poll(cursor).not.toBe('none')
+    await leavePlayer(page)
+  })
+
+  test('ArrowUp / ArrowDown change the volume by 5 percent with the controls hidden; with the focus in the strip they move between the controls', { tag: [TAG.writes] }, async ({ page, app, api }) => {
+    test.setTimeout(120_000)
+    const item = await api.findMovie('Big Buck Bunny')
+    await api.snapshot(item.Id)
+    await app.goto('/')
+    await page.setViewportSize({ width: 1280, height: 720 })
+    await playPaused(page, item, 10_000)
+    await expect(page.locator(strip)).toBeHidden({ timeout: 20_000 })
+    const volume = () => page.locator('video').evaluate((v: HTMLVideoElement) => Math.round(v.volume * 100))
+    const hud = page.locator('[role="status"]').filter({ hasText: '%' })
+    const start = await volume()
+    expect(start).toBeGreaterThanOrEqual(10)
+    await page.keyboard.press('ArrowDown')
+    await expect.poll(volume).toBe(start - 5)
+    await expect(hud).toHaveText(`${start - 5}%`)
+    await page.keyboard.press('ArrowDown')
+    await expect.poll(volume).toBe(start - 10)
+    await page.keyboard.press('ArrowUp')
+    await expect.poll(volume).toBe(start - 5)
+    await expect(page.locator(strip), 'the volume keys do not show the controls').toBeHidden()
+    await expect(hud).toBeHidden({ timeout: 5_000 })
+    // Enter shows the controls with Play focused; there the arrows move the focus and leave the volume alone
+    await page.keyboard.press('Enter')
+    await expect(button(page, 'play')).toBeFocused()
+    const before = await volume()
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    expect(await volume()).toBe(before)
+    await leavePlayer(page)
+  })
+})

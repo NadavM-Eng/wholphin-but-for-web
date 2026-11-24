@@ -156,6 +156,7 @@
   "web_shortcut_arrows": "Controls hidden: tap to skip back / forward, hold to seek faster. Controls shown: move focus",
   "web_shortcut_seek": "Skip back / forward",
   "web_shortcut_show_controls": "Show the controls",
+  "web_shortcut_volume": "Volume up / down (5% per press)",
   "web_shortcut_percent": "Jump to 0% ... 90%",
   "web_shortcut_next_previous": "Next / previous item",
   "web_shortcut_audio": "Audio track",

@@ -27,7 +27,7 @@ import { describePath, initialLadder, isVideoCopy, restartFlags, stepDown, trans
 import { endOfItemAction, nextUpCountdownStart, previousAction, shouldAutoPlayNextUp } from './nextUp'
 import { buildPlaybackInfoDto, resolvePlaybackInfo } from './playbackInfo'
 import { bindMediaSession, hasPrimaryArtwork, keepScreenOn, setMediaMetadata, updateMediaPosition } from './platform'
-import { createQueue, PLAYABLE_KINDS, SUPPORTED_ITEM_KINDS, type QueueEntry } from './queue'
+import { createQueue, isSameMedia, PLAYABLE_KINDS, queueForPlayedItem, queuePosition, SUPPORTED_ITEM_KINDS, type QueueEntry } from './queue'
 import { ProgressReporter } from './reporting'
 import { evaluateSegments, SEGMENT_POLL_MS, segmentEndMs } from './segments'
 import {
@@ -61,6 +61,7 @@ const initialState: PlaybackEngineState = {
   error: null,
   exit: null,
   autoplayBlocked: false,
+  frameHeld: false,
   destination: null,
   queue: [],
   index: 0,
@@ -212,6 +213,8 @@ export class PlaybackEngine {
   private loadedGen = -1
   private loadedUrl: string | null = null
   private failedGen = -1
+  /** the last picture of the entry being left (holdFrame) */
+  private heldFrame: HTMLCanvasElement | null = null
   private startTimer: ReturnType<typeof setTimeout> | null = null
   private ladder: FallbackLadder = initialLadder(false)
   private itemPlayback: ItemPlayback | null = null
@@ -324,7 +327,7 @@ export class PlaybackEngine {
           // "this episode and the following ones" / "this movie and its parts" (step 10, built once)
           const q = await createQueue(ctx.api, item, { userId: ctx.userId }).catch(() => null)
           if (q?.ok && q.entries.length > 0) {
-            entries = norm(q.entries[0].item.Id) === norm(item.Id) ? q.entries : [{ kind: 'media', item }, ...q.entries]
+            entries = queueForPlayedItem(item, q.entries)
           }
         }
       } else {
@@ -370,6 +373,7 @@ export class PlaybackEngine {
   stop(exit: ExitReason | null) {
     this.session++
     this.gen++
+    this.releaseFrame()
     this.teardownStream({ closeLiveStream: true })
     this.setPendingStart(null)
     this.clearItemTimers()
@@ -394,6 +398,7 @@ export class PlaybackEngine {
     const entry = get().queue[index]
     if (!entry) return false
     this.gen++
+    this.holdFrame()
     this.teardownStream({ closeLiveStream: true })
     this.setPendingStart(positionMs)
     this.clearItemTimers()
@@ -404,8 +409,7 @@ export class PlaybackEngine {
     const q = get().queue
     set({
       index,
-      hasNext: index + 1 < q.length,
-      hasPrevious: index > 0,
+      ...queuePosition(index, q.length),
       entryKind: entry.kind,
       nextUp: null,
       segment: null,
@@ -801,12 +805,53 @@ export class PlaybackEngine {
     this.loadedUrl = null
   }
 
+  /**
+   * Web: moving to another queue entry keeps the picture of the one being left on screen, drawn into a canvas over
+   * the element, until the next entry has a frame (as Jellyfin's web client, whose element keeps its last frame
+   * while the next source loads). Detaching the stream empties the element, which showed black. Only when a
+   * picture is there: at the first start the element is empty and the player's black cover shows instead.
+   */
+  private holdFrame() {
+    const v = this.video
+    // no picture in the element (a second move before the first one has a frame, a skipped entry): the picture
+    // already held stays, a black cover would flash otherwise
+    if (!v.parentElement || v.readyState < 2 || !v.videoWidth || !v.videoHeight) return
+    this.releaseFrame()
+    // drawn at most at the size it is shown (a 4K frame would take 33 MB for a moment)
+    const fit = Math.min(1, Math.max((v.clientWidth * devicePixelRatio) / v.videoWidth, (v.clientHeight * devicePixelRatio) / v.videoHeight) || 1)
+    const c = document.createElement('canvas')
+    c.width = Math.max(1, Math.round(v.videoWidth * fit))
+    c.height = Math.max(1, Math.round(v.videoHeight * fit))
+    try {
+      c.getContext('2d')?.drawImage(v, 0, 0, c.width, c.height)
+    } catch {
+      return
+    }
+    // the same box and scale as the video (setContentScale writes them inline)
+    c.style.cssText = v.style.cssText
+    c.style.display = 'block'
+    if (!c.style.position) Object.assign(c.style, { position: 'absolute', inset: '0' })
+    c.setAttribute('aria-hidden', 'true')
+    c.dataset.playerHeldFrame = ''
+    v.after(c)
+    this.heldFrame = c
+    set({ frameHeld: true })
+  }
+
+  private releaseFrame() {
+    if (!this.heldFrame) return
+    this.heldFrame.remove()
+    this.heldFrame = null
+    set({ frameHeld: false })
+  }
+
   private fail(error: PlaybackError) {
     this.watchdog.stop()
     if (this.startTimer) clearTimeout(this.startTimer)
     // stop listening to the dead stream's element events so they cannot overwrite the error state
     this.loadedGen = -1
     this.video.pause()
+    this.releaseFrame()
     set({ status: 'error', error, paused: true })
     keepScreenOn(false)
   }
@@ -1118,8 +1163,12 @@ export class PlaybackEngine {
   // -------------------------------------------------------------------------------------------
   // Next up
 
-  private showNextUp(index: number) {
-    const entry = get().queue[index]
+  private showNextUp(start: number) {
+    const { queue, item: playing } = get()
+    // never offer the item that is playing (a second copy of it in the queue)
+    let index = start
+    while (index < queue.length && isSameMedia(queue[index].item, playing)) index++
+    const entry = queue[index]
     if (!entry || entry.kind !== 'media') return
     const autoplay = shouldAutoPlayNextUp(getPrefs(), this.lastInteraction, Date.now())
     const countdown = nextUpCountdownStart(getPrefs(), autoplay)
@@ -1254,6 +1303,7 @@ export class PlaybackEngine {
       if (!isCurrent()) return
       if (this.startTimer) clearTimeout(this.startTimer)
       this.settlePendingStart()
+      this.releaseFrame()
       set({ status: 'playing', paused: false, autoplayBlocked: false })
       this.reporter?.onPlayingChanged(true)
       if (this.request?.item.MediaType !== 'Audio' && (get().source?.MediaStreams ?? []).some((s) => s.Type === 'Video')) this.watchdog.start()
@@ -1274,6 +1324,7 @@ export class PlaybackEngine {
       if (!isCurrent()) return
       if (this.startTimer) clearTimeout(this.startTimer)
       this.settlePendingStart()
+      this.releaseFrame()
       if (get().status === 'loading' || get().status === 'buffering') set({ status: v.paused ? 'paused' : 'playing' })
     })
     v.addEventListener('timeupdate', () => {

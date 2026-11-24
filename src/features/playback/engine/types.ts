@@ -112,6 +112,8 @@ export interface PlaybackEngineState {
   exit: ExitReason | null
   /** the browser refused autoplay: the UI should show a play affordance */
   autoplayBlocked: boolean
+  /** the last picture of the entry being left stays on screen until the next entry has a frame (web, see engine holdFrame) */
+  frameHeld: boolean
 
   destination: PlaybackDestination | null
   queue: QueueEntry[]

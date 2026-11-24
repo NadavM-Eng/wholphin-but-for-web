@@ -49,6 +49,7 @@ export function Controller({ dialog, onDialog, onInteract, skipBackMs, skipForwa
   const engine = getPlaybackEngine()
   const paused = usePlaybackStore((s) => s.paused)
   const hasNext = usePlaybackStore((s) => s.hasNext)
+  const hasPrevious = usePlaybackStore((s) => s.hasPrevious)
   const hasChapters = usePlaybackStore((s) => s.chapters.length > 0)
   const hasQueue = usePlaybackStore((s) => s.queue.length > 1)
   const segment = usePlaybackStore((s) => s.segment?.segment ?? null)
@@ -143,6 +144,8 @@ export function Controller({ dialog, onDialog, onInteract, skipBackMs, skipForwa
             icon={<DrawableIcon name="skip_previous" size={ICON} />}
             label={t('web_playback_previous')}
             title={`${t('web_playback_previous')} (Shift+P)`}
+            // upstream keeps it enabled (it restarts the item after 3 s); greyed out on the first entry (owner request)
+            disabled={!hasPrevious}
             onClick={click(() => engine.previousButton())}
           />
           <PlaybackButton

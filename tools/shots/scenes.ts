@@ -1206,6 +1206,21 @@ const BASE_SCENES: Scene[] = [
   },
   // player overlay on Multi Track Showcase (test server): several audio and subtitle tracks
   playerScene('play-paused', pausePlayer),
+  // a film playing, the compact control strip shown (the pointer rests on the strip, which keeps it from hiding)
+  playerScene(
+    'play-controls',
+    async (page, ctx) => {
+      await page.waitForFunction(() => (document.querySelector('video')?.currentTime ?? 0) > 3, null, { timeout: 30000 })
+      await page.mouse.move(640, 360)
+      await page.mouse.move(660, 380)
+      const pause = page.getByRole('button', { name: P(ctx.lang, 'web_playback_pause', { i: true }) }).first()
+      await pause.waitFor({ state: 'visible', timeout: 5000 })
+      const box = await pause.boundingBox()
+      if (box) await page.mouse.move(box.x - 260, box.y + box.height / 2)
+      await page.waitForFunction(() => document.querySelector('video')?.paused === false, null, { timeout: 5000 })
+    },
+    'Big Buck Bunny',
+  ),
   playerScene('play-sheet-settings', playerSheet('settings')),
   playerScene('play-sheet-speed', playerSheet('settings', 'playback_speed')),
   playerScene('play-sheet-scale', playerSheet('settings', 'video_scale')),

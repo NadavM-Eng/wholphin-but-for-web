@@ -79,6 +79,8 @@ That was the state when this document was first written (2026-11-17). Since then
 - **Phase 36** (2026-11-24, after the second release; [PROJECT-LOG.md](PROJECT-LOG.md)): the new order of Settings, quick rows and nine subjects, on the owner's requests (O-48, T-77), in `b7f3310`. It is not in the public repository yet.
 - **Phase 37** (2026-11-24, after phase 36; [PROJECT-LOG.md](PROJECT-LOG.md)): three small changes made by the lead alone on the fast path. The subtitle line that seemed to fly in after an arrow-key skip, on the owner's report (O-49, T-78), in `c92f5e6`. The episode strip moved by the mouse, on the owner's request (O-50, T-79), in `4d6b61e`. The language list of Settings in a solid box, on the owner's report (O-51, T-80), in `ce06734`. On 2026-11-24 the owner said yes to the first two, and the trial runs the image built from `4d6b61e` (a rollback image is kept), so it has the new order of Settings, the subtitle fix and the mouse on the episode strip. The owner said yes to the third the same day and it went onto the trial. None of the four changes of phases 36 and 37 is in the public repository. **Phase 38** (the same day, after phase 37; [PROJECT-LOG.md](PROJECT-LOG.md)): the language list's box made to fit its names, on the owner's request (O-52, T-81), in `d036067`, and a generated code map, on the owner's request (O-53, T-82), in `26273ae`; the owner's answer to keep all the stored images (O-54). The trial runs the image built from `d036067`.
 - **Phase 39** (the same day, after phase 38; [PROJECT-LOG.md](PROJECT-LOG.md)): the owner's question about announcing the project and the decision "Yes, publish first" (O-55), the privacy sweep and the checks before the third public release (T-83), which brought the work of phases 36 to 38 and this phase to the public repository, and the next project, an admin panel (O-56; nothing built). The trial is unchanged, at the image built from `d036067`.
+- **Phase 40** (the same day, after phase 39; [PROJECT-LOG.md](PROJECT-LOG.md)): the admin panel's research, mockup (the owner's review points are binding for the build) and build plan, which the owner put on hold (O-57, O-58, `docs/spec/admin/`); the owner's rules that the lead only reviews and that one agent per area is kept (O-59, T-87); and five player changes, each put on the trial the same day on the owner's yes: a double click for fullscreen that no longer pauses (O-60, T-84, `0daae7e`), the mouse bringing the controls back after a key hid them (O-61, `7b000ca`), the subtitles back as soon as a skip has landed (O-62, T-85, `93e5bf4`), the volume on the Up and Down arrows (O-63, `93e5bf4`) and the next episode that no longer restarts an earlier one (O-64, T-86, `e6dece7`). The third release is at `66b94ca` in the public repository; none of phase 40 was in it. `main` was at `e6dece7` plus the documentation, and the trial ran the image built from `e6dece7`.
+- **Phase 41** (the same day, after phase 40; [PROJECT-LOG.md](PROJECT-LOG.md)): the seamless episode change (O-65, T-88, `5734cae`), the playback engineer as a kept Opus agent with a role file and notes (O-66, T-89), the owner's question where to announce the project and the decision to ask the upstream author about the name first (O-67), and the fourth public release after "update the repo and its images" with a rewritten README (O-68, O-69, T-90). The public repository now holds everything up to and including phase 41 except the admin panel's mockup; the trial runs the image built from `5734cae`.
 
 > **Landing state of the comparison pass:** landed. On `main` since 2026-11-18, commit `e1b7e04` (fast-forward of `main` to `final`, which holds the merge `3085fba` of `parity` at `2a25082` and the top-up merges `f27f68a` and `b120d5f`).
 
@@ -94,7 +96,7 @@ O-19 to O-25 come from the lead's conversation with the owner on 2026-11-17 and 
 
 O-26 to O-29 come from later on 2026-11-18, around the trial deployment and the owner's first test of the app. They are recorded the same way: in no file, reported by the lead, summarized and not quoted.
 
-O-30 to O-56 come from 2026-11-18 (after the touch fix) to 2026-11-24: the way to the first public release, the maintenance rounds after it, the second release, the order of Settings, the subtitle report after a skip, the mouse on the episode strip, the language list, the code map, the stored images, the third release and the admin panel, in which the owner tried each change on the trial and answered. They are in no file either; the lead reported them for this document. Here the words in quotation marks are the owner's own, with the spelling corrected; everything else is the lead's summary.
+O-30 to O-69 come from 2026-11-18 (after the touch fix) to 2026-11-24: the way to the first public release, the maintenance rounds after it, the second release, the order of Settings, the subtitle report after a skip, the mouse on the episode strip, the language list, the code map, the stored images, the third release, the admin panel (its mockup, its hold, and the owner's rules for how the lead works) five reports and requests about the player, the seamless episode change, where to announce and the fourth release, in which the owner tried each change on the trial and answered. They are in no file either; the lead reported them for this document. Here the words in quotation marks are the owner's own, with the spelling corrected; everything else is the lead's summary.
 
 ### O-1. Name and license
 
@@ -417,7 +419,7 @@ O-30 to O-56 come from 2026-11-18 (after the touch fix) to 2026-11-24: the way t
 
 - **Context:** The privacy sweep cleaned the current files (O-33). Older versions of the documents stayed in the repository's history, and a history cannot be cleaned in place on the host (T-58).
 - **What the owner decided (2026-11-18):** "Yes, clean copy". The existing repository stays private, as the archive with the full history. A new public repository holds the cleaned tree as one fresh commit.
-- **What happened:** The project was published on 2026-11-18 at about 21:30 UTC. The README of that release is commit `1003992`.
+- **What happened:** The project was published on 2026-11-18. The README of that release is commit `1003992`.
 - **What it changed:**
   - Since then the project is in "maintenance and improvements": the owner hands over items one at a time, the desktop browser first (O-28).
   - The procedure for every later release is T-58.
@@ -587,7 +589,97 @@ O-30 to O-56 come from 2026-11-18 (after the touch fix) to 2026-11-24: the way t
 
 - **Context:** After the third release the owner opened the next project.
 - **What the owner asked (2026-11-24):** an admin panel inside Wholphin Web that is to replace the frontend of Jellyfin's stock dashboard, starting with research (what pages exist, how they connect, what can be merged or improved, what is needed), then a mockup. The owner's constraint: where the research looks at a running server's dashboard, only the lead looks, and nothing is changed.
-- **What it changed:** nothing in the code. Research is under way; nothing is built and no file of it is in the third release.
+- **What it changed:** nothing in the code. The research was done the same day (`docs/spec/admin/`; phase 40 of [PROJECT-LOG.md](PROJECT-LOG.md)); the structure, the mockup and the build plan followed (O-57, O-58), and the owner put the project on hold. Nothing is built; no file of it is in the third release (the research and the plan are in `docs/spec/admin/` on `main`).
+
+### O-57. The admin panel's structure, and the owner's review of the mockup
+
+- **Context:** The research for the admin panel (O-56) was done: the server's administration API and the stock dashboard were written down in `docs/spec/admin/` (phase 40 of [PROJECT-LOG.md](PROJECT-LOG.md)), and three proposed structures were checked against the page list. The structure the owner was shown was an Overview and nine subjects.
+- **What the owner decided (2026-11-24):** the structure was approved with "Yes, mock it up". The lead's mockup was a private design canvas with invented data, first of 28 screens.
+- **What the owner asked after looking at it,** in substance (the lead's summary, not quotes). These points are binding for the build:
+  - Use the width on 1080p, 2K and 4K screens: cards flow into columns, and an "On this page" list stands at the side, like a documentation page.
+  - The main action of a page stands on the same row as the search and the filters.
+  - One look for dropdowns, with room to the right of the arrow.
+  - Controls that belong together stand side by side on one line and at one height. The owner called misaligned field-and-button pairs a recurring fault.
+  - The Activity log is paged with 30, 60, 90 or 120 rows.
+  - Plugin screens are drawn as finished designs, not left as placeholders.
+  - Later, one more note: a transcoding session shows the user's progress in the regular colour, and the transcoding progress in yellow underneath it.
+- **What it changed:** a second version of the mockup, 33 screens, and the build plan (O-58). Nothing in the app. The mockup's files are local; the first step of the build plan copies them into the repository.
+
+### O-58. The admin panel's build plan is put on hold
+
+- **Context:** The lead presented the build plan (`docs/spec/admin/build-plan.md`): eight waves, 35 planned agent runs, everything built and tested only on the throwaway test server, a go-live only on the owner's yes, a list of mockup items the server cannot do, and five questions for the owner with default answers.
+- **What the owner decided (2026-11-24):** "Before the big project we will wait a bit".
+- **What it changed:** the plan stays a document, the state is "on hold": research and plan are on `main`, the mockup is outside the repository, nothing is built. Nothing starts until the owner says so; then the plan's five questions are asked. O-56 stands as the direction.
+
+### O-59. The lead only reviews: every task goes to an Opus, Sonnet or Haiku agent, and one agent per area is kept
+
+- **Context:** The owner wanted the lead's own model spared for reviewing.
+- **What the owner said (2026-11-24), in two steps:**
+  - "from now on give only opus, sonnet, haiku tasks, you are only a reviewer". So the lead no longer does the work itself: each task goes to an agent on Claude Opus, Claude Sonnet or Claude Haiku with the model named, and the lead writes the briefs, reviews, and does the hand-offs (talking to the owner, commits, publishing, go-lives).
+  - Later the same day, after asking whether new agents must learn the project again every time: an edit of a few lines where the lead already knows the exact place is made by the lead; one agent per area is kept alive and gets that area's next task as a follow-up (the owner's examples: an Opus agent for the player, a Sonnet agent for Settings); Haiku agents are for pinpoint tasks and are not kept.
+- **What it changed:** T-87, and the rule of T-76 (an explicit model for every agent) is now stricter. The documents agent that wrote phase 40 is the first of the kept agents. The small edits the lead still makes itself are the fast path of T-63 (see T-87).
+
+### O-60. A double click for fullscreen must not stop the video
+
+- **Context:** In the player a mouse click on the picture plays or pauses, and a double click goes fullscreen.
+- **What the owner reported (2026-11-24):** a fast double click for fullscreen stops the video. Each of the two clicks toggled play, so the video paused and resumed.
+- **What it changed:** T-84. The owner's yes put it on the trial the same day (a rollback image is kept). The TV app has no mouse double click, so the row of [DEVIATIONS.md](DEVIATIONS.md) says "web only".
+
+### O-61. After a key hid the controls, the mouse did not bring them back
+
+- **Context:** The mouse cursor was resting over the picture during playback.
+- **What the owner reported (2026-11-24):** moving the mouse did not bring the cursor and the controls back; only the Up arrow did.
+- **What the lead found** (two Claude Sonnet agents, one finding the cause and one confirming it): a flag that says the pointer rests on the control strip stayed set when a key (Escape, Back) hid the controls, because the hidden strip can no longer report that the pointer left, and every later mouse move was ignored until a key showed the controls again. The flag now counts only while the controls are visible (one line in `PlayerView.tsx`), with an end-to-end test in `playback-layout.spec.ts` that fails without it.
+- **What it changed:** commit `7b000ca`; on the trial the same day on the owner's yes. Not proven: that this was the owner's exact sequence. The owner's report is recorded as a bug report, like the earlier ones (O-49).
+
+### O-62. The subtitles after a skip: about 0.05 seconds
+
+- **Context:** After an arrow-key skip the subtitles were hidden for the skip indicator's 0.8 seconds (T-78 had only fixed their fly-in).
+- **What the owner asked (2026-11-24),** in order: first for a number, how long after a skip the subtitles come back; the lead measured about 0.81 seconds for every kind of subtitle. Then: "I would like to be able to see the subtitles 0.05 seconds after the skip. there should be enough time for the previous to disappear. of course there shouldn't be problems with the subtitles and playback being synchronised".
+- **What it changed:** T-85. The result is a median of 16 to 58 ms for the ways of playing the lead measured. The owner's yes put it on the trial the same day. The TV app never takes the subtitles away for a skip, so the 0.8 second rule was a web-only rule that is now gone.
+
+### O-63. The Up and Down arrows change the volume
+
+- **Context:** In the player the Up and Down arrows showed the controls, as on the TV, where the D-pad's Up shows them.
+- **What the owner asked (2026-11-24):** "I want the audio go up and down when using the arrow up and down".
+- **What it changed:** commit `93e5bf4` (the same commit as T-85). ArrowUp and ArrowDown change the volume by 5 percent when the keyboard focus is not inside the control strip, a sheet or a dialog; raising while muted unmutes; the existing volume pill shows the level. Since Up no longer shows the controls, Tab (new) or Enter show them. The shortcut sheet lists the change. Not like the TV, where Up shows the controls ([DEVIATIONS.md](DEVIATIONS.md)). On the trial the same day on the owner's yes.
+
+### O-64. At the end of an episode the next button went back to an earlier episode
+
+- **Context:** The queue plays the next episode when one ends (the Next Up panel, its countdown, or the next button of the controls).
+- **What the owner reported (2026-11-24), with a picture:** the Next Up panel (by click or by its countdown) and the next button of the controls went back to the start of an episode already played, with a lot of loading; the picture showed the panel naming the episode that was still playing. The owner asked for an Opus agent to fix it.
+- **What it changed:** T-86. A Claude Sonnet agent found the cause, a Claude Opus agent fixed it and a Claude Sonnet agent checked it; commit `e6dece7`; on the trial the same day on the owner's yes. The case in the picture, Next Up naming the playing episode, was not reproduced on the throwaway server and is covered by unit tests only.
+
+### O-65. Changing episodes must reload only the picture
+
+- **Context:** At the end of an episode, or by the next button, the player went on to the next episode. The owner compared it with Jellyfin's own web client.
+- **What the owner asked (2026-11-24):** to research how the stock Jellyfin web client changes episodes, because this app "reloads the whole page". The wanted behaviour: "reload only the picture, the controls remain untouched and are only updated based on the content (for one example last episode the next is grayed out)".
+- **What it changed:** T-88 (commit `5734cae`). It is on the trial since the owner's "Yes, go live" the same day, with a rollback image. Three points are deviations from the TV app that the owner was told about; the owner may reverse the Previous button's (DEVIATIONS section 9).
+
+### O-66. A kept playback engineer on Claude Opus, as a project agent
+
+- **Context:** For O-65 the owner asked for the research and the change to be made by an Opus agent, "created as an agent in this project that learns how playback works". This follows the rule of O-59 that one agent per area is kept.
+- **What the owner decided (2026-11-24):** the agent is a project agent with a role of its own, on Claude Opus. A first try, an agent started inside the lead's chat, was stopped by the owner, who asked for a separate session; the engineer runs as its own session under the lead's chat.
+- **What it changed:** T-89: `.claude/agents/playback.md` (the role) and `src/features/playback/AGENT-NOTES.md` (its notes).
+
+### O-67. Where to announce the project, and asking the upstream author first
+
+- **Context:** After O-55 ("Yes, publish first") the owner asked where the project may be announced.
+- **What the lead reported (2026-11-24),** from a Claude Sonnet agent that read the rules it could reach (the points are in phase 41 of [PROJECT-LOG.md](PROJECT-LOG.md)): allowed with conditions are the Jellyfin forum's Client Development section, the awesome-jellyfin list (a pull request; the project must be at least four weeks old) and Hacker News "Show HN"; from search results only, r/selfhosted takes new projects only in its weekly new-project thread (which asks about AI involvement) and r/opensource bars projects made by AI; Jellyfin's chat rules count self-promotion as spam; Reddit's rule pages could not be read. Jellyfin's policy on large language models, which the upstream app has also adopted, asks that an AI-built project is marked as such and that posts are in the poster's own words, so the lead does not write the owner's announcement or the message to the upstream author. The lead only reviewed the owner's own draft for accuracy.
+- **What the owner decided (2026-11-24):** to ask the upstream author about the name before announcing, through the Discussions of the upstream repository.
+- **What it changed:** nothing in the code. The announcement waits for the answer. It extends O-55.
+
+### O-68. The go for the fourth public release: "update the repo and its images"
+
+- **Context:** The public repository held the third release; `main` was ahead of it by phases 40 and 41. The owner noticed that some of the README's pictures were older.
+- **What the owner said (2026-11-24):** "update the repo and its images, some of them are older".
+- **What it changed:** the privacy sweep, the new pictures and the fourth release the same day (T-90; phase 41 of [PROJECT-LOG.md](PROJECT-LOG.md)). The owner's go was given for this release; whether the owner wants to be asked before every later one is still not recorded.
+
+### O-69. The README must be easy to understand and to set up
+
+- **Context:** The root README opened with long status paragraphs of test counts and rounds before a visitor learned how to run the app. The owner was about to show the repository to the upstream author and to the Jellyfin community.
+- **What the owner said (2026-11-24):** "make sure that the Readme is understandable and there is no unnecessary flare. it should be easy to understand and setup".
+- **What it changed:** the README was rewritten in two rounds and read cold by an agent that saw only it (phase 41). The AI disclosure stays in its own plain section, as the Jellyfin community's policy asks. The old status history stays in [STATUS.md](STATUS.md) and the project log.
 
 ---
 
@@ -607,7 +699,7 @@ Where the sources do not record which alternatives were weighed, the "Rejected" 
 
 T-27 to T-32 each came out of an incident on the development machine. What happened, in order and with the commits, is in [PROJECT-LOG.md](PROJECT-LOG.md) phase 15. T-33 to T-36 are the lead's decisions from the later phases (phases 13 to 17 of the log). T-37 to T-42 are the lead's decisions of 2026-11-17 and 2026-11-18: stage 2 of the final merge, the run in which the usage limit was reached, the TV-comparison pass and the way to landing. T-48 to T-51 are the lead's decisions at the landing of the polish round, the same day. T-52 to T-57 are the lead's later decisions of that day: the trial deployment, the touch fix after the owner's first test, and the clean-up.
 
-T-58 to T-64 are the lead's decisions around the first public release and the maintenance rounds after it (2026-11-18 to 2026-11-24; phases 31 to 34 of the log): how the project is published, the direct-play work, the web player's layout, the Settings panel, and three working rules. T-65 to T-75 record the smaller technical choices of the same days that have a visible effect, one entry per change. T-76 is the lead's rule of 2026-11-24 about the model each agent runs on. T-77 is the new order of Settings of the same day, after the second release. T-78 to T-80 are the three small changes after it: the subtitle line after an arrow-key skip, the mouse on the episode strip and the language list in a solid box. T-81 and T-82 are the language box fitted to its names and the generated code map. T-83 is the privacy sweep and the checks before the third public release. Part 3 ends with the touch fix, so these entries also hold the choices of the agents that built the work of 2026-11-18 and 2026-11-22; the lead kept those choices when it committed, and each entry says who built it where that is recorded. The work of 2026-11-23 and 2026-11-24 was the lead's own, on the fast path (T-63).
+T-58 to T-64 are the lead's decisions around the first public release and the maintenance rounds after it (2026-11-18 to 2026-11-24; phases 31 to 34 of the log): how the project is published, the direct-play work, the web player's layout, the Settings panel, and three working rules. T-65 to T-75 record the smaller technical choices of the same days that have a visible effect, one entry per change. T-76 is the lead's rule of 2026-11-24 about the model each agent runs on. T-77 is the new order of Settings of the same day, after the second release. T-78 to T-80 are the three small changes after it: the subtitle line after an arrow-key skip, the mouse on the episode strip and the language list in a solid box. T-81 and T-82 are the language box fitted to its names and the generated code map. T-83 is the privacy sweep and the checks before the third public release. T-84 to T-86 are three player changes of the same day (the click gate, the seek hold for subtitles and the queue rules that stop the next episode from restarting an earlier one), and T-87 is the working rule of the owner's, with its kept agents. T-88 to T-90 come from the end of the same day: the episode change that keeps the player in place, the playback engineer as a project agent, and the sweep, pictures and checks of the fourth public release. Part 3 ends with the touch fix, so these entries also hold the choices of the agents that built the work of 2026-11-18 and 2026-11-22; the lead kept those choices when it committed, and each entry says who built it where that is recorded. The work of 2026-11-23 and 2026-11-24 was the lead's own, on the fast path (T-63).
 
 ### T-1. Stack: Vite, React, TypeScript and a small set of libraries
 
@@ -1558,7 +1650,7 @@ T-58 to T-64 are the lead's decisions around the first public release and the ma
   - The commit hashes named in these documents belong to the private repository and cannot be looked up in the public one.
   - The public repository shows no development history; these documents are the history.
   - The second release was made on 2026-11-24 (O-47; phase 35 of [PROJECT-LOG.md](PROJECT-LOG.md)): one new commit on the public branch on top of the first release's commit, whose tree is the tree of `main` at the release, made with a no-reply identity and UTC dates, and pushed to the public repository; the private history was not pushed. The public repository now holds the work of phases 32 to 35.
-  - The third release was made the same day, after the owner's "Yes, publish first" (O-55; T-83; phase 39): one new commit on top of the second (`b9d0037`), with the tree of `main` after the documentation commit of that phase, made the same way. The public repository then held the work of phases 32 to 39.
+  - The third release was made the same day, after the owner's "Yes, publish first" (O-55; T-83; phase 39): one new commit on top of the second (`b9d0037`), with the tree of `main` after the documentation commit of that phase, made the same way. The public repository then held the work of phases 32 to 39. The public commit is `66b94ca`, with the tree of `main` at `162b44d`.
   - Its sweep followed the procedure above with five readers, one per part of the difference between the first release and `main` (the documents, the end-to-end tests, the player, the rest of the code and tools, and a pattern search over the whole tracked tree), and a second reader for every finding who was told to refute it. 51 findings were reported; the readers that tried to refute them let about 30 stand, all of low severity (none was a name, an address, a credential or a path), and about half of those were in text that the first release had already published. What was found, in general terms: statements that described the owner's use or the real server rather than the software, local clock times of the work, sample data in a unit test taken from a real response, and a table of the stream types of real items. All were reworded or removed before the release. The lead also searched the whole tree for the real private values themselves; none was present.
   - It cost more than announced: see T-76.
 - **Code:** none. `README.md` carries the status line of the first public release (commit `1003992`).
@@ -1847,6 +1939,7 @@ T-58 to T-64 are the lead's decisions around the first public release and the ma
 - **Rejected:** leaving the model to be inherited.
 - **Consequences:** The two jobs of 2026-11-24 (the documentation catch-up and the privacy sweep, 10 and 56 agents) ran entirely on the most expensive model. The fix-up of the sweep's findings in the documents ran on Claude Sonnet, the first job started under the rule.
   - The sweep and the documentation of the third release (phase 39) followed it: five readers and the documentation agent, all on Claude Sonnet.
+  - On the same day the owner went further (O-59, T-87): the lead's own model does no work at all, only reviews, and one agent per area is kept. The agents of phase 40 (research, mockup, plan, player fixes, documents) all ran on Claude Sonnet or Claude Opus.
 - **Code:** none.
 - **Status:** In use.
 
@@ -1955,15 +2048,121 @@ T-58 to T-64 are the lead's decisions around the first public release and the ma
 - **Decision** (2026-11-24; phase 39):
   - The sweep: five readers on Claude Sonnet (T-76), find only, each on a different part of what changed since the second release (49 files, about 11,800 added lines): the two halves of `tools/code-map/where.json`, the rest of the code map and its generator, the documents, and the code and tests. Seven points were reported; none was a credential, an address, a name or a path. Five sentences in `DECISIONS.md` and `PROJECT-LOG.md` were reworded: one that told what the owner was doing when a bug was seen, one that spoke of the owner's own media, and three that gave a count taken from the trial deployment.
   - Left as they were: an example clock time inside the code map's description of the "Ends at" text (an example of interface text, with no date beside it), and one sentence in `TOOLING.md` about the trial's temporary reverse-proxy route (the same wording was already public).
-  - The release: one new commit on top of the second (`b9d0037`), with the tree of `main` after the documentation commit of phase 39 (T-58).
+  - The release: one new commit on top of the second (`b9d0037`), with the tree of `main` after the documentation commit of phase 39 (T-58). That documentation commit is `162b44d` and the public commit is `66b94ca`; the CI run on GitHub for the public repository succeeded on it in 1 min 18 s (recorded in phase 40).
 - **Why:** The release is one commit with no history (T-58), so the sweep has only the tree to read. A smaller sweep than the second release's (five readers, no second reader per finding) fitted a difference of this size, and the rule of T-76 kept its cost as announced.
 - **Rejected:** none recorded.
 - **Consequences:**
   - Gaps the readers stated: the long list of source files in `docs/CODE-MAP.md` and the generator script were pattern-searched, not read line by line. The lead's own search of the whole tracked tree for the real private values found none.
   - Checks on the release tree (the lead): the type check passes; lint has 0 errors; the unit tests pass (104 files, 911 tests); the production build passes. The whole end-to-end suite ran once in all seven projects with two workers: 345 tests, 345 passed, in 14.0 minutes (the first whole-suite run since the one before the second release, which had 336 tests). The screenshot crawler was run for the Settings scenes only (one theme, desktop size): 26 pictures, 26 ok, no warnings, no page errors.
-  - Not verified: anything on real Safari or a real phone; CI results on GitHub for this release are not recorded; the full crawl.
+  - Not verified: anything on real Safari or a real phone; the full crawl. (The CI result for this release, a success, is recorded in phase 40.)
   - The root README's status paragraph was rewritten for the release, and the Settings picture in `docs/screenshots/` was taken again with the crawler because it showed the old order of Settings; the other eight pictures are from 2026-11-18.
 - **Code:** none; documents only.
+- **Status:** Done (2026-11-24).
+
+### T-84. A mouse click on the picture waits a quarter second before it plays or pauses
+
+- **Context:** The owner's report that a fast double click for fullscreen stops the video (O-60). A click on the picture toggles play and a double click goes fullscreen; the browser sends two clicks first, so each of them toggled play.
+- **Decision** (`0daae7e`):
+  - A mouse click on the picture does not act at once: it waits 250 ms (`CLICK_WAIT_MS`), and a second click inside that time cancels the wait, so the pair is a double click and play is not toggled.
+  - A double click slower than 250 ms (up to the system's time, at most one second) has already toggled play with its first click; the second click, with the double click event, puts the earlier play state back.
+  - Touch, pen, the keyboard and the buttons are unchanged and act at once; only a mouse click (or a click with no pointer type) goes through the gate.
+- **Why:** The owner wanted fullscreen to leave the video as it was; a click can only be told from the first of two by waiting a moment to see whether a second follows.
+- **Rejected:** none recorded.
+- **Consequences:** A single click on the picture now plays or pauses a quarter second later. The logic is free of React (`createClickGate`) so it is tested without a browser: 7 unit tests, and one end-to-end test in `playback-layout.spec.ts`. Not verified: the slow double click in a browser. On the trial since 2026-11-24.
+- **Code:** `src/features/playback/ui/useMouseClickGate.ts`, `useMouseClickGate.test.ts`, `src/features/playback/PlayerView.tsx`.
+- **Status:** Done. On the trial; not in the public repository.
+
+### T-85. The subtitles are hidden at a skip and shown when the seek has landed
+
+- **Context:** The owner asked how long after a skip the subtitles come back and then asked for 0.05 seconds (O-62). Measured before, in a headless browser on the throwaway test server, as the time from the key press to a visible subtitle (median of 5 runs): ASS played directly 815 ms, PGS 812 ms, text 811 ms, ASS on a repackaged stream 821 ms, while the renderers had the new picture after 11 to 76 ms. The cause: the subtitles were hidden for the skip indicator's fixed 800 ms animation, a rule of the web version only (the TV app never takes the subtitles away for a skip), kept because the indicator and the subtitle line overlap on the screen.
+- **Decision** (`93e5bf4`):
+  - A skip press hides the subtitle layer at once, before the next frame is painted. It is shown again when the video's latest seek has landed (the element's `seeked` event with no seek still running) and one frame has been drawn: ASS follows the video's own frames (JASSUB redraws on the video frame callback, which does not fire while paused), PGS and text follow animation frames. After 3 seconds without an answer the hold lets go, unless the video is still seeking, which keeps it.
+  - The order of the states, `idle`, `armed`, `seeking` and `landed`, is a small pure state machine (`seekHoldState.ts`), so a late event of an older seek cannot show the layer early; a skip pressed again while the first is still in flight starts a new round.
+  - The text subtitles stay mounted while hidden, as the PGS and ASS renderers already did.
+  - While the skip indicator or the seek bar shows, the line is lifted above it (the layer's new `lifted` prop), as it already steps up for the controls.
+- **Why:** It removes the 800 ms wait without showing the old line over the new picture or the new line early, which the owner required ("there shouldn't be problems with the subtitles and playback being synchronised").
+- **Rejected:** none recorded. The old rule, a fixed 800 ms hide, is what was replaced.
+- **Consequences:**
+  - Measured after, smallest, median and largest in ms: ASS direct 22, 36, 134; PGS direct 56, 58, 71; text 15, 16, 33; ASS repackaged 19, 37, 40; three quick presses 55 to 93 from the last press. No sampled frame showed an old line or an early new line.
+  - An independent checker found one defect and repaired it: after a skip while paused the old ASS line showed for one frame.
+  - Checks: unit tests of the state machine (`seekHoldState.test.ts`) and the key rules, and the `subtitles-skip` end-to-end spec in the writes project. Not verified: the seek bar's scrubbing mode in a browser, the look of the lifted line, and the few slow first runs of ASS.
+  - It replaces the rule of T-78 that the text renderer is taken away for a skip; T-78's other decisions (no transition on the area, the ASS renderer kept) stand.
+- **Code:** `src/features/playback/useSeekHold.ts`, `src/features/playback/engine/seekHoldState.ts` and its test, `SubtitleLayer.tsx`, `AssSubtitles.tsx`, `src/features/playback/PlayerView.tsx`; `e2e/specs/subtitles-skip.spec.ts`.
+- **Status:** Done. On the trial; not in the public repository.
+
+### T-86. The address follows the queue without restarting the engine, and the queue is cut at the played item
+
+- **Context:** The owner's report that the next episode went back to one already played (O-64). Since `3325a7d` (2026-11-18) the page address follows the play queue: when the queue moves on, `PlaybackPage` replaces `/play/<id>` with the entry now playing so that a reload continues what is playing. On the second move in a row the session key changed, so the engine restarted several times and ended on the item playback began with. It happened only when playback was started from an episode's own page. A broken move made 7 item requests, 3 playback-info requests and 4 engine restarts.
+- **Decision** (`e6dece7`):
+  - While the address only follows the queue, the destination that started the engine stays the running one, so the session key does not change and nothing restarts. The follow is marked by the address's own history state (`playbackFollowsQueue`), not found by comparing ids: the follow is a state update and a navigation that land in different renders, and a comparison seen between the two had restarted the engine on the previous episode and then on the first one.
+  - The queue for a playable item started directly is cut after the item (`queueForPlayedItem`): when the list the server returns holds the item under its own id, the queue starts there; when it holds the same episode under another id (another version, as servers that merge versions or library plugins can list one), that entry stands for the item; every other copy of the item is dropped.
+  - Next Up never offers the media that is playing (`isSameMedia`: the same id, or the same episode number of the same season of the same series).
+- **Why:** The two defects together made the queue end on an episode already played. The history-state mark does not depend on the order of renders.
+- **Rejected:** none recorded.
+- **Consequences:** Now each move makes one playback-info request and no restart, and the video element stays. Not reproduced on the throwaway server: Next Up naming the episode that is playing (the owner's picture); it is covered by unit tests only. Upstream difference: upstream appends the whole contextual list after the played item (`PlaybackViewModel.kt`), which repeats the item when the list does not start with exactly that id (the comment in `queue.ts` names the file). Checks: unit tests in `queue.test.ts` and `PlaybackPage.test.tsx`, and an end-to-end test in `playback.spec.ts`; the player specs pass in the writes project.
+- **Code:** `src/features/playback/PlaybackPage.tsx`, `src/features/playback/engine/queue.ts`, `engine.ts` (`showNextUp`), with tests.
+- **Status:** Done. On the trial; not in the public repository.
+
+### T-87. The lead reviews; one agent per area is kept; Haiku for pinpoint tasks
+
+- **Context:** The owner's rules of 2026-11-24 (O-59): the lead no longer does the work itself, and agents need not relearn the project each time.
+- **Decision:**
+  - Every task goes to an agent on Claude Opus, Claude Sonnet or Claude Haiku, with the model named (T-76). The work of 2026-11-24 after the rule: Sonnet for the readers, builders, reviewers, investigators and checkers; Opus for the plan's planners and writer and for the fix of the next-episode bug; Haiku is for pinpoint tasks.
+  - The lead writes the briefs, reviews the result, and does the hand-offs: talking to the owner, commits, publishing, go-lives. It edits itself only a few lines in a place it already knows exactly (the fast path of T-63).
+  - One agent per area is kept alive and gets that area's next task as a follow-up, so it keeps what it has learned (the owner's examples: an Opus agent for the player and a Sonnet agent for Settings). Haiku agents are not kept. The first kept agent is the documents agent, which writes each documentation round; the lead sends it the facts and it reads git.
+- **Why:** The lead's own model is kept for reviewing (O-59), and the owner asked whether new agents must relearn the project each time; a kept agent already has what it learned.
+- **Rejected:** none recorded.
+- **Consequences:** Each agent's model is named in the record of the work (phase 40 of [PROJECT-LOG.md](PROJECT-LOG.md) does so); a result is still reviewed by the lead. The follow-up to a kept agent carries the facts it cannot read in git, as this phase's did.
+- **Code:** none.
+- **Status:** In force (since 2026-11-24).
+
+### T-88. An episode change keeps the player in place: no page fade, the last picture held, the controls kept
+
+- **Context:** The owner's request that changing episodes reload only the picture (O-65). The playback engineer (T-89) compared the stock Jellyfin web client, served by the throwaway test server, with this app. The stock client keeps its video page, hands the next item to the same player, which swaps the source of the same video element, and refreshes its controls; its picture is empty for about 150 ms. In this app nothing was remounted. Three things made it look like a page reload: the app shell fades the page in from opacity 0 over 700 ms on every new address (and the address follow of T-86 changed the address on every move); a black cover with a spinner stood over the picture until the new stream loaded; and the Next Up click hid the controls.
+- **Decision** (`5734cae`):
+  - The address follow calls `skipNextPageFade()` (`src/app/shell/useShellLayout`), so the page does not fade in for it.
+  - Before a move to another queue entry the engine copies the last picture to a canvas over the video (`holdFrame`, drawn at most at the size it is shown, with the video's box and scale) and removes it (`releaseFrame`) when the new entry has a frame: about 160 ms after the next button or at the end of an episode, about 360 ms after Next Up. The store field `frameHeld` says it. When the element holds no picture (a second move before the first has a frame, or a skipped entry) the picture already held stays, so no cover flashes.
+  - The black cover is used only where there is no picture: the first start and a track change. During a move a small spinner stands over the held picture.
+  - Next Up and the choice of a queue entry no longer hide the controls.
+  - Previous and Next are disabled at the ends of the queue: `queuePosition(index, length)` in `engine/queue.ts` gives `hasPrevious` and `hasNext`.
+- **Why:** It is what the owner asked and what the stock client does: the picture changes, the player and its controls stay. The held canvas is the web's way of keeping the last frame while the element is detached from its stream.
+- **Rejected:** none recorded.
+- **Consequences:**
+  - Deviations from the TV app (DEVIATIONS section 9): the TV shows black between entries and the web holds the last picture; the TV keeps Previous enabled (it restarts the item after 3 seconds) and the web disables it on the first entry, so on a single movie it no longer restarts the item (the owner was told and may reverse it); choosing a queue entry (the TV hides the controls) and clicking Next Up keep the controls as they were.
+  - Checks: the unit test of `queuePosition` and the rewritten end-to-end spec `playback`; an independent Claude Sonnet checker found and repaired one defect (a second move before the first had a frame dropped the held picture and flashed the cover) and measured with its own frame sampling: the page opacity never fell below 1, no frame of the cover showed, the control strip stayed as it was, and the title updated. The checker did not repeat the engineer's check that the new test fails without the fix.
+  - Not verified: the held picture's position in fullscreen and at other aspect ratios, repackaged streams, a visible window, real media, and episodes with subtitles.
+  - On the trial since the owner's yes the same day.
+- **Code:** `src/features/playback/engine/engine.ts`, `engine/queue.ts`, `engine/types.ts`, `src/features/playback/PlaybackPage.tsx`, `PlayerView.tsx`, `ui/Controller.tsx`; `e2e/specs/playback.spec.ts`.
+- **Status:** Done. On the trial; in the public repository since the fourth release.
+
+### T-89. The playback engineer: a kept Opus agent with a role file and its own notes
+
+- **Context:** O-66, on top of the rule of O-59 and T-87 that one agent per area is kept.
+- **Decision:**
+  - The role is a project agent definition, `.claude/agents/playback.md`: Claude Opus; it owns `src/features/playback/` and the player's end-to-end specs; it finds the cause before it changes anything, makes the smallest correct change, writes a test that fails without the fix, measures when the complaint is about time, and reports short and exactly with the lines for the lead's documents. Its safety rules repeat the working agreement (the throwaway test server only, one headless muted browser, no real server, no recordings, no commits).
+  - Its own notes are `src/features/playback/AGENT-NOTES.md` (94 lines at the start): how playback is put together, the decisions and deviations that bind it with the reason for each, the pitfalls already paid for with the commit that fixed each, how to reproduce and measure in a headless browser, and what is unverified. The engineer reads them first in every task and updates them after it.
+  - It runs as a separate session under the lead's chat. The first try, an agent started inside the chat, was stopped by the owner, who asked for the separate session.
+- **Why:** The owner wanted an agent that learns how playback works and need not relearn it (O-66).
+- **Rejected:** an in-chat agent (stopped by the owner).
+- **Consequences:** The engineer does not edit the documents under `docs/`; it lists what belongs in them and this documents agent writes it. The two kept agents are the playback engineer and the documents agent (TOOLING section 14). The privacy sweep of the fourth release replaced the role file's list of local file names with a general sentence.
+- **Code:** `.claude/agents/playback.md`, `src/features/playback/AGENT-NOTES.md`.
+- **Status:** In force (since 2026-11-24).
+
+### T-90. The privacy sweep, the pictures and the checks before the fourth public release
+
+- **Context:** The owner said "update the repo and its images" (O-68). The public repository held the third release (`66b94ca`); `main` was ahead by phases 40 and 41. T-58 requires a sweep of the difference before every release.
+- **Decision** (2026-11-24; phase 41):
+  - The sweep: four Claude Sonnet readers (T-76), find only, on the changes since the third release (37 files, about 5,600 added lines). No credential, address, name, path or title was found. Five rewordings in three files by the lead (listed in phase 41): one sentence in the build plan that spoke of the trial talking to a real server; in `DECISIONS.md` three, the context of the cursor entry (it said what the owner was doing when a fault showed), and the context and the quoted sentence of the working-rules entry (the reason for the rule, which is now that the lead's own model is kept for reviewing; the rule stays); and in the playback role file the list of local file names, replaced by a general sentence. The old publication time of the first release, a clock time of day, was removed from every document in the last round of this phase (it remains in the history of the earlier public releases, which cannot be changed). Left as they were: sentences that mention a trial deployment in general terms, and a comment in a test that quotes the owner's wording of a subtitle fault.
+  - The pictures: eight of the nine README pictures retaken with the crawler on the throwaway test server by a Claude Sonnet agent; the player picture from a new crawler scene, `play-controls`, because the old scene showed a paused film.
+  - The release: one new commit on top of `66b94ca`, with the tree of `main` after the documentation commit of phase 41 (T-58).
+- **Why:** The release is one commit with no history, so the sweep has only the tree to read.
+- **Rejected:** none recorded.
+- **Consequences:**
+  - Gaps the readers stated: the long generated tables of the two admin inventories were pattern-searched and sampled, not read line by line; the code part was read by targeted searches.
+  - Checks on the release tree (the lead): the type check passes; lint has 0 errors; the unit tests pass (109 files, 944 tests); the production build passes; the whole end-to-end suite ran once in all seven projects with two workers: 351 tests, 351 passed, in 14.1 minutes. The development server logged one unhandled error that no test caught: `setPointerCapture` threw a NotFoundError in `src/ui/inputs/Slider.tsx` during a synthetic touch drag. Open, not fixed in this release.
+  - Not verified: real Safari or a real phone; CI on GitHub for this release is not recorded yet.
+  - `docs/deploy.md` was corrected: the default of `DIST_DIR` is the `dist` folder next to `server/` (the image sets `/app/dist`), not `./dist` (checked against `server/config.ts`).
+- **Code:** `tools/shots/scenes.ts` (the scene `play-controls`); documents only otherwise.
 - **Status:** Done (2026-11-24).
 
 ---
@@ -1985,7 +2184,7 @@ These choices were made by agents, usually to resolve something the specs left o
 
 Since 2026-11-18, `main` holds everything marked (wave3a), (integration) and (stage 2), because it was fast-forwarded to `integration` (commit `c14b168`), and, since a second fast-forward the same day (commit `e1b7e04`, T-47), everything marked (parity) and (final) as well. Everything marked (polish) reached `main` with the merge commit `f1fb308` the same day (T-48), and everything marked (closing) with the commits `692715f` and `7ad52ba` later that day. The marks are kept to show where each decision was made; the branches themselves were deleted on 2026-11-18 (T-57).
 
-Part 3 ends with the touch fix (A-166). The choices made after it, by agents on 2026-11-18 and 2026-11-22 and by the lead working alone after that, are recorded in Part 2 as T-58 to T-83. Where one of them changed an entry below, the entry says so.
+Part 3 ends with the touch fix (A-166). The choices made after it, by agents on 2026-11-18 and 2026-11-22 and by the lead working alone after that, are recorded in Part 2 as T-58 to T-90. Where one of them changed an entry below, the entry says so.
 
 **Decisions that were made more than once.** Several things were decided by one agent and changed by a later one. Such an entry gives the decisions in order and says which one stands. In a few cases the fix pass (on `main`) and the repair (on `integration`) each changed the same thing in their own way. Those entries say so. Stage 2 of the final merge settled which version remains; A-107 lists how, and the entries concerned were updated.
 
@@ -2391,8 +2590,14 @@ The update of 2026-11-24 (the first public release and the maintenance rounds) a
 
 - the git log of `main` from `7ad52ba` to `509db33`, whose commit messages the lead wrote, and the code on `main` at `509db33` for the entries T-59 to T-61 and T-65 to T-75 (the files named there were read);
 - the index of the agent log archive for the jobs of 2026-11-18 and 2026-11-22 (which agents each job had), and the notes of an unfinished documentation update of 2026-11-18 for details of the player layout and the direct-play work;
-- the lead's account of the owner's decisions and words (O-30 to O-56), of the publication and the second and third releases (T-58, T-83), of the new order of Settings (T-77), of the subtitle fix, the mouse on the episode strip, the language list and the code map (T-78 to T-82), of the review of the Settings panel (T-61), of the working rules T-62 to T-64, and of the state on 2026-11-24. None of these is in a file. Where a number of agents or a count of a test run was not recorded, the entry says so and gives none.
+- the lead's account of the owner's decisions and words (O-30 to O-69), of the publication and the second and third releases (T-58, T-83), of the new order of Settings (T-77), of the subtitle fix, the mouse on the episode strip, the language list and the code map (T-78 to T-82), of the review of the Settings panel (T-61), of the working rules T-62 to T-64, and of the state on 2026-11-24. None of these is in a file. Where a number of agents or a count of a test run was not recorded, the entry says so and gives none.
 
 The items that the earlier update could not yet record (the comparison pass's notes, section 11 of the final merge notes, the outcome of T-41) are now in T-40, T-41 and T-43. The result of the lead's last full end-to-end run is in [STATUS.md](STATUS.md), not here.
+
+The update of 2026-11-24 for phase 40 added:
+
+- the git log of `main` from `162b44d` to `e6dece7`, with the code and the tests in the commits `0daae7e`, `7b000ca`, `93e5bf4` and `e6dece7` for T-84 to T-86, and the documents `docs/spec/admin/*.md` for O-56 to O-58;
+- the git log of `main` from `f1b1e56` to `5734cae`, the code in `5734cae` for T-88 and T-89, and `.claude/agents/playback.md`;
+- the lead's account of the owner's words (O-65 to O-69), of the announcement research, of the privacy sweep and the checks of the fourth release (T-90), of the measurements before and after the subtitle change, of the cause of the next-episode bug and of the check numbers, and of the owner's rules for the lead's work (O-59, T-87). None of these is in a file.
 
 Where the logs and the notes differ, the logs were followed for numbers. Counts of tests, pictures and findings are given as the reports state them. "Verified" is used only where a report says something was run and observed; everything else is marked as reported or not verified.
